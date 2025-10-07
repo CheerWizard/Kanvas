@@ -1,7 +1,7 @@
 package com.cws.kanvas.pipeline
 
 import com.cws.kanvas.core.Kanvas
-import com.cws.fmm.FastList
+import com.cws.fmm.ObjectList
 
 class IndexBuffer(size: Int) : GpuBuffer(
     type = Kanvas.INDEX_BUFFER,
@@ -9,12 +9,12 @@ class IndexBuffer(size: Int) : GpuBuffer(
     capacity = size
 ) {
 
-    fun add(indices: FastList) {
+    fun add(indices: ObjectList) {
         ensureCapacity(size = indices.size)
         addArray(indices)
     }
 
-    fun update(index: Int, indices: FastList) {
+    fun update(index: Int, indices: ObjectList) {
         ensureCapacity(index = index, size = indices.size)
         update(index) {
             setArray(index, indices)

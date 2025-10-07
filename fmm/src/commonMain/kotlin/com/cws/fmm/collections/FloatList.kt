@@ -1,8 +1,8 @@
 package com.cws.fmm.collections
 
-import com.cws.fmm.FastList
+import com.cws.fmm.ObjectList
 
-class FloatList(capacity: Int) : FastList(capacity, Float.SIZE_BYTES) {
+class FloatList(capacity: Int) : ObjectList(capacity, Float.SIZE_BYTES) {
 
     fun clone(): FloatList = FloatList(capacity)
 

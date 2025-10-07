@@ -3,7 +3,7 @@ package com.cws.acatch.game.data
 import com.cws.kanvas.math.Vec2
 import com.cws.kanvas.math.Vec4
 import com.cws.fmm.FastObject
-import com.cws.fmm.stack
+import com.cws.fmm.stackScope
 
 @FastObject(
     gpuAlignment = true
@@ -19,7 +19,7 @@ class _Ball(
 
 fun generateBalls(size: Int, width: Float, height: Float): BallList {
     val balls = BallList(size)
-    stack {
+    stackScope {
         val r = (80..100).random().toFloat()
         repeat(size) { i ->
             balls[i] = Ball(

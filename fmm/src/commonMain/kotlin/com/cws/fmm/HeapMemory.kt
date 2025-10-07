@@ -34,9 +34,9 @@ class FreeBlocks(size: Int) {
 }
 
 // TODO: right now single heap memory model is limited to Int.MAX_VALUE = ~2GB size, so 2GB is memory limit
-object HeapMemory : FastList(
-    capacity = (getMemoryInfo().totalPhysicalSize * 0.10f).toInt(),
-    requireBigBuffer = true
+object HeapMemory : ObjectList(
+//    capacity = (getMemoryInfo().totalPhysicalSize * 0.10f).toInt(),
+    capacity = 2 * 1024 * 1024
 ) {
 
     val totalSize get() = capacity
@@ -50,12 +50,12 @@ object HeapMemory : FastList(
         private set
 
     private val freeBlocks = FreeBlocks(100)
-    private val lockFree = LockFree()
 
-    fun allocate(size: Int): MemoryHandle = lockFree.lock {
+    fun allocate(size: Int): MemoryHandle {
         val freeHandle = freeBlocks.pop(size)
         if (freeHandle != NULL) {
-            return@lock freeHandle
+            reset(freeHandle, size)
+            return freeHandle
         }
 
         val handle = position
@@ -64,18 +64,23 @@ object HeapMemory : FastList(
             resize(capacity * 2)
         }
 
+        reset(handle, size)
+
         allocations++
         usedSize += size
         position = handle + size
-        handle
+
+        return handle
     }
 
     fun free(handle: MemoryHandle, size: Int) {
         if (handle == NULL) return
-        lockFree.lock {
-            freeBlocks.push(handle, size)
-            usedSize -= size
-        }
+        freeBlocks.push(handle, size)
+        usedSize -= size
+    }
+
+    fun reset(handle: MemoryHandle, size: Int) {
+        setTo(0, handle, size)
     }
 
     private fun initCapacity(): Long {

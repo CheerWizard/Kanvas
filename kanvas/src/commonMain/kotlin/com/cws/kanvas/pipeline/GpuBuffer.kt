@@ -2,15 +2,14 @@ package com.cws.kanvas.pipeline
 
 import com.cws.kanvas.core.BufferID
 import com.cws.kanvas.core.Kanvas
-import com.cws.fmm.BigBuffer
 import com.cws.fmm.FastBuffer
-import com.cws.fmm.FastList
+import com.cws.fmm.ObjectList
 
 open class GpuBuffer(
     protected val type: Int,
     typeSize: Int,
     capacity: Int
-) : FastList(
+) : ObjectList(
     capacity = capacity,
     typeSize = typeSize,
     requireBigBuffer = true
@@ -39,14 +38,13 @@ open class GpuBuffer(
             type = type,
             size = size * typeSize,
             offset = position,
-            data = buffer as BigBuffer
+            data = buffer as FastBuffer
         )
     }
 
-    override fun resize(newCapacity: Int): FastBuffer {
+    override fun resize(newCapacity: Int) {
         super.resize(newCapacity)
         resizeBuffer()
-        return buffer
     }
 
     protected fun ensureCapacity(index: Int = position, size: Int) {
@@ -66,7 +64,7 @@ open class GpuBuffer(
         bind()
         Kanvas.bufferData(
             type = type,
-            data = buffer as BigBuffer,
+            data = buffer as FastBuffer,
             offset = 0,
             size = capacity,
             usage = Kanvas.DYNAMIC_DRAW

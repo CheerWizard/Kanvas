@@ -4,17 +4,19 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
-fun getCurrentTime(): Long {
-    return Clock.System.now().toEpochMilliseconds()
+fun getCurrentTime(): Duration {
+    return Clock.System.now().toEpochMilliseconds().milliseconds
 }
 
 @OptIn(ExperimentalTime::class)
-fun Long.formatDateTime(pattern: String, timeZone: TimeZone = TimeZone.currentSystemDefault()): String {
-    val instant = Instant.fromEpochMilliseconds(this)
+fun Duration.formatDateTime(pattern: String, timeZone: TimeZone = TimeZone.currentSystemDefault()): String {
+    val instant = Instant.fromEpochMilliseconds(inWholeMilliseconds)
     val localTime = instant.toLocalDateTime(timeZone)
     val date = localTime.date
     val time = localTime.time

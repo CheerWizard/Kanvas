@@ -1,8 +1,8 @@
 package com.cws.fmm.collections
 
-import com.cws.fmm.FastList
+import com.cws.fmm.ObjectList
 
-class LongList(capacity: Int) : FastList(capacity, Long.SIZE_BYTES) {
+class LongList(capacity: Int) : ObjectList(capacity, Long.SIZE_BYTES) {
 
     fun clone(): LongList = LongList(capacity)
 

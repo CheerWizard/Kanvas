@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     id("com.android.library")
+    id("dev.mokkery") version "2.10.0"
 }
 
 kotlin {
@@ -31,6 +32,13 @@ kotlin {
                 // standard
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.atomicfu)
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
 

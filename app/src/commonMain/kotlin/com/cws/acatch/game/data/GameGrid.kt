@@ -1,7 +1,7 @@
 package com.cws.acatch.game.data
 
 import com.cws.kanvas.math.Vec2
-import com.cws.fmm.FastList
+import com.cws.fmm.ObjectList
 import com.cws.fmm.collections.IntList
 
 class GameGrid(
@@ -19,7 +19,7 @@ class GameGrid(
     }
 
     fun fill(
-        entities: FastList,
+        entities: ObjectList,
         visible: (Int) -> Boolean,
         pos: (Int) -> Vec2
     ) {

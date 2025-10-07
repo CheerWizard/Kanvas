@@ -3,7 +3,7 @@ package com.cws.kanvas.core
 import com.cws.kanvas.texture.Texture
 import com.cws.kanvas.pipeline.VertexAttribute
 import com.cws.printer.Printer
-import com.cws.fmm.BigBuffer
+import com.cws.fmm.FastBuffer
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
@@ -41,6 +41,9 @@ actual typealias ShaderID = Int
 
 @OptIn(ExperimentalForeignApi::class)
 actual object Kanvas {
+
+    private const val TAG = "Kanvas"
+
     actual const val NULL: Int = -1
     actual const val STATIC_DRAW: Int = GL_STATIC_DRAW
     actual const val DYNAMIC_DRAW: Int = GL_DYNAMIC_DRAW
@@ -114,7 +117,7 @@ actual object Kanvas {
     actual fun bufferData(
         type: Int,
         offset: Int,
-        data: BigBuffer,
+        data: FastBuffer,
         size: Int,
         usage: Int
     ) {
@@ -124,7 +127,7 @@ actual object Kanvas {
     actual fun bufferSubData(
         type: Int,
         offset: Int,
-        data: BigBuffer,
+        data: FastBuffer,
         size: Int
     ) {
         glBufferSubData(type.toUInt(), offset.toLong(), size.toLong(), data.buffer)
@@ -184,7 +187,7 @@ actual object Kanvas {
 
     actual fun shaderStageCompile(id: ShaderStageID, source: String): Boolean {
         if (id.toUInt() == NULL.toUInt()) {
-            Printer.e("Shader is not created")
+            Printer.e(TAG, "Shader is not created")
             return false
         }
 
@@ -199,14 +202,14 @@ actual object Kanvas {
                 val logLength = alloc<IntVar>()
                 glGetShaderiv(id.toUInt(), GL_INFO_LOG_LENGTH.toUInt(), logLength.ptr)
                 if (logLength.value <= 0) {
-                    Printer.e("Failed to get compiler error log message")
+                    Printer.e(TAG, "Failed to get compiler error log message")
                     return false
                 }
 
                 val logBuffer = allocArray<ByteVar>(logLength.value)
                 glGetShaderInfoLog(id.toUInt(), logLength.value, null, logBuffer)
                 val log = logBuffer.toKString()
-                Printer.e("Failed to compile shader: $log")
+                Printer.e(TAG, "Failed to compile shader: $log")
 
                 shaderStageRelease(id)
                 return false
@@ -241,14 +244,14 @@ actual object Kanvas {
                 val logLength = alloc<IntVar>()
                 glGetProgramiv(id.toUInt(), GL_INFO_LOG_LENGTH.toUInt(), logLength.ptr)
                 if (logLength.value <= 0) {
-                    Printer.e("Failed to get link error log message")
+                    Printer.e(TAG, "Failed to get link error log message")
                     return false
                 }
 
                 val logBuffer = allocArray<ByteVar>(logLength.value)
                 glGetProgramInfoLog(id.toUInt(), logLength.value, null, logBuffer)
                 val log = logBuffer.toKString()
-                Printer.e("Failed to link shader: $log")
+                Printer.e(TAG, "Failed to link shader: $log")
 
                 shaderRelease(id)
                 return false

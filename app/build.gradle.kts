@@ -62,7 +62,6 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
 
                 implementation(project(":kanvas"))
-                implementation(project(":fmm"))
             }
         }
 

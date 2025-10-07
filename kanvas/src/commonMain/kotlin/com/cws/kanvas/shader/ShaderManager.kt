@@ -15,6 +15,8 @@ import org.koin.core.component.inject
 
 object ShaderManager : KoinComponent {
 
+    private const val TAG = "ShaderManager"
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val shaderLoader: ShaderLoader by inject()
 
@@ -40,7 +42,7 @@ object ShaderManager : KoinComponent {
             contains(".vert") -> Kanvas.VERTEX_SHADER
             contains(".frag") -> Kanvas.FRAGMENT_SHADER
             else -> {
-                Printer.w("Unsupported shader type $this")
+                Printer.w(TAG, "Unsupported shader type $this")
                 Kanvas.NULL
             }
         }

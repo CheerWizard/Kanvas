@@ -2,7 +2,7 @@ package com.cws.kanvas.core
 
 import com.cws.kanvas.texture.Texture
 import com.cws.kanvas.pipeline.VertexAttribute
-import com.cws.fmm.BigBuffer
+import com.cws.fmm.FastBuffer
 
 expect class VertexArrayID
 expect class BufferID
@@ -71,8 +71,8 @@ expect object Kanvas {
     fun bufferRelease(id: BufferID)
     fun bufferBind(type: Int, id: BufferID)
     fun bufferBindLocation(type: Int, id: BufferID, location: Int)
-    fun bufferData(type: Int, offset: Int, data: BigBuffer, size: Int, usage: Int)
-    fun bufferSubData(type: Int, offset: Int, data: BigBuffer, size: Int)
+    fun bufferData(type: Int, offset: Int, data: FastBuffer, size: Int, usage: Int)
+    fun bufferSubData(type: Int, offset: Int, data: FastBuffer, size: Int)
 
     fun vertexArrayInit(): VertexArrayID
     fun vertexArrayRelease(id: VertexArrayID)

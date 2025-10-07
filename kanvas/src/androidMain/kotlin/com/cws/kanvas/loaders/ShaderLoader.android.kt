@@ -6,6 +6,10 @@ import com.cws.printer.Printer
 
 class ShaderLoaderImpl(context: Context) : ShaderLoader {
 
+    companion object {
+        private const val TAG = "ShaderLoader"
+    }
+
     private val assetManager: AssetManager = context.assets
 
     override suspend fun load(name: String): String {
@@ -13,7 +17,7 @@ class ShaderLoaderImpl(context: Context) : ShaderLoader {
         val stream = try {
             assetManager.open(filepath)
         } catch (e: Exception) {
-            Printer.e("", e)
+            Printer.e(TAG, "", e)
             error("Failed to find shader $filepath")
         }
         return stream.bufferedReader().use { it.readText() }

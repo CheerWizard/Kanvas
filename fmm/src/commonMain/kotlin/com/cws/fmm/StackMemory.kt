@@ -6,7 +6,7 @@ class StackMemory(
 ) {
 
     companion object {
-        const val SIZE_BYTES = 1024 * 1024
+        const val SIZE_BYTES = 64 * 1024
     }
 
     var position: Int = 0
@@ -28,6 +28,10 @@ class StackMemory(
         }
     }
 
+    fun reset() {
+        HeapMemory.reset(handle, capacity)
+    }
+
 }
 
 object StackMemoryManager {
@@ -47,10 +51,15 @@ object StackMemoryManager {
 
 }
 
-inline fun stack(block: StackMemory.() -> Unit) {
+inline fun stackScope(block: StackMemory.() -> Unit) {
     val stackMemory = StackMemoryManager.getStack()
     val begin = stackMemory.position
     block(stackMemory)
     val end = stackMemory.position
     stackMemory.pop(end - begin)
+//    stackMemory.reset()
+}
+
+inline fun <R> stackPush(block: StackMemory.() -> R): R {
+    return block(StackMemoryManager.getStack())
 }

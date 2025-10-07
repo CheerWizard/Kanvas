@@ -8,11 +8,11 @@ import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.writeToFile
 
-actual class FileLogger() {
+actual class FileLogger(
+    private var filepath: String
+) : ILogger {
 
-    private var filepath: String? = null
-
-    actual fun open(name: String, filepath: String) {
+    actual override fun open() {
         val paths = NSSearchPathForDirectoriesInDomains(
             directory = NSDocumentDirectory,
             domainMask = NSUserDomainMask,
@@ -22,15 +22,20 @@ actual class FileLogger() {
         this.filepath = "$internalDocumentsDir/$filepath"
     }
 
-    actual fun close() {
-        filepath = null
+    actual override fun close() {
+        filepath = ""
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    actual fun log(message: String) {
-        filepath?.let { path ->
-            (message as NSString).writeToFile(
-                path = path,
+    actual override fun log(
+        logLevel: LogLevel,
+        tag: String,
+        message: String,
+        exception: Throwable?,
+    ) {
+        if (filepath.isNotEmpty()) {
+            (formatLog(logLevel, tag, message, exception) as NSString).writeToFile(
+                path = filepath,
                 atomically = true,
                 encoding = NSUTF8StringEncoding,
                 error = null

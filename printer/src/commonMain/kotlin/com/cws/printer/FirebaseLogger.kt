@@ -23,7 +23,7 @@ class FirebaseLogger(
     val clientId: String,
     val apiSecret: String,
     val measurementId: String
-) {
+) : ILogger {
 
     companion object {
         private const val TAG = "FirebaseLogger"
@@ -41,7 +41,7 @@ class FirebaseLogger(
     private val logs = StringBuilder()
     private val consoleLogger = ConsoleLogger()
 
-    fun open() {
+    override fun open() {
         if (scope?.isActive == true) return
         httpClient = provideHttpClient()
         scope = CoroutineScope(Dispatchers.Default)
@@ -53,7 +53,7 @@ class FirebaseLogger(
         }
     }
 
-    fun close() {
+    override fun close() {
         scope?.cancel()
         scope = null
         httpClient?.let { client ->
@@ -64,7 +64,7 @@ class FirebaseLogger(
         httpClient = null
     }
 
-    fun log(logLevel: LogLevel, tag: String, message: String, exception: Throwable? = null) {
+    override fun log(logLevel: LogLevel, tag: String, message: String, exception: Throwable?) {
         logs.appendLine(formatLog(logLevel, tag, message, exception))
     }
 

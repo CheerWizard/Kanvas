@@ -29,9 +29,9 @@ kotlin {
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
         compilations["main"].cinterops {
-            val gles by creating {
-                defFile(project.file("src/nativeInterop/cinterop/ios_gles.def"))
-            }
+//            val gles by creating {
+//                defFile(project.file("src/nativeInterop/cinterop/ios_gles.def"))
+//            }
         }
     }
 
@@ -43,9 +43,9 @@ kotlin {
                 api(libs.koin.core)
                 api(libs.koin.compose.viewModel)
                 // Logging
-                implementation(project(":printer"))
+                api(project(":printer"))
                 // Fast Memory Model
-                implementation(project(":fmm"))
+                api(project(":fmm"))
                 // Compose
                 api("org.jetbrains.compose.runtime:runtime:1.7.1")
                 api("org.jetbrains.compose.foundation:foundation:1.7.1")
@@ -131,6 +131,11 @@ kotlin {
             dependsOn(iosMain)
         }
     }
+}
+
+dependencies {
+    // Math
+    api(project(":kanvas-math"))
 }
 
 android {

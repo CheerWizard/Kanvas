@@ -1,7 +1,7 @@
 package com.cws.acatch.game
 
-import com.cws.acatch.game.di.commonModule
-import com.cws.acatch.game.di.platformModule
+import com.cws.acatch.di.commonModule
+import com.cws.acatch.di.platformModule
 import com.cws.acatch.game.ui.GameScreen
 import com.cws.kanvas.core.KanvasViewController
 import com.cws.kanvas.core.RenderLoop

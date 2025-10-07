@@ -1,14 +1,22 @@
 package com.cws.printer
 
-actual class ConsoleLogger actual constructor() {
+actual class ConsoleLogger actual constructor() : ILogger {
 
-    actual fun log(logLevel: LogLevel, tag: String, message: String, exception: Throwable?) {
+    actual override fun open() {
+        // do nothing
+    }
+
+    actual override fun close() {
+        // do nothing
+    }
+
+    actual override fun log(logLevel: LogLevel, tag: String, message: String, exception: Throwable?) {
         val formattedMessage = formatLog(logLevel, tag, message)
 
         if (logLevel.ordinal >= LogLevel.ERROR.ordinal) {
             System.err.println(formattedMessage)
         } else {
-            println(formattedMessage)
+            System.out.println("${logLevel.toColorCode()}$formattedMessage")
         }
 
         exception?.printStackTrace()

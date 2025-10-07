@@ -31,7 +31,6 @@ class FastProcessor(
 
     data class Class(
         val declaration: KSClassDeclaration,
-        val gpuAlignment: Boolean
     )
 
     data class Field(
@@ -53,6 +52,10 @@ class FastProcessor(
         "equals", "toString", "copy", "hashCode"
     )
 
+    private val smallTypes = arrayOf(
+        "Boolean", "Byte", "Short", "UByte", "UShort"
+    )
+
     override fun process(resolver: Resolver): List<KSAnnotated> {
         logger.warn("Scanning for @FastObject...")
 
@@ -63,19 +66,7 @@ class FastProcessor(
                 declaration.annotations
                     .find { it.shortName.asString() == "FastObject" } != null
             }
-            .map { declaration ->
-                val annotation = declaration.annotations
-                    .find { it.shortName.asString() == "FastObject" }!!
-
-                val gpuAlignment = annotation.arguments
-                    .find { it.name?.getShortName() == "gpuAlignment" }
-                    ?.value as? Boolean ?: false
-
-                Class(
-                    declaration = declaration,
-                    gpuAlignment = gpuAlignment
-                )
-            }
+            .map { declaration -> Class(declaration) }
 
         classes.forEach { clazz ->
             logger.warn("Generate: $clazz")
@@ -87,7 +78,6 @@ class FastProcessor(
 
     private fun generate(clazz: Class) {
         val declaration = clazz.declaration
-        val gpuAlignment = clazz.gpuAlignment
         val pkg = declaration.packageName.asString()
         val generatedName = declaration.simpleName.asString().removePrefix("_")
         val generatedClassName = ClassName(pkg, generatedName)
@@ -105,23 +95,21 @@ class FastProcessor(
 
                 type = if (nested) type.removePrefix("_") else type
 
-                if (gpuAlignment) {
-                    when (type) {
-                        "Boolean" -> {
-                            type = "Int"
-                            typeName as ClassName
-                            typeName = ClassName(typeName.packageName, "Int")
-                        }
-                        "Vec3" -> {
-                            type = "Vec4"
-                            typeName as ClassName
-                            typeName = ClassName(typeName.packageName, "Vec4")
-                        }
-                        "Mat3" -> {
-                            type = "Mat4"
-                            typeName as ClassName
-                            typeName = ClassName(typeName.packageName, "Mat4")
-                        }
+                when (type) {
+                    in smallTypes -> {
+                        type = "Int"
+                        typeName as ClassName
+                        typeName = ClassName(typeName.packageName, "Int")
+                    }
+                    "Vec3" -> {
+                        type = "Vec4"
+                        typeName as ClassName
+                        typeName = ClassName(typeName.packageName, "Vec4")
+                    }
+                    "Mat3" -> {
+                        type = "Mat4"
+                        typeName as ClassName
+                        typeName = ClassName(typeName.packageName, "Mat4")
                     }
                 }
 
@@ -145,7 +133,7 @@ class FastProcessor(
                     defaultValue = defaultValue
                 )
 
-                val typeSize = if (type == "Boolean") "Byte.SIZE_BYTES" else "$type.SIZE_BYTES"
+                val typeSize = if (type in smallTypes) "Int.SIZE_BYTES" else "$type.SIZE_BYTES"
 
                 offset += " + $typeSize"
             }
@@ -153,12 +141,8 @@ class FastProcessor(
         val fileSpec = FileSpec.builder(pkg, generatedName)
 
         val size = fields.joinToString(" + ") {
-            if (it.type == "Boolean") {
-                if (gpuAlignment) {
+            if (it.type in smallTypes) {
                     "Int.SIZE_BYTES"
-                } else {
-                    "Byte.SIZE_BYTES"
-                }
             } else {
                 "${it.generatedType}.SIZE_BYTES"
             }

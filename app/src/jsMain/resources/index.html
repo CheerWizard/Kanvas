@@ -3,11 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title>Catch</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        #KANVAS_ROOT {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #KANVAS_UI {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+    </style>
 </head>
 <body>
-<div id="kanvas">
-    <canvas id="kanvas-runtime"></canvas>
-</div>
+<!-- HTML root for game canvas -->
+<div id="KANVAS_ROOT"></div>
+<!-- Compose UI canvas overlay -->
+<canvas id="KANVAS_UI"></canvas>
 <script src="app.js"></script>
 </body>
 </html>

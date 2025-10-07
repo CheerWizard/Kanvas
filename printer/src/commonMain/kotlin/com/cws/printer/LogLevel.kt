@@ -20,4 +20,13 @@ enum class LogLevel {
             FATAL -> "[FATAL]"
         }
     }
+
+    fun toColorCode(): String {
+        return when (this) {
+            NONE, VERBOSE -> "\u001B[0m"
+            DEBUG, INFO -> "\u001B[32m"
+            WARNING -> "\u001B[33m"
+            ERROR, FATAL -> "\u001B[31m"
+        }
+    }
 }

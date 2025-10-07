@@ -2,20 +2,33 @@ package com.cws.printer
 
 import java.io.File
 
-actual class FileLogger() {
+actual class FileLogger(
+    private val filepath: String
+) : ILogger {
 
     private var file: File? = null
 
-    actual fun open(name: String,  filepath: String) {
+    actual override fun open() {
         file = File(filepath)
+        file?.let { f ->
+            f.parentFile.mkdirs()
+            if (!f.exists()) {
+                f.createNewFile()
+            }
+        }
     }
 
-    actual fun close() {
+    actual override fun close() {
         file = null
     }
 
-    actual fun log(message: String) {
-        file?.writeText(message)
+    actual override fun log(
+        logLevel: LogLevel,
+        tag: String,
+        message: String,
+        exception: Throwable?,
+    ) {
+        file?.appendText(formatLog(logLevel, tag, message, exception) + "\n")
     }
 
 }

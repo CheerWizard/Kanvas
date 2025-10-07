@@ -11,26 +11,34 @@ import platform.posix.fopen
 import platform.posix.fwrite
 
 @OptIn(ExperimentalForeignApi::class)
-actual class FileLogger() {
+actual class FileLogger(
+    private val filepath: String
+) : ILogger {
 
     private var file: CPointer<FILE>? = null
 
-    actual fun open(name: String, filepath: String) {
+    actual override fun open() {
         file = fopen(filepath, "w")
     }
 
-    actual fun close() {
+    actual override fun close() {
         if (file != null) {
             fclose(file)
         }
         file = null
     }
 
-    actual fun log(message: String) {
+    actual override fun log(
+        logLevel: LogLevel,
+        tag: String,
+        message: String,
+        exception: Throwable?,
+    ) {
         if (file != null) {
             memScoped {
                 // TODO: can be optimized by caching messages in nativeHeap, to remove need of memScoped arena
-                fwrite(message.cstr.getPointer(memScope), 1u, message.length.toULong(), file)
+                val log = formatLog(logLevel, tag, message, exception)
+                fwrite(log.cstr.getPointer(memScope), 1u, log.length.toULong(), file)
                 fflush(file)
             }
         }

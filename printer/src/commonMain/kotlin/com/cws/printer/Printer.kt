@@ -13,33 +13,35 @@ object Printer {
 
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val mutex = Mutex()
-    private val consoleLogger = ConsoleLogger()
-    private var fileLogger: FileLogger? = null
-    private var firebaseLogger: FirebaseLogger? = null
+    private val loggers = mutableSetOf<ILogger>()
 
     fun init(
-        name: String = "Printer",
-        logLevel: LogLevel = LogLevel.NONE,
-        fileLogger: FileLogger? = null,
-        firebaseLogger: FirebaseLogger? = null
+        logLevel: LogLevel = LogLevel.VERBOSE,
+        loggers: Set<ILogger> = emptySet()
     ) {
         launch {
             this.logLevel = logLevel
-
-            this.fileLogger = fileLogger
-            this.fileLogger?.open(name, "logs/${name}_${getCurrentTimestamp()}.logs")
-
-            this.firebaseLogger = firebaseLogger
-            this.firebaseLogger?.open()
+            this.loggers.add(ConsoleLogger())
+            loggers.forEach { this.loggers.add(it) }
+            this.loggers.forEach { it.open() }
         }
     }
 
     // optional to call, not really required to call from client side
     fun close() {
         launch {
-            fileLogger?.close()
-            firebaseLogger?.close()
+            loggers.forEach { logger ->
+                logger.close()
+            }
         }
+    }
+
+    fun addLogger(logger: ILogger) {
+        loggers.add(logger)
+    }
+
+    fun removeLogger(logger: ILogger) {
+        loggers.remove(logger)
     }
 
     fun v(tag: String, message: String) = log(LogLevel.VERBOSE, tag, message)
@@ -52,9 +54,9 @@ object Printer {
     private fun log(logLevel: LogLevel, tag: String, message: String, exception: Throwable? = null) {
         if (this.logLevel <= logLevel && this.logLevel != LogLevel.NONE) {
             launch {
-                consoleLogger.log(logLevel, tag, message, exception)
-                fileLogger?.log(formatLog(logLevel, tag, message, exception))
-                firebaseLogger?.log(logLevel, tag, message, exception)
+                loggers.forEach { logger ->
+                    logger.log(logLevel, tag, message, exception)
+                }
             }
         }
     }

@@ -3,21 +3,29 @@ package com.cws.printer
 import android.content.Context
 import java.io.File
 
-actual class FileLogger(context: Context) {
+actual class FileLogger(
+    context: Context,
+    private val filepath: String
+) : ILogger {
 
     private var file: File? = null
     private val internalDir: File = context.filesDir
 
-    actual fun open(name: String, filepath: String) {
+    actual override fun open() {
         file = File(internalDir, filepath)
     }
 
-    actual fun close() {
+    actual override fun close() {
         file = null
     }
 
-    actual fun log(message: String) {
-        file?.writeText(message)
+    actual override fun log(
+        logLevel: LogLevel,
+        tag: String,
+        message: String,
+        exception: Throwable?,
+    ) {
+        file?.writeText(formatLog(logLevel, tag, message, exception))
     }
 
 }

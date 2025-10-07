@@ -13,7 +13,7 @@ import com.cws.kanvas.event.EventListener
 import com.cws.kanvas.core.RenderLoop
 import com.cws.kanvas.math.Vec2
 import com.cws.kanvas.math.Vec4
-import com.cws.fmm.stack
+import com.cws.fmm.stackScope
 
 class GameLoop(
     x: Int,
@@ -23,6 +23,7 @@ class GameLoop(
     title: String,
     private val inputSensorManager: InputSensorManager
 ) : RenderLoop(
+    tag = "GameLoop",
     x = x,
     y = y,
     width = width,
@@ -93,7 +94,7 @@ class GameLoop(
             pos = { balls[it].pos },
         )
 
-        stack {
+        stackScope {
             balls.forEachIndexed { i, ball ->
                 if (ball.visible == 1) {
                     val x0 = screenBox.x
@@ -182,7 +183,7 @@ class GameLoop(
         val projectiles = scene.projectiles
         val y = 2000f
         val i = 0
-        stack {
+        stackScope {
             val projectile = projectiles[i]
             projectile.pos = Vec2(x, y)
             projectile.velocity = Vec2()

@@ -9,12 +9,13 @@ import com.cws.kanvas.utils.fps
 import com.cws.printer.Printer
 
 abstract class RenderLoop(
+    private val tag: String,
     val x: Int,
     val y: Int,
     val width: Int,
     val height: Int,
     protected val title: String,
-) : PlatformRenderLoop(name = "RenderLoop", priority = 1) {
+) : PlatformRenderLoop(name = tag, priority = 1) {
 
     lateinit var window: Window
         protected set
@@ -48,7 +49,7 @@ abstract class RenderLoop(
     }
 
     override fun onUpdate(dtMillis: Float) {
-        Printer.d("dt=${dtMillis}ms FPS=${dtMillis.fps}")
+        Printer.d(tag, "dt=${dtMillis}ms FPS=${dtMillis.fps}")
         window.pollEvents()
         onFrameUpdate(dtMillis)
         RenderLoopJobs.execute()

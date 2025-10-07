@@ -9,13 +9,17 @@ import platform.Foundation.NSOperationQueue
 @OptIn(ExperimentalForeignApi::class)
 actual class InputSensorManager {
 
+    companion object {
+        private const val TAG = "InputSensorManager"
+    }
+
     actual val sensor: InputSensor = InputSensor()
 
     private val motionManager = CMMotionManager()
 
     actual fun init() {
         if (!motionManager.isAccelerometerAvailable()) {
-            Printer.e("Accelerometer is not available on Native platform")
+            Printer.e(TAG, "Accelerometer is not available on Native platform")
             return
         }
 
@@ -27,7 +31,7 @@ actual class InputSensorManager {
                     sensor.acceleration.x = x.toFloat()
                     sensor.acceleration.y = y.toFloat()
                     sensor.acceleration.z = z.toFloat()
-                    sensor.acceleration.normalized()
+                    sensor.acceleration assign sensor.acceleration.normalize()
                 }
             }
         }

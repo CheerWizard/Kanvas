@@ -1,12 +1,14 @@
 package com.cws.printer
 
-actual class FileLogger() {
+actual class FileLogger(
+    private val name: String
+) : ILogger {
 
     private var indexedDB: dynamic? = null
 
     private val logs = StringBuilder()
 
-    actual fun open(name: String, filepath: String) {
+    actual override fun open() {
         indexedDB = js("window.indexedDB.open(name, 1)")
 
         indexedDB.onupgradeneeded = {
@@ -28,13 +30,18 @@ actual class FileLogger() {
         }
     }
 
-    actual fun close() {
+    actual override fun close() {
         val db = indexedDB.result
         db.close()
     }
 
-    actual fun log(message: String) {
-        logs.appendLine(message)
+    actual override fun log(
+        logLevel: LogLevel,
+        tag: String,
+        message: String,
+        exception: Throwable?,
+    ) {
+        logs.appendLine(formatLog(logLevel, tag, message, exception))
     }
 
 }

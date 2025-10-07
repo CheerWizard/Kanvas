@@ -1,7 +1,7 @@
 package com.cws.kanvas.pipeline
 
 import com.cws.kanvas.core.Kanvas
-import com.cws.fmm.FastList
+import com.cws.fmm.ObjectList
 
 class VertexBuffer(size: Int) : GpuBuffer(
     type = Kanvas.VERTEX_BUFFER,
@@ -9,12 +9,12 @@ class VertexBuffer(size: Int) : GpuBuffer(
     capacity = size
 ) {
 
-    fun add(vertices: FastList) {
+    fun add(vertices: ObjectList) {
         ensureCapacity(size = vertices.size)
         addArray(vertices)
     }
 
-    fun update(index: Int, vertices: FastList) {
+    fun update(index: Int, vertices: ObjectList) {
         ensureCapacity(index = index, size = vertices.size)
         update(index) {
             setArray(index, vertices)

@@ -4,7 +4,7 @@ import android.opengl.GLES30.*
 import com.cws.kanvas.texture.Texture
 import com.cws.kanvas.pipeline.VertexAttribute
 import com.cws.printer.Printer
-import com.cws.fmm.BigBuffer
+import com.cws.fmm.FastBuffer
 
 actual typealias VertexArrayID = IntArray
 actual typealias BufferID = IntArray
@@ -14,6 +14,8 @@ actual typealias ShaderStageID = Int
 actual typealias ShaderID = Int
 
 actual object Kanvas {
+
+    private const val TAG = "Kanvas"
 
     actual const val NULL: Int = -1
     actual const val STATIC_DRAW: Int = GL_STATIC_DRAW
@@ -87,7 +89,7 @@ actual object Kanvas {
     actual fun bufferData(
         type: Int,
         offset: Int,
-        data: BigBuffer,
+        data: FastBuffer,
         size: Int,
         usage: Int
     ) {
@@ -101,7 +103,7 @@ actual object Kanvas {
     actual fun bufferSubData(
         type: Int,
         offset: Int,
-        data: BigBuffer,
+        data: FastBuffer,
         size: Int
     ) {
         if (data.buffer.remaining() < size) {
@@ -163,7 +165,7 @@ actual object Kanvas {
 
     actual fun shaderStageCompile(id: ShaderStageID, source: String): Boolean {
         if (id == NULL) {
-            Printer.e("Shader is not created!")
+            Printer.e(TAG, "Shader is not created!")
             return false
         }
 
@@ -174,7 +176,7 @@ actual object Kanvas {
         if (compileStatus[0] == 0) {
             val log = glGetShaderInfoLog(id)
             shaderStageRelease(id)
-            Printer.e("Failed to compile shader: $log")
+            Printer.e(TAG, "Failed to compile shader: $log")
             return false
         }
 
@@ -203,7 +205,7 @@ actual object Kanvas {
         glLinkProgram(id)
         glGetProgramiv(id, LINK_STATUS, linkStatus, 0)
         if (linkStatus[0] == 0) {
-            Printer.e("Failed to link shader: ${glGetProgramInfoLog(id)}")
+            Printer.e(TAG, "Failed to link shader: ${glGetProgramInfoLog(id)}")
             shaderRelease(id)
             return false
         }

@@ -1,0 +1,85 @@
+package com.cws.kanvas.math
+
+import com.cws.fmm.StackMemory
+import com.cws.fmm.stackPush
+import kotlin.math.sqrt
+
+// Used to generate fresh version
+//@FastObject
+//class _Vec4(
+//    var x: Float,
+//    var y: Float,
+//    var z: Float,
+//    var w: Float
+//)
+
+interface Vec4
+
+expect fun Vec4(): Vec4
+expect fun Vec4(x: Float, y: Float, z: Float, w: Float): Vec4
+
+expect fun StackMemory.Vec4(): Vec4
+expect fun StackMemory.Vec4(x: Float, y: Float, z: Float, w: Float): Vec4
+
+expect fun Vec4.clone(): Vec4
+
+expect var Vec4.x: Float
+expect var Vec4.y: Float
+expect var Vec4.z: Float
+expect var Vec4.w: Float
+
+expect operator fun Vec4.component1(): Float
+expect operator fun Vec4.component2(): Float
+expect operator fun Vec4.component3(): Float
+expect operator fun Vec4.component4(): Float
+
+expect operator fun Vec4.get(i: Int): Float
+expect operator fun Vec4.set(i: Int, v: Float)
+
+val Vec4.length: Float get() {
+    val x = x
+    val y = y
+    val z = z
+    val w = w
+    return sqrt(x * x + y * y + z * z + w * w)
+}
+
+fun Vec4.normalize(): Vec4 {
+    return normalize(this, this)
+}
+
+operator fun Vec4.plus(v: Float): Vec4 = stackPush {
+    Vec4(x + v, y + v, z + v, w + v)
+}
+
+operator fun Vec4.minus(v: Float): Vec4 = stackPush {
+    Vec4(x - v, y - v, z - v, w - v)
+}
+
+operator fun Vec4.times(v: Float): Vec4 = stackPush {
+    Vec4(x * v, y * v, z * v, w * v)
+}
+
+operator fun Vec4.div(v: Float): Vec4 = stackPush {
+    Vec4(x / v, y / v, z / v, w / v)
+}
+
+operator fun Vec4.plus(v: Vec4): Vec4 = stackPush {
+    Vec4(x + v.x, y + v.y, z + v.z, w + v.w)
+}
+
+operator fun Vec4.minus(v: Vec4): Vec4 = stackPush {
+    Vec4(x - v.x, y - v.y, z - v.z, w - v.w)
+}
+
+operator fun Vec4.times(v: Vec4): Vec4 = stackPush {
+    Vec4(x * v.x, y * v.y, z * v.z, w * v.w)
+}
+
+operator fun Vec4.div(v: Vec4): Vec4 = stackPush {
+    Vec4(x / v.x, y / v.y, z / v.z, w / v.w)
+}
+
+operator fun Vec4.unaryMinus(): Vec4 = stackPush {
+    Vec4(-x, -y, -z, -w)
+}

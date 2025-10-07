@@ -3,7 +3,7 @@ package com.cws.kanvas.core
 import com.cws.kanvas.texture.Texture
 import com.cws.kanvas.pipeline.VertexAttribute
 import com.cws.printer.Printer
-import com.cws.fmm.BigBuffer
+import com.cws.fmm.FastBuffer
 import kotlinx.browser.document
 import org.khronos.webgl.WebGLBuffer
 import org.khronos.webgl.WebGLFramebuffer
@@ -22,44 +22,46 @@ actual typealias ShaderID = Any
 
 actual object Kanvas {
 
+    private const val TAG = "Kanvas"
+
     actual const val NULL: Int = -1
-    actual const val STATIC_DRAW: Int = WebGLRenderingContext.STATIC_DRAW
-    actual const val DYNAMIC_DRAW: Int = WebGLRenderingContext.DYNAMIC_DRAW
-    actual const val FLOAT: Int = WebGLRenderingContext.FLOAT
-    actual const val INT: Int = WebGLRenderingContext.INT
-    actual const val UINT: Int = WebGLRenderingContext.UNSIGNED_INT
-    actual const val BOOLEAN: Int = WebGLRenderingContext.BOOL
-    actual const val UBYTE: Int = WebGLRenderingContext.UNSIGNED_BYTE
-    actual const val TRIANGLES: Int = WebGLRenderingContext.TRIANGLES
-    actual const val VERTEX_BUFFER: Int = WebGLRenderingContext.ARRAY_BUFFER
-    actual const val INDEX_BUFFER: Int = WebGLRenderingContext.ELEMENT_ARRAY_BUFFER
-    actual const val UNIFORM_BUFFER: Int = NULL
-    actual const val FRAME_BUFFER: Int = WebGLRenderingContext.FRAMEBUFFER
-    actual const val READ_FRAME_BUFFER: Int = NULL
-    actual const val DRAW_FRAME_BUFFER: Int = NULL
-    actual const val VERTEX_SHADER: Int = WebGLRenderingContext.VERTEX_SHADER
-    actual const val FRAGMENT_SHADER: Int = WebGLRenderingContext.FRAGMENT_SHADER
-    actual const val GEOMETRY_SHADER: Int = NULL
-    actual const val TESS_CONTROL_SHADER: Int = NULL
-    actual const val TESS_EVAL_SHADER: Int = NULL
-    actual const val COMPUTE_SHADER: Int = NULL
-    actual const val COMPILE_STATUS: Int = WebGLRenderingContext.COMPILE_STATUS
-    actual const val LINK_STATUS: Int = WebGLRenderingContext.LINK_STATUS
-    actual const val COLOR_BUFFER_BIT: Int = WebGLRenderingContext.COLOR_BUFFER_BIT
-    actual const val DEPTH_BUFFER_BIT: Int = WebGLRenderingContext.DEPTH_BUFFER_BIT
-    actual const val STENCIL_BUFFER_BIT: Int = WebGLRenderingContext.STENCIL_BUFFER_BIT
-    actual const val FORMAT_RGBA: Int = WebGLRenderingContext.RGBA
-    actual const val FORMAT_RGB: Int = WebGLRenderingContext.RGB
-    actual const val LINEAR: Int = WebGLRenderingContext.LINEAR
-    actual const val CLAMP_TO_EDGE: Int = WebGLRenderingContext.CLAMP_TO_EDGE
-    actual const val REPEAT: Int = WebGLRenderingContext.REPEAT
-    actual const val TEXTURE_2D: Int = WebGLRenderingContext.TEXTURE_2D
-    actual const val TEXTURE_CUBE_MAP: Int = WebGLRenderingContext.TEXTURE_CUBE_MAP
-    actual const val TEXTURE_MIN_FILTER: Int = WebGLRenderingContext.TEXTURE_MIN_FILTER
-    actual const val TEXTURE_MAG_FILTER: Int = WebGLRenderingContext.TEXTURE_MAG_FILTER
-    actual const val TEXTURE_WRAP_S: Int = WebGLRenderingContext.TEXTURE_WRAP_S
-    actual const val TEXTURE_WRAP_T: Int = WebGLRenderingContext.TEXTURE_WRAP_T
-    actual const val TEXTURE_WRAP_R: Int = NULL
+    actual val STATIC_DRAW: Int = WebGLRenderingContext.STATIC_DRAW
+    actual val DYNAMIC_DRAW: Int = WebGLRenderingContext.DYNAMIC_DRAW
+    actual val FLOAT: Int = WebGLRenderingContext.FLOAT
+    actual val INT: Int = WebGLRenderingContext.INT
+    actual val UINT: Int = WebGLRenderingContext.UNSIGNED_INT
+    actual val BOOLEAN: Int = WebGLRenderingContext.BOOL
+    actual val UBYTE: Int = WebGLRenderingContext.UNSIGNED_BYTE
+    actual val TRIANGLES: Int = WebGLRenderingContext.TRIANGLES
+    actual val VERTEX_BUFFER: Int = WebGLRenderingContext.ARRAY_BUFFER
+    actual val INDEX_BUFFER: Int = WebGLRenderingContext.ELEMENT_ARRAY_BUFFER
+    actual val UNIFORM_BUFFER: Int = NULL
+    actual val FRAME_BUFFER: Int = WebGLRenderingContext.FRAMEBUFFER
+    actual val READ_FRAME_BUFFER: Int = NULL
+    actual val DRAW_FRAME_BUFFER: Int = NULL
+    actual val VERTEX_SHADER: Int = WebGLRenderingContext.VERTEX_SHADER
+    actual val FRAGMENT_SHADER: Int = WebGLRenderingContext.FRAGMENT_SHADER
+    actual val GEOMETRY_SHADER: Int = NULL
+    actual val TESS_CONTROL_SHADER: Int = NULL
+    actual val TESS_EVAL_SHADER: Int = NULL
+    actual val COMPUTE_SHADER: Int = NULL
+    actual val COMPILE_STATUS: Int = WebGLRenderingContext.COMPILE_STATUS
+    actual val LINK_STATUS: Int = WebGLRenderingContext.LINK_STATUS
+    actual val COLOR_BUFFER_BIT: Int = WebGLRenderingContext.COLOR_BUFFER_BIT
+    actual val DEPTH_BUFFER_BIT: Int = WebGLRenderingContext.DEPTH_BUFFER_BIT
+    actual val STENCIL_BUFFER_BIT: Int = WebGLRenderingContext.STENCIL_BUFFER_BIT
+    actual val FORMAT_RGBA: Int = WebGLRenderingContext.RGBA
+    actual val FORMAT_RGB: Int = WebGLRenderingContext.RGB
+    actual val LINEAR: Int = WebGLRenderingContext.LINEAR
+    actual val CLAMP_TO_EDGE: Int = WebGLRenderingContext.CLAMP_TO_EDGE
+    actual val REPEAT: Int = WebGLRenderingContext.REPEAT
+    actual val TEXTURE_2D: Int = WebGLRenderingContext.TEXTURE_2D
+    actual val TEXTURE_CUBE_MAP: Int = WebGLRenderingContext.TEXTURE_CUBE_MAP
+    actual val TEXTURE_MIN_FILTER: Int = WebGLRenderingContext.TEXTURE_MIN_FILTER
+    actual val TEXTURE_MAG_FILTER: Int = WebGLRenderingContext.TEXTURE_MAG_FILTER
+    actual val TEXTURE_WRAP_S: Int = WebGLRenderingContext.TEXTURE_WRAP_S
+    actual val TEXTURE_WRAP_T: Int = WebGLRenderingContext.TEXTURE_WRAP_T
+    actual val TEXTURE_WRAP_R: Int = NULL
 
     private val context: WebGL2RenderingContext = createContext()
 
@@ -110,7 +112,7 @@ actual object Kanvas {
     actual fun bufferData(
         type: Int,
         offset: Int,
-        data: BigBuffer,
+        data: FastBuffer,
         size: Int,
         usage: Int
     ) {
@@ -120,7 +122,7 @@ actual object Kanvas {
     actual fun bufferSubData(
         type: Int,
         offset: Int,
-        data: BigBuffer,
+        data: FastBuffer,
         size: Int,
     ) {
         context.bufferSubData(type, offset, data.buffer)
@@ -174,7 +176,7 @@ actual object Kanvas {
 
     actual fun shaderStageCompile(id: ShaderStageID, source: String): Boolean {
         if (id == NULL) {
-            Printer.e("Shader is not created!")
+            Printer.e(TAG, "Shader is not created!")
             return false
         }
 
@@ -185,7 +187,7 @@ actual object Kanvas {
         if (compileStatus == null) {
             val log = context.getShaderInfoLog(id)
             shaderStageRelease(id)
-            Printer.e("Failed to compile shader: $log")
+            Printer.e(TAG, "Failed to compile shader: $log")
             return false
         }
 
@@ -212,7 +214,7 @@ actual object Kanvas {
         context.linkProgram(id as WebGLProgram)
         val linkStatus = context.getProgramParameter(id, LINK_STATUS)
         if (linkStatus == null) {
-            Printer.e("Failed to link shader: ${context.getProgramInfoLog(id)}")
+            Printer.e(TAG, "Failed to link shader: ${context.getProgramInfoLog(id)}")
             shaderRelease(id)
             return false
         }

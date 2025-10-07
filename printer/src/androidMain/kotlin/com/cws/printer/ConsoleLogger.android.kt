@@ -2,9 +2,17 @@ package com.cws.printer
 
 import android.util.Log
 
-actual class ConsoleLogger actual constructor() {
+actual class ConsoleLogger actual constructor() : ILogger {
 
-    actual fun log(logLevel: LogLevel, tag: String, message: String, exception: Throwable?) {
+    actual override fun open() {
+        // do nothing
+    }
+
+    actual override fun close() {
+        // do nothing
+    }
+
+    actual override fun log(logLevel: LogLevel, tag: String, message: String, exception: Throwable?) {
         if (logLevel == LogLevel.NONE) return
 
         if (exception == null) {

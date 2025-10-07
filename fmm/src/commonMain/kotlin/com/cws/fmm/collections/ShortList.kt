@@ -1,8 +1,8 @@
 package com.cws.fmm.collections
 
-import com.cws.fmm.FastList
+import com.cws.fmm.ObjectList
 
-class ShortList(capacity: Int) : FastList(capacity, Short.SIZE_BYTES) {
+class ShortList(capacity: Int) : ObjectList(capacity, Short.SIZE_BYTES) {
 
     fun clone(): ShortList = ShortList(capacity)
 
