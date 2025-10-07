@@ -26,7 +26,9 @@ abstract class NetworkLogger(
     protected abstract val baseUrl: String
 
     private var httpClient: HttpClient? = null
-    private val logBuffer = LogBuffer(100)
+    private var scope: CoroutineScope? = null
+    private var logs = Array(100) { LogData() }
+    private var logIndex = 0
     private val consoleLogger = ConsoleLogger()
     private val lock = ReentrantLock()
 
@@ -54,8 +56,8 @@ abstract class NetworkLogger(
     }
 
     override fun log(logLevel: LogLevel, tag: String, message: String, exception: Throwable?) {
-        if (logLevel.ordinal >= this.logLevel.ordinal && logBuffer.logIndex >= 0) {
-            if (logBuffer.isFull()) {
+        if (logLevel.ordinal >= this.logLevel.ordinal && logIndex >= 0) {
+            if (logIndex > logs.lastIndex) {
                 scope?.launch {
                     sendLogs()
                     addLog(logLevel, tag, message, exception)
@@ -68,19 +70,24 @@ abstract class NetworkLogger(
 
     private fun addLog(logLevel: LogLevel, tag: String, message: String, exception: Throwable?) {
         lock.withLock {
-            logBuffer.add(logLevel, tag, message, exception)
+            logs[logIndex++].apply {
+                this.timestamp = getCurrentTime()
+                this.level = logLevel
+                this.tag = tag
+                this.message = message
+                this.exception = exception
+            }
         }
     }
 
     private suspend fun sendLogs() {
         lock.withLock {
             val httpClient = this.httpClient
+            if (httpClient == null || logIndex == 0) return
 
-            if (httpClient == null || logBuffer.isEmpty()) return
+            val requestBody = getRequestBody(logs)
 
-            val requestBody = getRequestBody(logBuffer.logs)
-
-            logBuffer.clear()
+            logIndex = 0
 
             val response = httpClient.post(baseUrl) {
                 url {

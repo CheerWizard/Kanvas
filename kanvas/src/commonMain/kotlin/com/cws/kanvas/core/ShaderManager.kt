@@ -19,6 +19,8 @@ class ShaderManager(
         private const val TAG = "ShaderManager"
     }
 
+    private const val TAG = "ShaderManager"
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     fun load(
