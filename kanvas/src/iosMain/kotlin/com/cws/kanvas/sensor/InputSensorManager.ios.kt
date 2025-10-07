@@ -31,7 +31,7 @@ actual class InputSensorManager {
                     sensor.acceleration.x = x.toFloat()
                     sensor.acceleration.y = y.toFloat()
                     sensor.acceleration.z = z.toFloat()
-                    sensor.acceleration assign sensor.acceleration.normalize()
+                    sensor.acceleration = sensor.acceleration.normalize()
                 }
             }
         }

@@ -11,8 +11,7 @@ open class GpuBuffer(
     capacity: Int
 ) : ObjectList(
     capacity = capacity,
-    typeSize = typeSize,
-    requireBigBuffer = true
+    typeSize = typeSize
 ) {
 
     protected lateinit var handle: BufferID
@@ -38,7 +37,7 @@ open class GpuBuffer(
             type = type,
             size = size * typeSize,
             offset = position,
-            data = buffer as FastBuffer
+            data = buffer
         )
     }
 
@@ -64,7 +63,7 @@ open class GpuBuffer(
         bind()
         Kanvas.bufferData(
             type = type,
-            data = buffer as FastBuffer,
+            data = buffer,
             offset = 0,
             size = capacity,
             usage = Kanvas.DYNAMIC_DRAW

@@ -42,6 +42,8 @@ kotlin {
                 // DI
                 api(libs.koin.core)
                 api(libs.koin.compose.viewModel)
+                // Math
+                api(project(":kanvas-math"))
                 // Logging
                 api(project(":printer"))
                 // Fast Memory Model
