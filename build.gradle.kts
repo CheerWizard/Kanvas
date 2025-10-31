@@ -6,3 +6,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
     id("org.jetbrains.kotlin.multiplatform") apply false
 }
+
+ext {
+    packageName = "com.example.empty"
+}
