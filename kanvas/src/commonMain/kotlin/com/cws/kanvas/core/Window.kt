@@ -1,12 +1,13 @@
 package com.cws.kanvas.core
 
+import com.cws.kanvas.config.WindowConfig
 import com.cws.kanvas.event.EventListener
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.withLock
 
-expect class WindowID
-
-open class BaseWindow {
+open class BaseWindow(
+    val config: WindowConfig
+) {
 
     val eventListeners = mutableSetOf<EventListener>()
     val events = ArrayDeque<Any>()
@@ -44,22 +45,8 @@ open class BaseWindow {
 
 expect class Window : BaseWindow {
 
-    companion object {
-        fun free()
-    }
+    constructor(config: WindowConfig)
 
-    constructor(
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        title: String
-    )
-
-    fun setSurface(surface: Any?)
-    fun release()
     fun isClosed(): Boolean
-    fun applySwapChain()
-    fun bindFrameBuffer()
 
 }

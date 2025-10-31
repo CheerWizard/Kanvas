@@ -1,22 +1,14 @@
 package com.cws.fmm.collections
 
-import com.cws.fmm.FastCollection
-
 class IntSet(
     capacity: Int
-) : FastCollection {
-
+) {
     private val values = IntList(capacity)
     private val used = BooleanList(capacity)
 
-    override val size: Int = values.size
+    val size: Int = values.size
 
-    override fun release() {
-        values.release()
-        used.release()
-    }
-
-    override fun clear() {
+    fun clear() {
         values.clear()
         used.clear()
     }

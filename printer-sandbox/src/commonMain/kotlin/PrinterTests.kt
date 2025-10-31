@@ -10,8 +10,6 @@ import kotlin.time.Duration.Companion.seconds
 
 object PrinterTests {
 
-    private const val TAG = "PrinterTests"
-
     val logTags = listOf("Auth", "Network", "Database", "Cache", "UI", "App", "Profiler", "Service")
 
     val verboseMessages = listOf(

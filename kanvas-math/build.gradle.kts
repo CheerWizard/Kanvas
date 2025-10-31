@@ -13,10 +13,20 @@ kotlin {
     js(IR) {
         browser {
             binaries.library()
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
         }
+
         nodejs {
             binaries.library()
+            testTask {
+                useMocha()
+            }
         }
+
         compilerOptions {
             // enable support of BigInt for Long
             freeCompilerArgs.add("-Xir-per-module")
@@ -48,16 +58,27 @@ kotlin {
             dependsOn(commonMain)
         }
 
+        val stdTest by creating {
+            dependsOn(commonTest)
+        }
+
+        val jsMain by getting {
+            dependsOn(commonMain)
+        }
+
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
+                implementation(libs.kotlinx.coroutines.test)
+            }
+        }
+
         val androidMain by getting {
             dependsOn(stdMain)
         }
 
         val desktopMain by getting {
             dependsOn(stdMain)
-        }
-
-        val jsMain by getting {
-            dependsOn(commonMain)
         }
 
         val iosX64Main by getting { dependsOn(stdMain) }

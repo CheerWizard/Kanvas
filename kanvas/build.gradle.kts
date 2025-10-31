@@ -27,21 +27,12 @@ kotlin {
     iosX64()
     iosSimulatorArm64()
 
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-        compilations["main"].cinterops {
-//            val gles by creating {
-//                defFile(project.file("src/nativeInterop/cinterop/ios_gles.def"))
-//            }
-        }
-    }
-
     sourceSets {
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
-                // DI
-                api(libs.koin.core)
-                api(libs.koin.compose.viewModel)
+                // Graphics
+                api(project(":kanvas-gfx"))
                 // Math
                 api(project(":kanvas-math"))
                 // Logging
@@ -51,74 +42,40 @@ kotlin {
                 // Compose
                 api("org.jetbrains.compose.runtime:runtime:1.7.1")
                 api("org.jetbrains.compose.foundation:foundation:1.7.1")
-                // Coroutines and Atomics
-                implementation(libs.atomicfu)
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(kotlin("stdlib-common"))
-            }
-        }
-
-        val composeUiMain by creating {
-            dependencies {
-                // Compose
-                api("org.jetbrains.compose.material:material:1.7.1")
                 api(compose.components.uiToolingPreview)
+                // Coroutines and Atomics
+                api(libs.atomicfu)
+                api(libs.kotlinx.coroutines.core)
+                api(kotlin("stdlib-common"))
             }
-            dependsOn(commonMain)
-        }
-
-        val webUiMain by creating {
-            dependencies {
-                api(compose.html.core)
-                api(compose.runtime)
-            }
-            dependsOn(commonMain)
         }
 
         val androidMain by getting {
             dependencies {
-                // DI
-                api(libs.koin.android)
-                api(libs.koin.compose)
-                // Compose
                 api("androidx.activity:activity-compose:1.10.1")
                 api(libs.androidx.core.ktx)
             }
-            dependsOn(composeUiMain)
+            dependsOn(commonMain)
         }
 
         val iosMain by creating {
-            dependsOn(composeUiMain)
+            dependsOn(commonMain)
         }
 
         val desktopMain by getting {
             dependencies {
                 // Compose
                 api(compose.desktop.currentOs)
-
-                val lwjglVersion = "3.3.6"
-                val lwjglNatives = when (System.getProperty("os.name").lowercase()) {
-                    "linux" -> "natives-linux"
-                    "windows" -> "natives-windows"
-                    "mac os x" -> "natives-macos"
-                    else -> throw GradleException("Unsupported OS")
-                }
-
-                // LWJGL core
-                api("org.lwjgl:lwjgl:$lwjglVersion")
-                api("org.lwjgl:lwjgl-opengl:$lwjglVersion")
-                api("org.lwjgl:lwjgl-glfw:$lwjglVersion")
-
-                // LWJGL natives
-                runtimeOnly("org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives")
-                runtimeOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives")
-                runtimeOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives")
             }
-            dependsOn(composeUiMain)
+            dependsOn(commonMain)
         }
 
         val jsMain by getting {
-            dependsOn(webUiMain)
+            dependencies {
+                api(compose.html.core)
+                api(compose.runtime)
+            }
+            dependsOn(commonMain)
         }
 
         val iosX64Main by getting {
@@ -133,11 +90,6 @@ kotlin {
             dependsOn(iosMain)
         }
     }
-}
-
-dependencies {
-    // Math
-    api(project(":kanvas-math"))
 }
 
 android {
@@ -156,8 +108,9 @@ android {
 
     sourceSets["main"].assets.srcDir("$buildDir/generated/commonAssets")
 }
+
 dependencies {
-    "ksp"(project(":fmm-ksp"))
+    ksp(project(":fmm-ksp"))
 }
 
 afterEvaluate {

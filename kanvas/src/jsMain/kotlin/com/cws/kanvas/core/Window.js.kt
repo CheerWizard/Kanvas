@@ -1,46 +1,23 @@
 package com.cws.kanvas.core
 
+import com.cws.kanvas.config.WindowConfig
 import com.cws.kanvas.event.KeyCode
 import com.cws.kanvas.event.MouseCode
 import kotlinx.browser.window
 
-actual typealias WindowID = Any
-
 actual class Window : BaseWindow {
 
-    actual companion object {
-        actual fun free() = Unit
-    }
-
-    private var handle: WindowID = Kanvas.NULL
-
-    actual constructor(
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        title: String
-    ) {
-        Kanvas.getCanvas()?.let { canvas ->
-            canvas.width = width
-            canvas.height = height
-            canvas.title = title
-            handle = canvas
-            initEventListeners()
-        }
-    }
-
-    actual fun release() {
-        window.close()
+    actual constructor(config: WindowConfig) : super(config) {
+        initEventListeners()
     }
 
     actual fun isClosed(): Boolean = window.closed
 
-    actual fun applySwapChain() = Unit
-
-    actual fun setSurface(surface: Any?) = Unit
-
     private fun initEventListeners() {
+        window.onclose = { e ->
+            eventListeners.forEach { it.onWindowClosed() }
+        }
+
         window.onresize = { e ->
             eventListeners.forEach { it.onWindowResized(window.innerWidth, window.innerHeight) }
         }
@@ -148,7 +125,5 @@ actual class Window : BaseWindow {
             else -> MouseCode.Null
         }
     }
-
-    actual fun bindFrameBuffer() {}
 
 }

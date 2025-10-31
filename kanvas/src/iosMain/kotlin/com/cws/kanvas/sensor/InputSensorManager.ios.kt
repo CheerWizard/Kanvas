@@ -1,5 +1,6 @@
 package com.cws.kanvas.sensor
 
+import com.cws.kanvas.math.*
 import com.cws.printer.Printer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents

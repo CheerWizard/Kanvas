@@ -1,6 +1,7 @@
 package com.cws.kanvas.event
 
 interface EventListener {
+    fun onWindowClosed() = Unit
     fun onWindowResized(width: Int, height: Int) = Unit
     fun onWindowMoved(x: Int, y: Int) = Unit
     fun onKeyPressed(code: KeyCode, hold: Boolean) = Unit

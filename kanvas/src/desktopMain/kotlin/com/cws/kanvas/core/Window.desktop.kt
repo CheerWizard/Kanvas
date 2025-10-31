@@ -11,25 +11,23 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.window.WindowState
+import com.cws.kanvas.config.WindowConfig
 import com.cws.kanvas.event.KeyCode
 import com.cws.kanvas.event.MouseCode
-import org.lwjgl.glfw.GLFW.*
-import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL33.*
+import com.cws.kanvas.gfx.bridges.RenderBridge
+import com.cws.kanvas.gfx.texture.Pixels
 import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 
-actual typealias WindowID = Long
-
 class WindowPixels(width: Int, height: Int) {
 
-    var buffer = ByteBuffer.allocateDirect(width * height * 4)
+    var pixels = Pixels(ByteBuffer.allocateDirect(width * height * 4))
     var array = ByteArray(width * height * 4)
 
     fun sync() {
-        buffer.rewind()
+        pixels.buffer.rewind()
         for (i in 0..<array.size) {
-            array[i] = buffer[i]
+            array[i] = pixels.buffer[i]
         }
     }
 
@@ -37,89 +35,34 @@ class WindowPixels(width: Int, height: Int) {
 
 actual class Window : BaseWindow {
 
-    actual companion object {
-        private var libraryInitialized: Boolean = false
-
-        actual fun free() {
-            glfwTerminate()
-        }
-    }
-
     lateinit var onBitmapChanged: (ImageBitmap?) -> Unit
-
-    var handle: WindowID = Kanvas.NULL.toLong()
-        private set
 
     @Volatile
     var composeState: WindowState? = null
 
-    private var x: Int = 0
-    private var y: Int = 0
-    private var width: Int = 800
-    private var height: Int = 600
     private var closed = false
-    private val bitmap = ImageBitmap(width, height, ImageBitmapConfig.Argb8888)
-    private var pixels: WindowPixels? = null
+    private val bitmap = ImageBitmap(config.width, config.height, ImageBitmapConfig.Argb8888)
+    private var windowPixels: WindowPixels? = null
 
-    actual constructor(
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        title: String
-    ) {
-        if (!libraryInitialized) {
-            System.setProperty("org.lwjgl.glfw.libdecor", "false");
-            if (!glfwInit()) {
-                throw RuntimeException("Failed to initialize GLFW")
-            }
-            libraryInitialized = true
-        }
-
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
-
-        handle = glfwCreateWindow(width, height, title, 0, 0)
-        if (handle == Kanvas.NULL.toLong()) {
-            throw RuntimeException("Failed to create GLFW window")
-        }
-
-        glfwMakeContextCurrent(handle)
-        GL.createCapabilities()
-
-        this.width = width
-        this.height = height
-
-        createPixels(width, height)
-    }
-
-    actual fun release() {
-        if (handle != Kanvas.NULL.toLong()) {
-            glfwDestroyWindow(handle)
-            handle = Kanvas.NULL.toLong()
+    actual constructor(config: WindowConfig) : super(config) {
+        createPixels(config.width, config.height)
+        windowPixels?.let { windowPixels ->
+            RenderBridge.nativeRegisterPixels(windowPixels.pixels.buffer)
         }
     }
 
     private fun createPixels(width: Int, height: Int) {
-        pixels = WindowPixels(width, height)
+        windowPixels = WindowPixels(width, height)
     }
 
     actual fun isClosed(): Boolean = closed
 
-    actual fun applySwapChain() {
-        // frame is rendered offscreen and swap chain is implemented by Compose
+    // called from native C++ side
+    fun onPixelsUpdated() {
         checkComposeState()
-        updatePixels()
-    }
-
-    actual fun setSurface(surface: Any?) {}
-
-    actual fun bindFrameBuffer() {}
-
-    private fun updatePixels() {
-        pixels?.let { pixels ->
-            glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, pixels.buffer)
-            pixels.sync()
-            bitmap.asSkiaBitmap().installPixels(pixels.array)
+        windowPixels?.let { windowPixels ->
+            windowPixels.sync()
+            bitmap.asSkiaBitmap().installPixels(windowPixels.array)
             if (::onBitmapChanged.isInitialized) {
                 onBitmapChanged(bitmap)
             }
@@ -132,8 +75,8 @@ actual class Window : BaseWindow {
             val newY = state.position.y.value.roundToInt()
             val newWidth = state.size.width.value.roundToInt()
             val newHeight = state.size.height.value.roundToInt()
-            val posChanged = x != newX || y != newY
-            val sizeChanged = width != newWidth || height != newHeight
+            val posChanged = config.x != newX || config.y != newY
+            val sizeChanged = config.width != newWidth || config.height != newHeight
 
             if (posChanged) {
                 onWindowMove(newX, newY)
@@ -144,18 +87,19 @@ actual class Window : BaseWindow {
             }
 
             if (posChanged || sizeChanged) {
-                glViewport(newX, newY, newWidth, newHeight)
+                RenderBridge.updateViewport(newX, newY, newWidth, newHeight)
             }
 
-            x = newX
-            y = newY
-            width = newWidth
-            height = newHeight
+            config.x = newX
+            config.y = newY
+            config.width = newWidth
+            config.height = newHeight
         }
     }
 
     fun onWindowClose() {
         closed = true
+        eventListeners.forEach { it.onWindowClosed() }
     }
 
     fun onWindowMove(x: Int, y: Int) {

@@ -1,22 +1,14 @@
 package com.cws.fmm.collections
 
-import com.cws.fmm.FastCollection
-
-class ShortShortMap(capacity: Int) : FastCollection {
+class ShortShortMap(capacity: Int) {
 
     private val keys = ShortList(capacity)
     private val values = ShortList(capacity)
     private val used = BooleanList(capacity)
 
-    override val size: Int = keys.size
+    val size: Int = keys.size
 
-    override fun release() {
-        keys.release()
-        values.release()
-        used.release()
-    }
-
-    override fun clear() {
+    fun clear() {
         keys.clear()
         values.clear()
         used.clear()

@@ -48,6 +48,10 @@ class FastProcessor(
         "Int", "Double", "Float", "Long", "Boolean", "Byte", "Short"
     )
 
+    private val primitiveDefaultValues = arrayOf(
+        "0", "0.0", "0f", "0L", "false", "0", "0"
+    )
+
     private val filterMethods = arrayOf(
         "equals", "toString", "copy", "hashCode"
     )
@@ -373,20 +377,20 @@ class FastProcessor(
                 fileSpec.build().writeTo(it)
             }
 
-        // generate only once for updates!
+        // only uncomment to generate new version of collections once!
 //        generatePrimitiveCollections()
 
         generateObjectCollections(pkg, generatedName)
     }
 
     private fun generatePrimitiveCollections() {
-        primitiveTypes.forEach { type ->
-            generateFastList("com.cws.fmm.collections", type)
-            generateFastSet("com.cws.fmm.collections", type)
+        primitiveTypes.forEachIndexed { i, type ->
+            generatePrimitiveList("com.cws.fmm.collections", type, primitiveDefaultValues[i])
+            generatePrimitiveSet("com.cws.fmm.collections", type)
         }
         primitiveTypes.forEach { key ->
             primitiveTypes.forEach { value ->
-                generateFastMap("com.cws.fmm.collections", key, value)
+                generatePrimitiveMap("com.cws.fmm.collections", key, value)
             }
         }
     }
@@ -474,6 +478,40 @@ class FastProcessor(
         if (generatedFiles.contains("${name}Map")) return
 
         val code = readTemplate("FastMap")
+            .replace("#pkg", pkg)
+            .replace("#T", name)
+            .replace("#K", key)
+            .replace("#V", value)
+
+        generateFile(pkg, "${name}Map", code)
+    }
+
+    fun generatePrimitiveList(pkg: String, name: String, defaultValue: String) {
+        if (generatedFiles.contains("${name}List")) return
+
+        val code = readTemplate("PrimitiveList")
+            .replace("#pkg", pkg)
+            .replace("#T", name)
+            .replace("#DEFAULT_VALUE", defaultValue)
+
+        generateFile(pkg, "${name}List", code)
+    }
+
+    fun generatePrimitiveSet(pkg: String, name: String) {
+        if (generatedFiles.contains("${name}Set")) return
+
+        val code = readTemplate("PrimitiveSet")
+            .replace("#pkg", pkg)
+            .replace("#T", name)
+
+        generateFile(pkg, "${name}Set", code)
+    }
+
+    fun generatePrimitiveMap(pkg: String, key: String, value: String) {
+        val name = "$key$value"
+        if (generatedFiles.contains("${name}Map")) return
+
+        val code = readTemplate("PrimitiveMap")
             .replace("#pkg", pkg)
             .replace("#T", name)
             .replace("#K", key)

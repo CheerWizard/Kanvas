@@ -1,25 +1,17 @@
 package com.cws.acatch
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
-import com.cws.acatch.game.GameLoop
-import com.cws.acatch.game.ui.GameScreen
-import com.cws.kanvas.core.KanvasView
+import com.cws.kanvas.config.GameConfig
+import com.cws.kanvas.core.Game
+import com.cws.kanvas.core.GameActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : GameActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            KanvasView<GameLoop>(Modifier.fillMaxSize()) {
-                GameScreen()
-            }
-        }
+    override fun provideGame(): Game {
+        TODO("Not yet implemented")
+    }
+
+    override fun provideGameConfig(): GameConfig {
+        TODO("Not yet implemented")
     }
 
 }

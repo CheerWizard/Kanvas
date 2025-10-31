@@ -1,5 +1,6 @@
 package com.cws.kanvas.math
 
+import kotlin.jvm.JvmInline
 import kotlin.math.PI
 
 @JvmInline
