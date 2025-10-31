@@ -22,11 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Catch"
+rootProject.name = "Empty"
 include(":app")
-include(":kanvas")
-include(":kanvas-math")
-include(":printer")
-include(":printer-sandbox")
-include(":fmm")
-include(":fmm-ksp")

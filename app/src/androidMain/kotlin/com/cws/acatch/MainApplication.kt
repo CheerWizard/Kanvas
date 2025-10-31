@@ -1,17 +1,11 @@
 package com.cws.acatch
 
-import android.app.Application
-import com.cws.acatch.di.platformModule
-import com.cws.acatch.di.commonModule
-import com.cws.kanvas.di.startKanvasKoin
+import com.cws.kanvas.core.GameApplication
 
-class MainApplication : Application() {
+class MainApplication : GameApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        startKanvasKoin(applicationContext) {
-            modules(commonModule, platformModule)
-        }
     }
 
 }

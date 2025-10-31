@@ -33,7 +33,7 @@ kotlin {
     iosArm64 {
         binaries {
             framework {
-                baseName = "Catch"
+                baseName = project.name
             }
         }
     }
@@ -41,7 +41,7 @@ kotlin {
     iosX64 {
         binaries {
             framework {
-                baseName = "Catch"
+                baseName = project.name
             }
         }
     }
@@ -49,7 +49,7 @@ kotlin {
     iosSimulatorArm64 {
         binaries {
             framework {
-                baseName = "Catch"
+                baseName = project.name
             }
         }
     }
@@ -58,9 +58,6 @@ kotlin {
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
-                // Networking
-                implementation(libs.kotlinx.serialization.json)
-
                 implementation(project(":kanvas"))
             }
         }
@@ -96,28 +93,16 @@ kotlin {
     }
 }
 
-val keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(rootProject.file("keystore.properties")))
-
 android {
-    namespace = "com.cws.acatch"
+    namespace = project.ext.packageName
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.cws.acatch"
+        applicationId = project.ext.packageName
         minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-    }
-
-    signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["KEY_ALIAS"] as String
-            keyPassword = keystoreProperties["KEY_PASSWORD"] as String
-            storeFile = file(keystoreProperties["STORE_FILE"] as String)
-            storePassword = keystoreProperties["STORE_PASSWORD"] as String
-        }
     }
 
     buildTypes {
@@ -134,8 +119,9 @@ android {
 
     sourceSets["main"].assets.srcDir("$buildDir/generated/commonAssets")
 }
+
 dependencies {
-    "ksp"(project(":fmm-ksp"))
+    ksp(project(":fmm-ksp"))
 }
 
 afterEvaluate {
