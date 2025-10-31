@@ -7,7 +7,7 @@ import com.cws.kanvas.core.GameApplication
 class LabApplication : GameApplication() {
 
     override fun provideGame(): Game {
-
+        TODO("Not yet implemented")
     }
 
     override fun provideGameConfig(): GameConfig {

@@ -1,10 +1,8 @@
 package com.cws.kanvas.core
 
-import com.cws.kanvas.loaders.ShaderLoader
 import com.cws.kanvas.sensor.InputSensorManager
 
 class Engine(
-    shaderLoader: ShaderLoader,
     inputSensorManager: InputSensorManager,
 ) {
 
@@ -12,7 +10,6 @@ class Engine(
 
     val shaderManager: ShaderManager = ShaderManager(
         jobsManager = jobsManager,
-        shaderLoader = shaderLoader,
     )
 
     val inputSensorManager: InputSensorManager = inputSensorManager

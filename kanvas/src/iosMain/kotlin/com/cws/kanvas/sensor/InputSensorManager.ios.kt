@@ -1,11 +1,11 @@
 package com.cws.kanvas.sensor
 
-import com.cws.kanvas.math.*
 import com.cws.printer.Printer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.CoreMotion.CMMotionManager
 import platform.Foundation.NSOperationQueue
+import com.cws.kanvas.math.*
 
 @OptIn(ExperimentalForeignApi::class)
 actual class InputSensorManager {

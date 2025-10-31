@@ -3,7 +3,6 @@ package com.cws.acatch
 import com.cws.fmm.collections.ShortList
 import com.cws.kanvas.gfx.core.Kanvas
 import com.cws.kanvas.gfx.pipeline.Shader
-import com.cws.kanvas.core.ShaderManager
 import com.cws.kanvas.gfx.geometry.Geometry
 import com.cws.kanvas.gfx.geometry.GeometryManager
 import com.cws.kanvas.gfx.pipeline.UniformBuffer

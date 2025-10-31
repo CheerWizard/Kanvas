@@ -7,8 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.cws.kanvas.config.GameConfig
-import com.cws.kanvas.gfx.geometry.GeometryManager
-import com.cws.kanvas.loaders.ShaderLoaderImpl
 import com.cws.kanvas.sensor.InputSensorManager
 
 abstract class GameActivity : ComponentActivity() {
@@ -42,7 +40,6 @@ abstract class GameActivity : ComponentActivity() {
 
     private fun initEngine(): Engine {
         return Engine(
-            shaderLoader = ShaderLoaderImpl(applicationContext),
             inputSensorManager = InputSensorManager(applicationContext),
         )
     }

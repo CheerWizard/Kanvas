@@ -2,7 +2,6 @@ package com.cws.kanvas.core
 
 import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.event.EventListener
-import com.cws.kanvas.loaders.ShaderLoaderImpl
 import com.cws.kanvas.sensor.InputSensorManager
 import com.cws.printer.Printer
 
@@ -56,7 +55,6 @@ abstract class GameApplication : EventListener {
 
     private fun initEngine(): Engine {
         return Engine(
-            shaderLoader = ShaderLoaderImpl(),
             inputSensorManager = InputSensorManager(),
         )
     }

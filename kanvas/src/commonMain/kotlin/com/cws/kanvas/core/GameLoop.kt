@@ -7,7 +7,6 @@ import com.cws.kanvas.event.EventListener
 import com.cws.kanvas.event.KeyCode
 import com.cws.kanvas.event.MouseCode
 import com.cws.kanvas.gfx.bridges.RenderBridge
-import com.cws.kanvas.utils.fps
 import com.cws.printer.Printer
 
 class GameLoop(
@@ -46,7 +45,6 @@ class GameLoop(
 
     override fun onCreate() {
         window = Window(config.window)
-        window.setSurface(surface)
         if (::onWindowCreated.isInitialized) {
             onWindowCreated(window)
         }
@@ -59,7 +57,6 @@ class GameLoop(
         removeGame()
         engine.release()
         window.removeEventListener(this)
-        window.release()
     }
 
     override fun onUpdate(dtMillis: Float) {

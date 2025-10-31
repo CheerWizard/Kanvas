@@ -1,8 +1,6 @@
 package com.cws.kanvas.core
 
-import androidx.compose.ui.window.ComposeUIViewController
 import com.cws.kanvas.config.GameConfig
-import com.cws.kanvas.loaders.ShaderLoaderImpl
 import com.cws.kanvas.sensor.InputSensorManager
 import com.cws.printer.Printer
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -53,7 +51,6 @@ abstract class GameViewController : UIViewController() {
 
     private fun initEngine(): Engine {
         return Engine(
-            shaderLoader = ShaderLoaderImpl(),
             inputSensorManager = InputSensorManager(),
         )
     }
