@@ -24,9 +24,7 @@ namespace stc {
 
 #elif WEBGPU
 
-    struct ContextBackend {
-        WGPUInstance handle = null;
-    };
+    struct ContextBackend {};
 
 #endif
 
@@ -43,9 +41,11 @@ namespace stc {
         ~Context();
 
     private:
+        void initInstance(const ContextCreateInfo& create_info);
+        void releaseInstance();
         void initDevices();
         void selectDevice();
-        void initSurface(void* nativeWindow);
+        void initSurface(const RenderConfig& render_config);
         bool checkExtension(const char* extension);
         bool checkExtensions(const char** extension, u32 count);
         bool checkLayer(const char* extension);

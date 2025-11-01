@@ -59,7 +59,6 @@ endforeach()
 
 include_directories(../external)
 
-# Create an interface target to expose the include directory
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
 
@@ -149,6 +148,9 @@ macro(build_web)
             "-sFORCE_FILESYSTEM=1"
             "-sMODULARIZE=1"
             "-sENVIRONMENT=web"
+            "-sASYNCIFY=1"
+            "-sASYNCIFY_IMPORTS=['wgpuCreateAsync', 'loadFileAsync']"
+            $<$<CONFIG:Debug>:-sASYNCIFY_DEBUG=1>
             "--bind"
     )
 

@@ -25,7 +25,9 @@ namespace stc {
 
 #elif WEBGPU
 
-
+    struct CommandBufferBackend {
+        WGPUCommandBuffer handle = null;
+    };
 
 #endif
 
@@ -52,12 +54,13 @@ namespace stc {
     };
 
     struct RenderPassCommand {
-        RenderPassBackend renderPass;
-        FrameBufferBackend framebuffer;
+        RenderTargetBackend renderTarget;
         vec4<float> clearColor = { 0, 0, 0, 1 };
         float clearDepth = 0;
-        vec2<int> renderAreaOffset = { 0, 0 };
-        vec2<u32> renderAreaExtent;
+        int renderAreaX = 0;
+        int renderAreaY = 0;
+        u32 renderAreaW = 0;
+        u32 renderAreaH = 0;
     };
 
     struct AddToSubmitCommand {
@@ -72,7 +75,7 @@ namespace stc {
     };
 
     struct PresentCommand {
-        SwapchainBackend swapchain;
+        SwapchainHandle swapchain;
         u32 imageIndex = 0;
         SemaphoreBackend waitSemaphore;
     };
@@ -118,7 +121,7 @@ namespace stc {
         void setPipelineBinding(const Pipeline& pipeline, const BindingSet& binding_set) const;
 
         void setViewport(const Viewport& viewport) const;
-        void setScissor(const vec2<int32_t>& offset, const vec2<uint32_t>& extent) const;
+        void setScissor(int x, int y, u32 w, u32 h) const;
 
         void draw(const DrawCommand& command) const;
         void drawIndexed(const DrawIndexedCommand& command) const;

@@ -122,7 +122,7 @@ actual class Window : BaseWindow {
             1.toShort() -> MouseCode.Left
             2.toShort() -> MouseCode.Right
             4.toShort() -> MouseCode.Middle
-            else -> MouseCode.Null
+            else -> MouseCode.None
         }
     }
 

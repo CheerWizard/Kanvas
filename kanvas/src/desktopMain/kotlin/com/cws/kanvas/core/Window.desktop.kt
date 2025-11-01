@@ -33,7 +33,7 @@ class WindowPixels(width: Int, height: Int) {
 
 }
 
-actual class Window : BaseWindow {
+actual class Window : BaseWindow, RenderBridge.OffscreenCallback {
 
     lateinit var onBitmapChanged: (ImageBitmap?) -> Unit
 
@@ -47,7 +47,7 @@ actual class Window : BaseWindow {
     actual constructor(config: WindowConfig) : super(config) {
         createPixels(config.width, config.height)
         windowPixels?.let { windowPixels ->
-            RenderBridge.nativeRegisterPixels(windowPixels.pixels.buffer)
+            RenderBridge.nativeSetOffscreenCallback(this, windowPixels.pixels.buffer)
         }
     }
 
@@ -57,8 +57,7 @@ actual class Window : BaseWindow {
 
     actual fun isClosed(): Boolean = closed
 
-    // called from native C++ side
-    fun onPixelsUpdated() {
+    override fun onPixelsReady() {
         checkComposeState()
         windowPixels?.let { windowPixels ->
             windowPixels.sync()
@@ -210,7 +209,7 @@ actual class Window : BaseWindow {
             PointerButton.Tertiary -> MouseCode.Middle
             PointerButton.Primary -> MouseCode.Left
             PointerButton.Secondary -> MouseCode.Right
-            else -> MouseCode.Null
+            else -> MouseCode.None
         }
     }
 

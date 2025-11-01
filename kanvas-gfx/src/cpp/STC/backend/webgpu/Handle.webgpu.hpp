@@ -6,8 +6,10 @@
 #define STC_HANDLE_WEBGPU_HPP
 
 #include <webgpu/webgpu.h>
+#include <emscripten/html5_webgpu.h>
+#include <emscripten/emscripten.h>
 
-#define CALL(function) ASSERT(function == WGPUStatus_Success, "WebGPU", #function)
+#define CALL(function) ASSERT(function == 1, "WebGPU", #function)
 #define null nullptr
 
 #define ASSERT_HANDLE(HANDLE) ASSERT(handle, "WebGPU", "Failed to create " #HANDLE)
@@ -55,20 +57,20 @@ namespace stc {
     WGPU_HANDLE(PipelineLayout)
     WGPU_HANDLE(CommandEncoder)
 
-    struct SwapchainHandle {
-        WGPUSwapChain handle = null;
-
-        void New(WGPUDevice device, WGPUSurface surface, const WGPUSwapChainDescriptor& descriptor);
+    struct InstanceHandle {
+        void New();
         void Delete();
+    };
 
-        [[nodiscard]] WGPUSwapChain get() const {
-            return handle;
-        }
+    struct DeviceHandle {
+        WGPUDevice handle = null;
+        void New();
+        void Delete();
+    };
 
-        operator WGPUSwapChain() const {
-            return handle;
-        }
-
+    struct SwapchainHandle {
+        void New();
+        void Delete();
     };
 
     struct TextureViewHandle {

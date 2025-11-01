@@ -41,7 +41,8 @@ namespace stc {
 
     struct RenderTargetCreateInfo {
         TextureFormat format;
-        vec2<u32> extent;
+        u32 width;
+        u32 height;
         std::vector<ColorAttachment> colorAttachments;
     };
 

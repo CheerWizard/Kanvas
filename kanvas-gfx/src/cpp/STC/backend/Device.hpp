@@ -28,15 +28,15 @@ namespace stc {
 
 #elif WEBGPU
 
-    struct DeviceBackend {
-        WGPUDevice handle = null;
+    struct DeviceBackend : DeviceHandle {
+        WGPUAdapter adapter = null;
         WGPUAdapterProperties properties = {};
+        WGPUSupportedLimits supported_limits = {};
+        WGPULimits limits = {};
         std::vector<WGPUFeatureName> features;
     };
 
-    struct DeviceCreateInfo {
-        WGPUAdapter adapter = null;
-    };
+    struct DeviceCreateInfo {};
 
 #endif
 
@@ -48,10 +48,11 @@ namespace stc {
 
         void initialize();
 
-        bool checkExtension(const char* extension);
         bool checkExtensions(const char** extensions, u32 count);
-        bool checkLayer(const char* layer);
         bool checkLayers(const char** layers, u32 count);
+
+        bool checkExtension(const char* extension);
+        bool checkLayer(const char* layer);
 
         Scope<DeviceQueue>& getQueue(u32 family_index);
         void wait();

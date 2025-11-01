@@ -16,7 +16,7 @@ namespace stc {
         Delete();
     }
 
-    void DeviceQueue::reset() const {
+    void DeviceQueue::reset() {
         handle = wgpuDeviceGetQueue(device);
         ASSERT_HANDLE(handle);
     }

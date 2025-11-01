@@ -76,7 +76,7 @@ namespace stc {
     }
 
     BindingSet::~BindingSet() {
-        CALL(vkFreeDescriptorSets(device, pool, 1, &handle))
+        CALL(vkFreeDescriptorSets(device, pool, 1, &handle));
     }
 
 }

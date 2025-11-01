@@ -49,7 +49,7 @@ class GameLoop(
             onWindowCreated(window)
         }
         window.addEventListener(this)
-        engine.init()
+        engine.init(config)
         setGame(game)
     }
 
@@ -65,7 +65,6 @@ class GameLoop(
         game?.onUpdate(dtMillis)
         engine.jobsManager.execute()
         render(dtMillis)
-        window.applySwapChain()
         running = !window.isClosed()
     }
 

@@ -18,15 +18,11 @@ namespace stc {
         BINDING_TYPE_SAMPLER = VK_DESCRIPTOR_TYPE_SAMPLER,
     };
 
-    struct BindingLayoutBackend : DescriptorSetLayoutHandle {};
-
-    struct BindingSetBackend {
-        VkDevice device = null;
-        VkDescriptorPool pool = null;
-        VkDescriptorSet handle = null;
+    struct BindingLayoutBackend :  {
+        DescriptorSetLayoutHandle layout;
+        DescriptorPoolHandle pool;
+        VkDescriptorSet set = null;
     };
-
-    struct BindingSetPoolBackend : DescriptorPoolHandle {};
 
 #elif METAL
 
@@ -35,17 +31,16 @@ namespace stc {
 #elif WEBGPU
 
     enum BindingType {
-        BINDING_TYPE_UNIFORM_BUFFER = WGPUBufferBindingType_Uniform,
-        BINDING_TYPE_STORAGE_BUFFER = WGPUBufferBindingType_Storage,
-        BINDING_TYPE_TEXTURE = WGPUBufferBindingType_Undefined,
-        BINDING_TYPE_SAMPLER = WGPUBufferBindingType_Undefined,
+        BINDING_TYPE_UNIFORM_BUFFER = 0,
+        BINDING_TYPE_STORAGE_BUFFER,
+        BINDING_TYPE_TEXTURE,
+        BINDING_TYPE_SAMPLER,
     };
 
-    struct BindingLayoutBackend : BindGroupLayoutHandle {};
-
-    struct BindingSetBackend : BindGroupHandle {};
-
-    struct BindingSetPoolBackend {};
+    struct BindingLayoutBackend {
+        BindGroupLayoutHandle layout;
+        BindGroupHandle group;
+    };
 
 #endif
 
@@ -53,6 +48,7 @@ namespace stc {
         BindingType type;
         u32 slot;
         u32 shader_stages;
+        void* resource = nullptr;
     };
 
     struct Device;
@@ -62,17 +58,8 @@ namespace stc {
 
         BindingLayout(const Device& device, const std::vector<Binding>& bindings);
         ~BindingLayout();
-    };
 
-    struct BindingSetPool : BindingSetPoolBackend {
-        BindingSetPool(const Device& device, BindingType type, u32 size);
-        ~BindingSetPool();
-        void reset();
-    };
-
-    struct BindingSet : BindingSetBackend {
-        BindingSet(const BindingSetPool& pool, const BindingLayout& layout);
-        ~BindingSet();
+        void resetPool();
     };
 
 }

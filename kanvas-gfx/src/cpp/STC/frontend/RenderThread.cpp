@@ -4,13 +4,9 @@
 
 #include "RenderThread.hpp"
 
-#include "Viewport.hpp"
 #include "backend/Sync.hpp"
 
-stc::RenderThread::RenderThread(
-    Renderer& renderer,
-    FrameQueue& frameQueue
-) : renderer(renderer), frameQueue(frameQueue) {
+stc::RenderThread::RenderThread(const RenderConfig& render_config) : renderer(render_config) {
     // testVertShader = context.createShader("shaders/spv/model_vert.glsl.spv", VK_SHADER_STAGE_VERTEX_BIT);
     // testVertShader = context.createShader("shaders/spv/model_frag.glsl.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 
@@ -56,7 +52,7 @@ void stc::RenderThread::runLoop() {
     }
     while (running) {
         Frame frame;
-        frameQueue.pop(frame);
+        frame_queue.pop(frame);
         renderFrame(frame);
     }
     renderer.context->device->wait();
@@ -128,5 +124,5 @@ void stc::RenderThread::renderFrame(const Frame &frame) {
     }
 
     // next frame
-    currentFrame = (currentFrame + 1) % frameQueue.getSize();
+    currentFrame = (currentFrame + 1) % frame_queue.getSize();
 }

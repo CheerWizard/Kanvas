@@ -79,7 +79,7 @@ namespace stc {
         needsResize = false;
     }
 
-    void* Surface::createSwapChain(const vec2<u32>& extent) const {
+    void* Surface::initSwapChain(const vec2<u32>& extent) const {
         u32 imageCount = capabilities.minImageCount + 1;
         if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount) {
             imageCount = capabilities.maxImageCount;

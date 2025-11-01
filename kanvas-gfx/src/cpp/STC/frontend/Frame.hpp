@@ -12,6 +12,10 @@
 #include "buffers/InstanceBuffer.hpp"
 #include "buffers/MaterialBuffer.hpp"
 
+#include "core/thread_pool.hpp"
+
+#include <functional>
+
 namespace stc {
 
     struct Command {

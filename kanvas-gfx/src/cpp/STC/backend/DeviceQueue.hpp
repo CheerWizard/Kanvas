@@ -42,7 +42,7 @@ namespace stc {
         DeviceQueue(const Device& device, u32 familyIndex);
         ~DeviceQueue();
 
-        void reset() const;
+        void reset();
 
     };
 

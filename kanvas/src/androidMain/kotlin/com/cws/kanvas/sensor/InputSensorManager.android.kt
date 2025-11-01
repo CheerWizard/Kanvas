@@ -33,6 +33,7 @@ actual class InputSensorManager(context: Context) : SensorEventListener {
         val z = event.values[2] * 10f
 
         sensor.acceleration = Vec3(abs(x), abs(y), abs(z))
+
         sensor.direction.x = if (x > 3f) -1f else 1f
         sensor.direction.y = if (y > 3f) 1f else -1f
         sensor.direction.z = if (z > 3f) -1f else 1f

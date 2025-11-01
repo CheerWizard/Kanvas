@@ -12,6 +12,7 @@ namespace stc {
         void* nativeWindow = nullptr;
         int width = 800;
         int height = 600;
+        std::string canvasID;
     };
 
 }

@@ -15,35 +15,35 @@ if (!(condition)) { \
     LOG_ASSERT(tag, msg, ##__VA_ARGS__); \
 }
 
-#if defined(DEBUG)
+#ifdef DEBUG
 
-#if defined(ANDROID)
+#ifdef ANDROID
 
-#define LOG_VERBOSE(tag, msg, ...) Logger::getInstance().log(LogLevel::VERBOSE, tag, msg, 0, ##__VA_ARGS__)
-#define LOG_INFO(tag, msg, ...) Logger::getInstance().log(LogLevel::INFO, tag, msg, 0, ##__VA_ARGS__)
-#define LOG_DEBUG(tag, msg, ...) Logger::getInstance().log(LogLevel::DBG, tag, msg, 0, ##__VA_ARGS__)
-#define LOG_WARNING(tag, msg, ...) Logger::getInstance().log(LogLevel::WARNING, tag, msg, 0, ##__VA_ARGS__)
-#define LOG_ERROR(tag, msg, ...) Logger::getInstance().log(LogLevel::ERROR, tag, msg, 0, ##__VA_ARGS__)
-#define LOG_ASSERT(tag, msg, ...) Logger::getInstance().log(LogLevel::FATAL, tag, msg, 0, ##__VA_ARGS__)
+#define LOG_VERBOSE(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_VERBOSE, tag, msg, 0, ##__VA_ARGS__)
+#define LOG_INFO(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_INFO, tag, msg, 0, ##__VA_ARGS__)
+#define LOG_DEBUG(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_DEBUG, tag, msg, 0, ##__VA_ARGS__)
+#define LOG_WARNING(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_WARNING, tag, msg, 0, ##__VA_ARGS__)
+#define LOG_ERROR(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_ERROR, tag, msg, 0, ##__VA_ARGS__)
+#define LOG_ASSERT(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_FATAL, tag, msg, 0, ##__VA_ARGS__)
 
 #else
 
-#define LOG_VERBOSE(tag, msg, ...) Logger::getInstance().log(LogLevel::VERBOSE, tag, msg, ##__VA_ARGS__)
-#define LOG_INFO(tag, msg, ...) Logger::getInstance().log(LogLevel::INFO, tag, msg, ##__VA_ARGS__)
-#define LOG_DEBUG(tag, msg, ...) Logger::getInstance().log(LogLevel::DBG, tag, msg, ##__VA_ARGS__)
-#define LOG_WARNING(tag, msg, ...) Logger::getInstance().log(LogLevel::WARNING, tag, msg, ##__VA_ARGS__)
-#define LOG_ERROR(tag, msg, ...) Logger::getInstance().log(LogLevel::ERROR, tag, msg, ##__VA_ARGS__)
-#define LOG_ASSERT(tag, msg, ...) Logger::getInstance().log(LogLevel::FATAL, tag, msg, ##__VA_ARGS__)
+#define LOG_VERBOSE(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_VERBOSE, tag, msg, ##__VA_ARGS__)
+#define LOG_INFO(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_INFO, tag, msg, ##__VA_ARGS__)
+#define LOG_DEBUG(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_DEBUG, tag, msg, ##__VA_ARGS__)
+#define LOG_WARNING(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_WARNING, tag, msg, ##__VA_ARGS__)
+#define LOG_ERROR(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_ERROR, tag, msg, ##__VA_ARGS__)
+#define LOG_ASSERT(tag, msg, ...) Logger::getInstance().log(LOG_LEVEL_FATAL, tag, msg, ##__VA_ARGS__)
 
 #endif
 
 #else
 
-#define LOG_VERB(tag,  msg, ...)
+#define LOG_VERBOSE(tag,  msg, ...)
 #define LOG_INFO(tag, msg, ...)
-#define LOG_DBG(tag, msg, ...)
-#define LOG_WARN(tag, msg, ...)
-#define LOG_ERR(tag, msg, ...)
+#define LOG_DEBUG(tag, msg, ...)
+#define LOG_WARNING(tag, msg, ...)
+#define LOG_ERROR(tag, msg, ...)
 #define LOG_ASSERT(tag, msg, ...) std::abort()
 
 #endif
@@ -89,7 +89,7 @@ if (!(condition)) { \
     ) {
         std::unique_lock lock(mutex);
         Log log;
-#if defined(ANDROID)
+#ifdef ANDROID
         std::snprintf(log.message.data(), log.message.size(), "%s", msg, args...);
         std::snprintf(log.tag.data(), log.tag.size(), "%s", tag);
 #else
@@ -97,7 +97,7 @@ if (!(condition)) { \
         std::snprintf(log.tag.data(), log.tag.size(), tag);
 #endif
         log.level = level;
-        if (level >= LogLevel::ERROR) {
+        if (level >= LOG_LEVEL_ERROR) {
             log.exceptionMessage = log.message;
         }
         logQueue.push(log);

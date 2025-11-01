@@ -10,16 +10,12 @@
 
 namespace stc {
 
-    struct Fence;
-    struct Semaphore;
-
     struct RenderThread {
+        Renderer renderer;
+        FrameQueue frame_queue;
+        u32 currentFrame = 0;
 
-        RenderThread(
-            Renderer& renderer,
-            FrameQueue& frameQueue
-        );
-
+        RenderThread(const RenderConfig& render_config);
         ~RenderThread();
 
         void resize(int w, int h);
@@ -29,9 +25,6 @@ namespace stc {
         void renderFrame(const Frame& frame);
 
         bool running = false;
-        u32 currentFrame = 0;
-        FrameQueue& frameQueue;
-        Renderer& renderer;
         std::array<Scope<Semaphore>, MAX_FRAMES> imageSemaphores;
         std::array<Scope<Semaphore>, MAX_FRAMES> renderFinishedSemaphores;
         std::array<Scope<Fence>, MAX_FRAMES> fences;

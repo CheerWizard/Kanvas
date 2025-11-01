@@ -10,26 +10,19 @@ stc::RenderBridge::RenderBridge(const RenderConfig& render_config) {
     // renderUploader->uploadMesh({}, newModel.visible, [this](const Command& command) {
     //             currentFrameState.predrawCommands.emplace_back(command);
     //         });
-    frameQueue.New();
-    renderer.New(render_config);
-    renderThread.New(*renderer, *frameQueue);
-    renderUploader.New(*renderer);
+    renderThread.New(render_config);
 }
 
 stc::RenderBridge::~RenderBridge() {
-    renderer->context->device->wait();
-}
-
-void stc::RenderBridge::beginFrame() {
-}
-
-void stc::RenderBridge::endFrame() {
-    frameQueue->push(currentFrameState);
-    currentFrame = (currentFrame + 1) % frameQueue->getSize();
+    renderThread->renderer.context->device->wait();
 }
 
 void stc::RenderBridge::resize(int width, int height) {
-    renderer->resize(width, height);
+    renderThread->renderer.resize(width, height);
+}
+
+void stc::RenderBridge::render(const Mesh &mesh) {
+    // renderThread->renderer.uploadMesh(mesh);
 }
 
 // void stc::RenderBridge::update() {

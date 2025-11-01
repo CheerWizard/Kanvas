@@ -6,6 +6,7 @@
 #define STC_SHADER_HPP
 
 #include "Handle.hpp"
+#include "../bridges/FileBridge.hpp"
 
 namespace stc {
 
@@ -41,8 +42,10 @@ namespace stc {
 
 #endif
 
+    struct Device;
+
     struct Shader : ShaderBackend {
-        Shader(const char* src);
+        Shader(const Device& device, const char* shaderName, const char* shaderPath);
         ~Shader();
     };
 

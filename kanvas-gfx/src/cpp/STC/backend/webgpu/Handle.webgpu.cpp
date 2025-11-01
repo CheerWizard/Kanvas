@@ -7,6 +7,26 @@
 
 namespace stc {
 
+    void InstanceHandle::New() {
+        // no-op
+    }
+
+    void InstanceHandle::Delete() {
+        // no-op
+    }
+
+    void DeviceHandle::New() {
+        handle = emscripten_webgpu_get_device();
+        ASSERT_HANDLE(DeviceHandle);
+    }
+
+    void DeviceHandle::Delete() {
+        if (handle) {
+            wgpuDeviceRelease(handle);
+            handle = null;
+        }
+    }
+
     void SwapchainHandle::New(WGPUDevice device, WGPUSurface surface, const WGPUSwapChainDescriptor &descriptor) {
         handle = wgpuDeviceCreateSwapChain(device, surface, &descriptor);
         ASSERT_HANDLE(SwapchainHandle);

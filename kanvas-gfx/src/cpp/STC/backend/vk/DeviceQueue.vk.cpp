@@ -20,6 +20,6 @@ stc::DeviceQueue::~DeviceQueue() {
     pool.Delete();
 }
 
-void stc::DeviceQueue::reset() const {
+void stc::DeviceQueue::reset() {
     CALL(vkResetCommandPool(pool.device, pool.handle, 0));
 }

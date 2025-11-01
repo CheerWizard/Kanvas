@@ -33,7 +33,7 @@ namespace stc {
         Delete();
     }
 
-    Texture::Texture(const TextureCreateInfo &create_info) : info(create_info) {
+    Texture::Texture(const Device& device, const TextureCreateInfo &create_info) : info(create_info) {
         VkImageType imageType;
         VkImageViewType imageViewType;
 
@@ -100,11 +100,11 @@ namespace stc {
             }
         };
 
-        imageView.New(device, viewInfo);
+        view.New(device, viewInfo);
     }
 
     Texture::~Texture() {
-        imageView.Delete();
+        view.Delete();
         if (handle) {
             vmaDestroyImage(VulkanAllocator::getInstance().allocator, handle, allocation);
             handle = null;

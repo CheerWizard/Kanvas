@@ -21,7 +21,10 @@ open class BasePrinter {
     ) {
         launch {
             this.logLevel = logLevel
-            this.loggers.add(ConsoleLogger())
+            if (loggers.isEmpty()) {
+                // by default will be at least console logger
+                this.loggers.add(ConsoleLogger())
+            }
             loggers.forEach { this.loggers.add(it) }
             this.loggers.forEach { it.open() }
         }

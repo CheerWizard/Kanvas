@@ -40,11 +40,6 @@ namespace stc {
         }
     }
 
-    Device::~Device() {
-        queues.clear();
-        Delete();
-    }
-
     void Device::initialize() {
         float queuePriority = 1.0f;
 
@@ -86,15 +81,6 @@ namespace stc {
         return false;
     }
 
-    bool Device::checkExtensions(const char **extensions, u32 count) {
-        for (int i = 0 ; i < count ; i++) {
-            if (!checkExtension(extensions[i])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     bool Device::checkLayer(const char *layer) {
         for (const auto& entry : layers) {
             if (strcmp(layer, entry.layerName) == 0) {
@@ -102,15 +88,6 @@ namespace stc {
             }
         }
         return false;
-    }
-
-    bool Device::checkLayers(const char **layers, u32 count) {
-        for (int i = 0 ; i < count ; i++) {
-            if (!checkLayer(layers[i])) {
-                return false;
-            }
-        }
-        return true;
     }
 
     void Device::wait() {

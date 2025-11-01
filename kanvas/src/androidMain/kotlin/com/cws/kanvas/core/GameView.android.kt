@@ -52,9 +52,9 @@ class GameView(
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
         Printer.d(TAG, "onSurfaceTextureAvailable")
-        gameLoop?.let {
-            it.setSurface(Surface(surface))
-            it.startLoop()
+        gameLoop?.let { gameLoop ->
+            gameLoop.setSurface(Surface(surface))
+            gameLoop.startLoop()
         }
     }
 

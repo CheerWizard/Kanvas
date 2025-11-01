@@ -40,7 +40,7 @@ namespace stc {
         return VK_FALSE;
     }
 
-    Context::Context(const ContextCreateInfo& create_info) {
+    void Context::initInstance(const ContextCreateInfo &create_info) {
         VkApplicationInfo appInfo { VK_STRUCTURE_TYPE_APPLICATION_INFO };
         appInfo.pApplicationName = "Kanvas";
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -103,52 +103,12 @@ namespace stc {
 #endif
 
         New(nullptr, createInfo);
-
-        initDevices();
-        selectDevice();
-        initSurface(create_info.render_config.nativeWindow);
     }
 
-    Context::~Context() {
+    void Context::releaseInstance() {
         debug_utils.Delete();
         Delete();
         VulkanAllocator::getInstance().Delete();
-    }
-
-    bool Context::checkExtension(const char *extension) {
-        for (const auto& entry : extensions) {
-            if (strcmp(extension, entry.extensionName) == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool Context::checkExtensions(const char **extensions, uint32_t count) {
-        for (int i = 0 ; i < count ; i++) {
-            if (!checkExtension(extensions[i])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool Context::checkLayer(const char *layer) {
-        for (const auto& entry : layers) {
-            if (strcmp(layer, entry.layerName) == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool Context::checkLayers(const char **layers, uint32_t count) {
-        for (int i = 0 ; i < count ; i++) {
-            if (!checkLayer(layers[i])) {
-                return false;
-            }
-        }
-        return true;
     }
 
     void Context::initDevices() {
@@ -190,10 +150,10 @@ namespace stc {
 
 namespace stc {
 
-    void Context::initSurface(void* nativeWindow) {
+    void Context::initSurface(const RenderConfig& render_config) {
         VkAndroidSurfaceCreateInfoKHR createInfo {
             .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
-            .window = (ANativeWindow*) nativeWindow,
+            .window = (ANativeWindow*) render_config.nativeWindow,
         };
         CALL(vkCreateAndroidSurfaceKHR(handle, &createInfo, &VulkanAllocator::getInstance().callbacks, (VkSurfaceKHR*) &surface));
     }
@@ -204,7 +164,7 @@ namespace stc {
 
 namespace stc {
 
-    void Context::initSurface(void* nativeWindow) {
+    void Context::initSurface(const RenderConfig& render_config) {
         // no-op
     }
 

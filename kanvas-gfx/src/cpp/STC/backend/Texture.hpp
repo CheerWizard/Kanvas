@@ -61,8 +61,7 @@ namespace stc {
     };
 
     enum SamplerMipMapMode {
-        // TODO find alternative
-        MIPMAP_LINEAR = 0,
+        MIPMAP_LINEAR = WGPUFilterMode_Linear,
     };
 
     enum CompareOp {
@@ -129,14 +128,12 @@ namespace stc {
     };
 
     struct Texture : TextureBackend {
-        void* mapped = nullptr;
         TextureCreateInfo info;
 
-        Texture(const TextureCreateInfo& info);
+        Texture(const Device& device, const TextureCreateInfo& info);
         ~Texture();
 
-        void* map();
-        void unmap();
+        void update();
 
     private:
         static constexpr auto TAG = "Texture";

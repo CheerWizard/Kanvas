@@ -1,5 +1,7 @@
 package com.cws.kanvas.core
 
+import com.cws.kanvas.config.GameConfig
+import com.cws.kanvas.gfx.bridges.RenderBridge
 import com.cws.kanvas.sensor.InputSensorManager
 
 class Engine(
@@ -14,12 +16,14 @@ class Engine(
 
     val inputSensorManager: InputSensorManager = inputSensorManager
 
-    fun init() {
+    fun init(gameConfig: GameConfig) {
         inputSensorManager.init()
+        RenderBridge.init(gameConfig.renderConfig)
     }
 
     fun release() {
         inputSensorManager.release()
+        RenderBridge.free()
     }
 
 }

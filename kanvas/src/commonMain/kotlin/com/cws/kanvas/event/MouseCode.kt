@@ -1,7 +1,7 @@
 package com.cws.kanvas.event
 
 enum class MouseCode {
-    Null,
+    None,
     Left,
     Right,
     Middle

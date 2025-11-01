@@ -29,8 +29,11 @@ actual object RenderBridge {
 
     private external fun nativeUpdateViewport(x: Int, y: Int, width: Int, height: Int)
 
-    external fun nativeRegisterPixels(pixels: ByteBuffer)
+    interface OffscreenCallback {
+        fun onPixelsReady()
+    }
 
-    external fun nativeUnregisterPixels()
+    external fun nativeSetOffscreenCallback(callback: OffscreenCallback, pixels: ByteBuffer)
+    external fun nativeRemoveOffscreenCallback()
 
 }

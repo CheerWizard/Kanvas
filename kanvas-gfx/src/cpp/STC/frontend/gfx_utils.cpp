@@ -4,6 +4,8 @@
 
 #include <fstream>
 
+// TODO: will consider how to port it so I can use it to translate shader to SPIRV
+
 //    // read shader file
 //    std::ifstream file(filepath, std::ios::ate | std::ios::binary);
 //    ASSERT(file.is_open(), "Failed to open shader file %s", filepath);
