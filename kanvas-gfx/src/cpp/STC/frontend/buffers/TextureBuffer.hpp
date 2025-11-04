@@ -13,16 +13,16 @@
 namespace stc {
 
     struct TextureBuffer {
+        Device& device;
         BindingLayout binding_layout;
-        BindingSetPool binding_set_pool;
-        BindingSet binding_set;
         std::vector<Scope<Texture>> textures;
         LockFreeIndices freeIndices;
         Scope<Sampler> sampler;
         u32 currentTextureIndex = TEXTURE_INDEX_NULL;
 
-        TextureBuffer(const Device& device);
+        TextureBuffer(Device& device);
         ~TextureBuffer();
+
         u32 allocate(const TextureCreateInfo& create_info);
         void free(u32 textureIndex);
 

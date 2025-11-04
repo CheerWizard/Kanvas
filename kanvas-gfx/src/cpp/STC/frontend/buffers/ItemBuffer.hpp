@@ -11,30 +11,27 @@
 
 namespace stc {
 
-    template<typename T, Binding binding>
+    template<typename T, Binding _binding>
     struct ItemBuffer : Buffer {
         BindingLayout binding_layout;
-        BindingSetPool binding_set_pool;
-        BindingSet binding_set;
+        Binding binding = _binding;
 
         ItemBuffer(const Device& device);
         void update(u32 frame, const T& data);
     };
 
-    template<typename T, Binding binding>
-    ItemBuffer<T, binding>::ItemBuffer(const Device &device)
+    template<typename T, Binding _binding>
+    ItemBuffer<T, _binding>::ItemBuffer(const Device &device)
     : binding_layout(device, { binding }),
-    binding_set_pool(device, binding.type, sizeof(T)),
-    binding_set(binding_set_pool, binding_layout),
-    Buffer(MEMORY_TYPE_HOST, BUFFER_USAGE_UNIFORM_BUFFER, sizeof(T) * MAX_FRAMES)
+      Buffer(device, MEMORY_TYPE_HOST, BUFFER_USAGE_UNIFORM_BUFFER, sizeof(T) * MAX_FRAMES)
     {
-        updateBinding(binding, binding_set, sizeof(T));
+        updateBinding(device, binding_layout, binding);
         map();
     }
 
-    template<typename T, Binding binding>
-    void ItemBuffer<T, binding>::update(u32 frame, const T &data) {
-        memcpy((void*)((char*)mapped + frame * sizeof(T)), &data, sizeof(T));
+    template<typename T, Binding _binding>
+    void ItemBuffer<T, _binding>::update(u32 frame, const T &data) {
+        memcpy((void*)((char*) mapped + frame * sizeof(T)), &data, sizeof(T));
     }
 
 }

@@ -6,7 +6,7 @@
 #define STC_CONTEXT_HPP
 
 #include "Device.hpp"
-#include "bridges/RenderConfig.hpp"
+#include "../bridges/RenderConfig.hpp"
 
 namespace stc {
 

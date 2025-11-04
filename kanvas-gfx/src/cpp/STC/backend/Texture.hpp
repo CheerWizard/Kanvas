@@ -11,6 +11,13 @@ namespace stc {
 
 #ifdef VK
 
+    enum TextureType {
+        TEXTURE_2D = VK_IMAGE_VIEW_TYPE_2D,
+        TEXTURE_3D = VK_IMAGE_VIEW_TYPE_3D,
+        TEXTURE_CUBE_MAP = VK_IMAGE_VIEW_TYPE_CUBE,
+        TEXTURE_ARRAY = VK_IMAGE_VIEW_TYPE_2D_ARRAY,
+    };
+
     enum TextureFormat {
         FORMAT_RGBA8 = VK_FORMAT_R8G8B8A8_SRGB,
     };
@@ -28,7 +35,15 @@ namespace stc {
     };
 
     enum CompareOp {
+        COMPARE_OP_NONE = -1,
         COMPARE_OP_ALWAYS = VK_COMPARE_OP_ALWAYS,
+        COMPARE_OP_NEVER = VK_COMPARE_OP_NEVER,
+        COMPARE_OP_LESS = VK_COMPARE_OP_LESS,
+        COMPARE_OP_LESS_EQUAL = VK_COMPARE_OP_LESS_OR_EQUAL,
+        COMPARE_OP_GREATER = VK_COMPARE_OP_GREATER,
+        COMPARE_OP_GREATER_EQUAL = VK_COMPARE_OP_GREATER_OR_EQUAL,
+        COMPARE_OP_EQUAL = VK_COMPARE_OP_EQUAL,
+        COMPARE_OP_NOT_EQUAL = VK_COMPARE_OP_NOT_EQUAL,
     };
 
     enum BorderColor {
@@ -38,7 +53,7 @@ namespace stc {
     struct SamplerBackend : SamplerHandle {};
 
     struct TextureBackend : ImageHandle {
-        ImageViewHandle imageView;
+        ImageViewHandle view;
         VmaAllocation allocation = {};
     };
 
@@ -47,6 +62,13 @@ namespace stc {
 
 
 #elif WEBGPU
+
+    enum TextureType {
+        TEXTURE_2D = WGPUTextureViewDimension_2D,
+        TEXTURE_3D = WGPUTextureViewDimension_3D,
+        TEXTURE_CUBE_MAP = WGPUTextureViewDimension_Cube,
+        TEXTURE_ARRAY = WGPUTextureViewDimension_2DArray,
+    };
 
     enum TextureFormat {
         FORMAT_RGBA8 = WGPUTextureFormat_RGBA8UnormSrgb,
@@ -65,19 +87,20 @@ namespace stc {
     };
 
     enum CompareOp {
+        COMPARE_OP_NONE = WGPUCompareFunction_Undefined,
         COMPARE_OP_ALWAYS = WGPUCompareFunction_Always,
+        COMPARE_OP_NEVER = WGPUCompareFunction_Never,
+        COMPARE_OP_LESS = WGPUCompareFunction_Less,
+        COMPARE_OP_LESS_EQUAL = WGPUCompareFunction_LessEqual,
+        COMPARE_OP_GREATER = WGPUCompareFunction_Greater,
+        COMPARE_OP_GREATER_EQUAL = WGPUCompareFunction_GreaterEqual,
+        COMPARE_OP_EQUAL = WGPUCompareFunction_Equal,
+        COMPARE_OP_NOT_EQUAL = WGPUCompareFunction_NotEqual,
     };
 
     enum BorderColor {
         // TODO find alternative
         BORDER_COLOR_FLOAT_OPAQUE_BLACK = 0,
-    };
-
-    enum TextureType {
-        TEXTURE_2D = WGPUTextureViewDimension_2D,
-        TEXTURE_3D = WGPUTextureViewDimension_3D,
-        TEXTURE_CUBE_MAP = WGPUTextureViewDimension_Cube,
-        TEXTURE_ARRAY = WGPUTextureViewDimension_2DArray,
     };
 
     struct SamplerBackend : SamplerHandle {};
@@ -99,7 +122,7 @@ namespace stc {
         BorderColor borderColor = BORDER_COLOR_FLOAT_OPAQUE_BLACK;
         bool unnormalizedCoordinates = false;
         bool enableCompare = false;
-        CompareOp compareOperation = COMPARE_OP_ALWAYS;
+        CompareOp compareOp = COMPARE_OP_ALWAYS;
         SamplerMipMapMode mipmapMode = MIPMAP_LINEAR;
         float mipLodBias = 0.0f;
         float minLod = 0.0f;

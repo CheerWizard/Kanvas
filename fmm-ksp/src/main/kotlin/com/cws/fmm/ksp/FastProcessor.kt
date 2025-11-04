@@ -146,7 +146,7 @@ class FastProcessor(
 
         val size = fields.joinToString(" + ") {
             if (it.type in smallTypes) {
-                    "Int.SIZE_BYTES"
+                "Int.SIZE_BYTES"
             } else {
                 "${it.generatedType}.SIZE_BYTES"
             }

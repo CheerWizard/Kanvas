@@ -69,7 +69,7 @@ void stc::RenderThread::renderFrame(const Frame &frame) {
     // wait for frame
     fence->wait();
     u32 surfaceImageIndex;
-    bool imageGet = renderer.surface->getImage(*imageSemaphore, surfaceImageIndex);
+    bool imageGet = renderer.surface->getImage(*imageSemaphore);
     if (!imageGet) {
         // we can't proceed rendering without image to present
         return;

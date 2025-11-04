@@ -24,7 +24,7 @@ namespace stc {
         Buffer vertexBuffer;
         Buffer indexBuffer;
 
-        MeshBuffer(size_t vertices, size_t indices);
+        MeshBuffer(const Device& device, size_t vertices, size_t indices);
 
         MeshRegion allocate(const Mesh& mesh);
         void free(const MeshRegion& region);

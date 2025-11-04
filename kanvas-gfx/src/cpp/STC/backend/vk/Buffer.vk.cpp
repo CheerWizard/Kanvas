@@ -3,10 +3,12 @@
 //
 
 #include "../Buffer.hpp"
+#include "backend/Device.hpp"
 
 namespace stc {
 
-    Buffer::Buffer(MemoryType memoryType, u32 usages, size_t size) : size(size) {
+    Buffer::Buffer(const Device& device, MemoryType memoryType, u32 usages, size_t size)
+    : size(size) {
         VkBufferCreateInfo createInfo = {
             .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
             .size = size,
@@ -55,7 +57,7 @@ namespace stc {
         }
     }
 
-    void Buffer::updateBinding(const Binding& binding, const BindingSet& binding_set, size_t size) {
+    void Buffer::updateBinding(const Device& device, const BindingLayout& binding_layout, Binding& binding) {
         VkDescriptorBufferInfo bufferInfo = {
             .buffer = handle,
             .offset = 0,
@@ -64,7 +66,7 @@ namespace stc {
 
         VkWriteDescriptorSet descriptorWrite = {
             .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-            .dstSet = binding_set.handle,
+            .dstSet = binding_layout.set,
             .dstBinding = binding.slot,
             .dstArrayElement = 0,
             .descriptorCount = 1,
@@ -72,7 +74,7 @@ namespace stc {
             .pBufferInfo = &bufferInfo,
         };
 
-        vkUpdateDescriptorSets(binding_set.device, 1, &descriptorWrite, 0, nullptr);
+        vkUpdateDescriptorSets(device.handle, 1, &descriptorWrite, 0, nullptr);
     }
 
 }

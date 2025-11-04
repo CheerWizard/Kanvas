@@ -61,6 +61,7 @@ namespace stc {
         threadPool->submit({
             .task = [&, this, mesh]() {
                 Buffer stagingVertexBuffer = {
+                    *context->device,
                     MEMORY_TYPE_HOST,
                     BUFFER_USAGE_TRANSFER_SRC,
                     sizeof(Vertex) * mesh.vertices.size(),
@@ -70,6 +71,7 @@ namespace stc {
                 stagingVertexBuffer.unmap();
 
                 Buffer stagingIndexBuffer = {
+                    *context->device,
                     MEMORY_TYPE_HOST,
                     BUFFER_USAGE_TRANSFER_SRC,
                     sizeof(u32) * mesh.indices.size(),
@@ -92,7 +94,7 @@ namespace stc {
                 commandBuffer.copyBuffer({
                     .srcBuffer = stagingIndexBuffer,
                     .srcOffset = 0,
-                    .dstBuffer = meshBuffer->indexBuffer,
+                    .dstBuffer = meshBuffer->indexBuffer.handle,
                     .dstOffset = meshRegion.indirectData.indexOffset,
                     .size = meshRegion.indirectData.indices
                 });

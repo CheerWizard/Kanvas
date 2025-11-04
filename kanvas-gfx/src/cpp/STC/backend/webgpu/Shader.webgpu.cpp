@@ -7,8 +7,8 @@
 
 namespace stc {
 
-    Shader::Shader(const Device& device, const char* shaderName, const char* shaderPath) {
-        auto wgslSource = FileBridge::loadFile(shaderPath);
+    Shader::Shader(const Device& device, const ShaderCreateInfo& create_info) {
+        auto wgslSource = FileBridge::loadFile(create_info.path);
 
         WGPUShaderModuleWGSLDescriptor wgslDescriptor = {
             .chain.sType = WGPUSType_ShaderModuleWGSLDescriptor,
@@ -18,7 +18,7 @@ namespace stc {
 
         New(device.handle, WGPUShaderModuleDescriptor {
             .nextInChain = (WGPUChainedStruct const*) &wgslDescriptor,
-            .label = shaderName,
+            .label = create_info.name,
         });
     }
 

@@ -20,7 +20,7 @@ namespace stc {
             .anisotropyEnable = create_info.enableAnisotropy,
             .maxAnisotropy = create_info.maxAnisotropy,
             .compareEnable = create_info.enableCompare,
-            .compareOp = (VkCompareOp) create_info.compareOperation,
+            .compareOp = (VkCompareOp) create_info.compareOp,
             .minLod = create_info.minLod,
             .maxLod = create_info.maxLod,
             .borderColor = (VkBorderColor) create_info.borderColor,
@@ -111,17 +111,19 @@ namespace stc {
         }
     }
 
-    void* Texture::map() {
-        CALL(vmaMapMemory(VulkanAllocator::getInstance().allocator, allocation, &mapped));
-        ASSERT(!mapped, TAG, "Failed to map buffer memory");
-        return mapped;
-    }
+    // TODO consider cross platform way to update texture
 
-    void Texture::unmap() {
-        if (mapped) {
-            vmaUnmapMemory(VulkanAllocator::getInstance().allocator, allocation);
-            mapped = nullptr;
-        }
-    }
+    // void* Texture::map() {
+    //     CALL(vmaMapMemory(VulkanAllocator::getInstance().allocator, allocation, &mapped));
+    //     ASSERT(!mapped, TAG, "Failed to map buffer memory");
+    //     return mapped;
+    // }
+    //
+    // void Texture::unmap() {
+    //     if (mapped) {
+    //         vmaUnmapMemory(VulkanAllocator::getInstance().allocator, allocation);
+    //         mapped = nullptr;
+    //     }
+    // }
 
 }

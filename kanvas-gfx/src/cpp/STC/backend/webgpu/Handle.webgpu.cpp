@@ -27,16 +27,12 @@ namespace stc {
         }
     }
 
-    void SwapchainHandle::New(WGPUDevice device, WGPUSurface surface, const WGPUSwapChainDescriptor &descriptor) {
-        handle = wgpuDeviceCreateSwapChain(device, surface, &descriptor);
-        ASSERT_HANDLE(SwapchainHandle);
+    void SwapchainHandle::New() {
+        // no-op
     }
 
     void SwapchainHandle::Delete() {
-        if (handle) {
-            wgpuSwapChainRelease(handle);
-            handle = null;
-        }
+        // no-op
     }
 
     void TextureViewHandle::New(WGPUTexture texture, const WGPUTextureViewDescriptor &descriptor) {

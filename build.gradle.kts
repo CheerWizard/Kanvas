@@ -7,6 +7,6 @@ plugins {
     id("org.jetbrains.kotlin.multiplatform") apply false
 }
 
-ext {
-    packageName = "com.example.empty"
-}
+extra["packageName"] = "com.cws.acatch"
+extra["versionCode"] = 1
+extra["versionName"] = "0.0.1"

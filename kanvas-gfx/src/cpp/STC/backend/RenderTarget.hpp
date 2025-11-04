@@ -7,18 +7,19 @@
 
 #include "Handle.hpp"
 #include "Texture.hpp"
+#include "Blending.hpp"
 
 namespace stc {
 
 #ifdef VK
 
-    struct ColorAttachment : ImageViewHandle {};
+    struct ColorAttachmentBackend : ImageViewHandle {};
 
-    struct DepthAttachment : ImageViewHandle {};
+    struct DepthAttachmentBackend : ImageViewHandle {};
 
     struct RenderTargetBackend {
         RenderPassHandle render_pass;
-        std::vector<FramebufferHandle> frame_buffers;
+        FramebufferHandle frame_buffer;
     };
 
 #elif METAL
@@ -27,26 +28,54 @@ namespace stc {
 
 #elif WEBGPU
 
-    struct ColorAttachment : TextureViewHandle {};
+    struct ColorAttachmentBackend : TextureViewHandle {};
 
-    struct DepthAttachment : TextureViewHandle {};
+    struct DepthAttachmentBackend : TextureViewHandle {};
 
     struct RenderTargetBackend {
         RenderPassHandle render_pass;
+        CommandEncoderHandle command_encoder;
     };
 
 #endif
 
     struct Device;
+    struct CommandBuffer;
+
+    struct ColorAttachment : ColorAttachmentBackend {
+        TextureFormat format;
+        u32 samples = 1;
+        vec4<float> clearColor = { 0, 0, 0, 1 };
+        bool enableBlending = false;
+        Blending blendColor;
+        Blending blendAlpha;
+    };
+
+    struct DepthAttachment : DepthAttachmentBackend {
+        bool enabled = false;
+        TextureFormat format;
+        u32 samples = 1;
+        float depthClearValue = 1.0f;
+        CompareOp depthCompareOp = COMPARE_OP_LESS;
+        u32 stencilClearValue = 1.0;
+        bool depthReadOnly = false;
+        bool depthWriteEnabled = false;
+        bool stencilReadOnly = false;
+    };
 
     struct RenderTargetCreateInfo {
-        TextureFormat format;
+        int x = 0;
+        int y = 0;
         u32 width;
         u32 height;
+        u32 depth = 1;
         std::vector<ColorAttachment> colorAttachments;
+        DepthAttachment depthAttachment;
     };
 
     struct RenderTarget : RenderTargetBackend {
+        RenderTargetCreateInfo info;
+
         RenderTarget(const Device& device, const RenderTargetCreateInfo& create_info);
         ~RenderTarget();
     };

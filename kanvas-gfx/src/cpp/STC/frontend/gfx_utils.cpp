@@ -25,15 +25,6 @@
 //        case VK_SHADER_STAGE_FRAGMENT_BIT:
 //            shaderKind = shaderc_glsl_fragment_shader;
 //            break;
-//        case VK_SHADER_STAGE_GEOMETRY_BIT:
-//            shaderKind = shaderc_glsl_geometry_shader;
-//            break;
-//        case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
-//            shaderKind = shaderc_glsl_tess_control_shader;
-//            break;
-//        case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
-//            shaderKind = shaderc_glsl_tess_evaluation_shader;
-//            break;
 //        case VK_SHADER_STAGE_COMPUTE_BIT:
 //            shaderKind = shaderc_glsl_compute_shader;
 //            break;

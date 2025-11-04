@@ -48,8 +48,8 @@ void stc::CommandBuffer::end() const {
 void stc::CommandBuffer::beginRenderPass(const RenderPassCommand& command) const {
     VkRenderPassBeginInfo beginInfo = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = command.renderPass.handle,
-        .framebuffer = command.framebuffer.handle,
+        .renderPass = command.renderTarget.render_pass.handle,
+        .framebuffer = command.renderTarget.frame_buffer.handle,
         .renderArea = {
             .offset = { .x = command.renderAreaOffset.x, .y = command.renderAreaOffset.y },
             .extent = { .width = command.renderAreaExtent.x, .height = command.renderAreaExtent.y }
@@ -98,21 +98,21 @@ void stc::CommandBuffer::setIndexBuffer(const Buffer& buffer) const {
     vkCmdBindIndexBuffer(handle, buffer.handle, 0, VK_INDEX_TYPE_UINT32);
 }
 
-void stc::CommandBuffer::setPipelineBinding(const Pipeline& pipeline, const BindingSet &binding_set) const {
+void stc::CommandBuffer::setPipelineBinding(const Pipeline& pipeline, const BindingLayout &binding_layout) const {
     vkCmdBindDescriptorSets(
         handle,
         VK_PIPELINE_BIND_POINT_GRAPHICS,
         pipeline.layout.handle,
         0,
-        1, &binding_set.handle,
+        1, &binding_layout.set,
         0, nullptr
     );
 }
 
-void stc::CommandBuffer::setScissor(const vec2<int32_t> &offset, const vec2<uint32_t> &extent) const {
+void stc::CommandBuffer::setScissor(int x, int y, u32 w, u32 h) const {
     VkRect2D scissor = {
-        .offset = { .x = offset.x, .y = offset.y },
-        .extent = { .width = extent.x, .height = extent.y },
+        .offset = { .x = x, .y = y },
+        .extent = { .width = w, .height = h },
     };
     vkCmdSetScissor(handle, 0, 1, &scissor);
 }
@@ -179,7 +179,7 @@ void stc::CommandBuffer::copyBuffer(const CopyBufferCommand &command) const {
         .dstOffset = command.dstOffset,
         .size = command.size,
     };
-    vkCmdCopyBuffer(handle, command.srcBuffer.handle, command.dstBuffer.handle, 1, &copyRegion);
+    vkCmdCopyBuffer(handle, command.srcBuffer, command.dstBuffer, 1, &copyRegion);
 }
 
 void stc::CommandBuffer::copyBufferToImage(const CopyBufferToImageCommand &command) const {

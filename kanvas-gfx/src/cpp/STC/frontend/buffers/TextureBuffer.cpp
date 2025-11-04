@@ -6,17 +6,15 @@
 
 namespace stc {
 
-    TextureBuffer::TextureBuffer(const Device &device) :
+    TextureBuffer::TextureBuffer(Device &device) :
+    device(device),
     binding_layout(device, {
         Binding {
             .type = BINDING_TYPE_TEXTURE,
             .slot = 0,
             .shader_stages = SHADER_STAGE_FRAGMENT,
         }
-    }),
-    binding_set_pool(device, BINDING_TYPE_TEXTURE, 1),
-    binding_set(binding_set_pool, binding_layout)
-    {}
+    }) {}
 
     TextureBuffer::~TextureBuffer() {
         textures.clear();
@@ -28,7 +26,7 @@ namespace stc {
             return textureIndex;
         }
 
-        textures.emplace_back(create_info);
+        textures.emplace_back(device, create_info);
 
         return textures.size() - 1;
     }

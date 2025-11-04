@@ -6,7 +6,8 @@
 
 namespace stc {
 
-    IndirectIndexBuffer::IndirectIndexBuffer(u32 count) : count(count), Buffer(
+    IndirectIndexBuffer::IndirectIndexBuffer(const Device& device, u32 count) : count(count), Buffer(
+        device,
         MEMORY_TYPE_HOST,
         BUFFER_USAGE_INDIRECT_BUFFER,
         sizeof(IndirectIndexData) * count * MAX_FRAMES

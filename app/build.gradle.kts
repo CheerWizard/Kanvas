@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -94,15 +91,15 @@ kotlin {
 }
 
 android {
-    namespace = project.ext.packageName
+    namespace = rootProject.extra["packageName"] as String
     compileSdk = 36
 
     defaultConfig {
-        applicationId = project.ext.packageName
+        applicationId = rootProject.extra["packageName"] as String
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = rootProject.extra["versionCode"] as Int
+        versionName = rootProject.extra["versionName"] as String
     }
 
     buildTypes {

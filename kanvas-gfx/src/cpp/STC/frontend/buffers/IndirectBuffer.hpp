@@ -20,8 +20,8 @@ namespace stc {
     struct IndirectIndexBuffer : Buffer {
         u32 count = 0;
 
-        IndirectIndexBuffer(u32 count);
-        ~IndirectIndexBuffer();
+        IndirectIndexBuffer(const Device& device, u32 count);
+
         void update(u32 frame, u32 offset, const IndirectIndexData& data) const;
         void update(u32 frame, u32 offset, IndirectIndexData* data, u32 count) const;
     };

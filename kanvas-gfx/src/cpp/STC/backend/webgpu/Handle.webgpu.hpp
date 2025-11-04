@@ -9,7 +9,7 @@
 #include <emscripten/html5_webgpu.h>
 #include <emscripten/emscripten.h>
 
-#define CALL(function) ASSERT(function == 1, "WebGPU", #function)
+#define CALL(function) ASSERT((function) == 1, "WebGPU", #function)
 #define null nullptr
 
 #define ASSERT_HANDLE(HANDLE) ASSERT(handle, "WebGPU", "Failed to create " #HANDLE)
@@ -56,6 +56,8 @@ namespace stc {
     WGPU_HANDLE(BindGroup)
     WGPU_HANDLE(PipelineLayout)
     WGPU_HANDLE(CommandEncoder)
+
+    using CommandBufferHandle = WGPUCommandBuffer;
 
     struct InstanceHandle {
         void New();

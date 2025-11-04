@@ -8,9 +8,9 @@
 
 namespace stc {
 
-    MeshBuffer::MeshBuffer(size_t vertices, size_t indices) :
-    vertexBuffer(MEMORY_TYPE_DEVICE_LOCAL, BUFFER_USAGE_TRANSFER_DST | BUFFER_USAGE_VERTEX_BUFFER, sizeof(Vertex) * vertices),
-    indexBuffer(MEMORY_TYPE_DEVICE_LOCAL, BUFFER_USAGE_TRANSFER_DST | BUFFER_USAGE_INDEX_BUFFER, sizeof(u32) * indices) {}
+    MeshBuffer::MeshBuffer(const Device& device, size_t vertices, size_t indices) :
+    vertexBuffer(device, MEMORY_TYPE_DEVICE_LOCAL, BUFFER_USAGE_TRANSFER_DST | BUFFER_USAGE_VERTEX_BUFFER, sizeof(Vertex) * vertices),
+    indexBuffer(device, MEMORY_TYPE_DEVICE_LOCAL, BUFFER_USAGE_TRANSFER_DST | BUFFER_USAGE_INDEX_BUFFER, sizeof(u32) * indices) {}
 
     MeshRegion MeshBuffer::allocate(const Mesh &mesh) {
         std::unique_lock lock(mutex);

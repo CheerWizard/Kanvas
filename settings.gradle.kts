@@ -24,9 +24,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "Catch"
 include(":app")
-include(":kanvas")
-include(":kanvas-math")
-include(":printer")
-include(":printer-sandbox")
 include(":fmm")
 include(":fmm-ksp")
+include(":printer")
+include(":printer-sandbox")
+include(":kanvas")
+include(":kanvas-math")
+include(":kanvas-gfx")
+include(":KanvasLab")

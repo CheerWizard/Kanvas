@@ -7,63 +7,61 @@
 
 namespace stc {
 
-    RenderTarget::RenderTarget(const Device &device, const RenderTargetCreateInfo &create_info) {
-        VkAttachmentDescription colorAttachment = {
-            .format = (VkFormat) create_info.format,
-            .samples = VK_SAMPLE_COUNT_1_BIT,
-            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-            .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-            .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-            .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-            .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-            .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-        };
+    RenderTarget::RenderTarget(const Device &device, const RenderTargetCreateInfo &create_info)
+    : info(create_info) {
+        usize color_attachment_count = create_info.colorAttachments.size();
+        std::vector<VkAttachmentDescription> vk_color_attachments(color_attachment_count);
+        std::vector<VkAttachmentReference> vk_color_references(color_attachment_count);
+        std::vector<VkImageView> vk_image_views(color_attachment_count);
 
-        VkAttachmentReference colorAttachmentRef = {
-            .attachment = 0,
-            .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        };
+        for (u32 i = 0 ; i < color_attachment_count ; i++) {
+            auto& vk_color_attachment = vk_color_attachments[i];
+            auto& vk_color_reference = vk_color_references[i];
+            const auto& color_attachment = create_info.colorAttachments[i];
+
+            vk_color_attachment.format = (VkFormat) color_attachment.format;
+            vk_color_attachment.samples = (VkSampleCountFlagBits) color_attachment.samples;
+            // TODO expose more params
+            vk_color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            vk_color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            vk_color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            vk_color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            vk_color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            vk_color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+            vk_color_reference.attachment = i;
+            vk_color_reference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            vk_image_views[i] = create_info.colorAttachments[i].handle;
+        }
 
         VkSubpassDescription subpass = {
             .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-            .colorAttachmentCount = 1,
-            .pColorAttachments = &colorAttachmentRef,
+            .colorAttachmentCount = (u32) vk_color_attachments.size(),
+            .pColorAttachments = vk_color_references.data(),
         };
 
-        VkRenderPassCreateInfo render_pass_create_info = {
+        render_pass.New(device.handle, VkRenderPassCreateInfo {
             .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-            .attachmentCount = 1,
-            .pAttachments = &colorAttachment,
+            .attachmentCount = (u32) vk_color_attachments.size(),
+            .pAttachments = vk_color_attachments.data(),
             .subpassCount = 1,
             .pSubpasses = &subpass,
-        };
+        });
 
-        std::vector<VkImageView> vk_attachments(create_info.colorAttachments.size());
-
-        for (uint32_t i = 0 ; i < create_info.colorAttachments.size() ; i++) {
-            vk_attachments[i] = create_info.colorAttachments[i].handle;
-        }
-
-        VkFramebufferCreateInfo frame_buffer_create_info = {
+        frame_buffer.New(device.handle, VkFramebufferCreateInfo {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
             .renderPass = render_pass.handle,
-            .attachmentCount = static_cast<uint32_t>(vk_attachments.size()),
-            .pAttachments = vk_attachments.data(),
-            .width = create_info.extent.x,
-            .height = create_info.extent.y,
-            .layers = 1,
-        };
-
-        render_pass.New(device.handle, render_pass_create_info);
-        auto& frame_buffer = frame_buffers.emplace_back();
-        frame_buffer.New(device.handle, frame_buffer_create_info);
+            .attachmentCount = (u32) vk_image_views.size(),
+            .pAttachments = vk_image_views.data(),
+            .width = create_info.width,
+            .height = create_info.height,
+            .layers = create_info.depth,
+        });
     }
 
     RenderTarget::~RenderTarget() {
-        for (auto& frame_buffer : frame_buffers) {
-            frame_buffer.Delete();
-        }
-        frame_buffers.clear();
+        frame_buffer.Delete();
         render_pass.Delete();
     }
 

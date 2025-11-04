@@ -26,7 +26,9 @@ namespace stc {
 #elif WEBGPU
 
     struct CommandBufferBackend {
-        WGPUCommandBuffer handle = null;
+        CommandBufferHandle handle = null;
+        CommandEncoderHandle encoder;
+        RenderPassHandle render_pass;
     };
 
 #endif
@@ -54,13 +56,8 @@ namespace stc {
     };
 
     struct RenderPassCommand {
-        RenderTargetBackend renderTarget;
-        vec4<float> clearColor = { 0, 0, 0, 1 };
-        float clearDepth = 0;
-        int renderAreaX = 0;
-        int renderAreaY = 0;
-        u32 renderAreaW = 0;
-        u32 renderAreaH = 0;
+        Ptr<RenderTarget> renderTarget;
+        u32 colorAttachmentIndex = 0;
     };
 
     struct AddToSubmitCommand {
@@ -81,16 +78,16 @@ namespace stc {
     };
 
     struct CopyBufferCommand {
-        BufferBackend srcBuffer;
+        BufferHandle srcBuffer;
         size_t srcOffset = 0;
-        BufferBackend dstBuffer;
+        BufferHandle dstBuffer;
         size_t dstOffset = 0;
         size_t size = 0;
     };
 
     struct CopyBufferToImageCommand {
-        BufferBackend srcBuffer;
-        TextureBackend dstImage;
+        BufferHandle srcBuffer;
+        TextureHandle dstImage;
         u32 dstMipLevel = 0;
         u32 dstWidth = 0;
         u32 dstHeight = 0;
@@ -110,15 +107,15 @@ namespace stc {
 
         void reset() const;
         void begin() const;
-        void end() const;
+        void end();
 
-        void beginRenderPass(const RenderPassCommand& command) const;
+        void beginRenderPass(const RenderPassCommand& command);
         void endRenderPass() const;
 
         void setPipeline(const Pipeline& pipeline) const;
         void setVertexBuffer(const Buffer& buffer) const;
         void setIndexBuffer(const Buffer& buffer) const;
-        void setPipelineBinding(const Pipeline& pipeline, const BindingSet& binding_set) const;
+        void setPipelineBinding(const Pipeline& pipeline, const BindingLayout& binding_layout) const;
 
         void setViewport(const Viewport& viewport) const;
         void setScissor(int x, int y, u32 w, u32 h) const;

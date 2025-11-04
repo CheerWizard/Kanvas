@@ -18,7 +18,7 @@ namespace stc {
         BINDING_TYPE_SAMPLER = VK_DESCRIPTOR_TYPE_SAMPLER,
     };
 
-    struct BindingLayoutBackend :  {
+    struct BindingLayoutBackend {
         DescriptorSetLayoutHandle layout;
         DescriptorPoolHandle pool;
         VkDescriptorSet set = null;

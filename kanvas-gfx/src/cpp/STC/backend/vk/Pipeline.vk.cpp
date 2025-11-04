@@ -8,20 +8,6 @@
 
 #include "frontend/Vertex.hpp"
 
-namespace stc {
-
-    static const std::unordered_map<AttributeType, VkFormat> vk_attribute_formats = {
-        { AttributeType::PRIMITIVE, VK_FORMAT_R32_SFLOAT },
-        { AttributeType::VEC2, VK_FORMAT_R32G32_SFLOAT },
-        { AttributeType::VEC3, VK_FORMAT_R32G32B32_SFLOAT },
-        { AttributeType::VEC4, VK_FORMAT_R32G32B32A32_SFLOAT },
-        { AttributeType::MAT2, VK_FORMAT_R32G32_SFLOAT },
-        { AttributeType::MAT3, VK_FORMAT_R32G32B32_SFLOAT },
-        { AttributeType::MAT4, VK_FORMAT_R32G32B32A32_SFLOAT },
-    };
-
-}
-
 stc::Pipeline::Pipeline(const Device &device, const PipelineCreateInfo &create_info) {
     uint32_t stride = 0;
 
@@ -35,7 +21,7 @@ stc::Pipeline::Pipeline(const Device &device, const PipelineCreateInfo &create_i
 
         vk_attribute.binding = create_info.vertexBufferSlot;
         vk_attribute.location = attribute.location;
-        vk_attribute.format = vk_attribute_formats.at(attribute.type);
+        vk_attribute.format = attribute.format;
         vk_attribute.offset = size;
 
         stride += size;

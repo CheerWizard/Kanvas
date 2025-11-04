@@ -15,9 +15,6 @@ namespace stc {
     enum ShaderStage {
         SHADER_STAGE_VERTEX = VK_SHADER_STAGE_VERTEX_BIT,
         SHADER_STAGE_FRAGMENT = VK_SHADER_STAGE_FRAGMENT_BIT,
-        SHADER_STAGE_GEOMETRY = VK_SHADER_STAGE_GEOMETRY_BIT,
-        SHADER_STAGE_TESS_EVAL = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
-        SHADER_STAGE_TESS_CONTROL = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT,
         SHADER_STAGE_COMPUTE = VK_SHADER_STAGE_COMPUTE_BIT,
     };
 
@@ -32,9 +29,6 @@ namespace stc {
     enum ShaderStage {
         SHADER_STAGE_VERTEX = WGPUShaderStage_Vertex,
         SHADER_STAGE_FRAGMENT = WGPUShaderStage_Fragment,
-        SHADER_STAGE_GEOMETRY = WGPUShaderStage_None,
-        SHADER_STAGE_TESS_EVAL = WGPUShaderStage_None,
-        SHADER_STAGE_TESS_CONTROL = WGPUShaderStage_None,
         SHADER_STAGE_COMPUTE = WGPUShaderStage_Compute,
     };
 
@@ -44,8 +38,16 @@ namespace stc {
 
     struct Device;
 
+    struct ShaderCreateInfo {
+        const char* name;
+        const char* path;
+        const char* entryPoint = "main";
+    };
+
     struct Shader : ShaderBackend {
-        Shader(const Device& device, const char* shaderName, const char* shaderPath);
+        ShaderCreateInfo info;
+
+        Shader(const Device& device, const ShaderCreateInfo& create_info);
         ~Shader();
     };
 

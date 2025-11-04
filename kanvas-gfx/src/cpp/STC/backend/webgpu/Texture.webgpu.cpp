@@ -18,7 +18,7 @@ namespace stc {
             .mipmapFilter = (WGPUFilterMode) create_info.mipmapMode,
             .lodMinClamp = create_info.minLod,
             .lodMaxClamp = create_info.maxLod,
-            .compare = (WGPUCompareFunction) create_info.compareOperation,
+            .compare = (WGPUCompareFunction) create_info.compareOp,
             .maxAnisotropy = (u16) create_info.maxAnisotropy,
         });
     }

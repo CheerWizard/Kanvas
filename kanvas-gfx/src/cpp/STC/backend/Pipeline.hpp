@@ -22,7 +22,7 @@ namespace stc {
     };
 
     enum PrimitiveTopology {
-        TRIANGLE_LIST = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+        PRIMITIVE_TOPOLOGY_TRIANGLE_LIST = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
     };
 
     enum PolygonMode {
@@ -62,11 +62,10 @@ namespace stc {
     };
 
     enum PrimitiveTopology {
-        TRIANGLE_LIST = WGPUPrimitiveTopology_TriangleList,
+        PRIMITIVE_TOPOLOGY_TRIANGLE_LIST = WGPUPrimitiveTopology_TriangleList,
     };
 
     enum PolygonMode {
-        // todo find alternative
         POLYGON_MODE_FILL = 0,
     };
 
@@ -93,11 +92,11 @@ namespace stc {
 
     struct Device;
     struct Shader;
-    struct RenderPass;
     struct BindingLayout;
+    struct RenderTarget;
 
     struct PipelineCreateInfo {
-        std::vector<VertexAttribute> vertexAttributes;
+        std::vector<Attribute> vertexAttributes;
         bool instanced = false;
         uint32_t vertexBufferSlot;
         PrimitiveTopology primitiveTopology = TRIANGLE_LIST;
@@ -120,7 +119,7 @@ namespace stc {
         BlendFactor alphaSrcBlendFactor = BLEND_FACTOR_ONE;
         BlendFactor alphaDstBlendFactor = BLEND_FACTOR_ZERO;
         BlendOp alphaBlendOp = BLEND_OP_ADD;
-        Ptr<RenderPass> renderPass;
+        Ptr<RenderTarget> render_target;
     };
 
     struct Pipeline : PipelineBackend {
