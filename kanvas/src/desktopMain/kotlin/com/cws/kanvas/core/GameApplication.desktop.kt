@@ -2,6 +2,8 @@ package com.cws.kanvas.core
 
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.application
+import com.cws.kanvas.audio.AudioPlayer
+import com.cws.kanvas.audio.AudioRecorder
 import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.sensor.InputSensorManager
 import com.cws.printer.Printer
@@ -52,6 +54,8 @@ abstract class GameApplication {
     private fun initEngine(): Engine {
         return Engine(
             inputSensorManager = InputSensorManager(),
+            audioPlayer = AudioPlayer(),
+            audioRecorder = AudioRecorder(),
         )
     }
 

@@ -1,4 +1,4 @@
-package com.cws.acatch
+package com.cws.flip
 
 import com.cws.kanvas.core.GameApplication
 

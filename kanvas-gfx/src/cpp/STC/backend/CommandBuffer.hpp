@@ -61,7 +61,7 @@ namespace stc {
     };
 
     struct AddToSubmitCommand {
-        CommandBufferHandle* secondary = nullptr;
+        CommandBufferBackend* secondary = nullptr;
         u32 secondaryCount = 0;
     };
 

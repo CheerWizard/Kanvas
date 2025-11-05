@@ -30,7 +30,12 @@ namespace stc {
         Renderer(const RenderConfig& render_config);
         ~Renderer();
 
+        void runLoop();
+
+        void renderFrame(const Frame& frame);
+
         void resize(int w, int h);
+
         void render(Scope<CommandBuffer>& command_buffer, u32 frame, u32 surfaceImageIndex);
 
         void uploadMesh(const Mesh& mesh, bool& ready, const std::function<void(const Command&)>& onDone);
@@ -39,7 +44,16 @@ namespace stc {
         CommandBuffer& getCommandBuffer(std::thread::id threadId);
 
         Scope<ThreadPool> threadPool;
-        std::unordered_map<std::thread::id, Scope<CommandBuffer>> commandBuffers;
+        std::unordered_map<std::thread::id, Scope<CommandBuffer>> commandBufferMap;
+
+        bool running = false;
+        std::array<Scope<Semaphore>, MAX_FRAMES> imageSemaphores;
+        std::array<Scope<Semaphore>, MAX_FRAMES> renderFinishedSemaphores;
+        std::array<Scope<Fence>, MAX_FRAMES> fences;
+        std::array<Scope<CommandBuffer>, MAX_FRAMES> commandBuffers;
+
+        FrameQueue frame_queue;
+        u32 currentFrame = 0;
 
         /* TODO: custom pipelines
         Scope<Pipeline> pipeline;

@@ -19,7 +19,26 @@ namespace stc {
     };
 
     enum TextureFormat {
+        FORMAT_R8 = VK_FORMAT_R8_SRGB,
+        FORMAT_RG8 = VK_FORMAT_R8G8_SRGB,
+        FORMAT_RGB8 = VK_FORMAT_R8G8B8_SRGB,
         FORMAT_RGBA8 = VK_FORMAT_R8G8B8A8_SRGB,
+
+        FORMAT_R16 = VK_FORMAT_R16_SFLOAT,
+        FORMAT_RG16 = VK_FORMAT_R16G16_SFLOAT,
+        FORMAT_RGB16 = VK_FORMAT_R16G16B16_SFLOAT,
+        FORMAT_RGBA16 = VK_FORMAT_R16G16B16A16_SFLOAT,
+
+        FORMAT_R32 = VK_FORMAT_R32_SFLOAT,
+        FORMAT_RG32 = VK_FORMAT_R32G32_SFLOAT,
+        FORMAT_RGB32 = VK_FORMAT_R32G32B32_SFLOAT,
+        FORMAT_RGBA32 = VK_FORMAT_R32G32B32A32_SFLOAT,
+
+        FORMAT_DEPTH16 = VK_FORMAT_D16_UNORM,
+        FORMAT_DEPTH24 = VK_FORMAT_D24_UNORM_S8_UINT,
+        FORMAT_DEPTH32 = VK_FORMAT_D32_SFLOAT,
+
+        FORMAT_STENCIL = VK_FORMAT_D16_UNORM,
     };
 
     enum SamplerFilter {
@@ -71,7 +90,26 @@ namespace stc {
     };
 
     enum TextureFormat {
-        FORMAT_RGBA8 = WGPUTextureFormat_RGBA8UnormSrgb,
+        FORMAT_R8 = WGPUTextureFormat_R8Unorm,
+        FORMAT_RG8 = WGPUTextureFormat_RG8Unorm,
+        FORMAT_RGB8 = WGPUTextureFormat_Undefined,
+        FORMAT_RGBA8 = WGPUTextureFormat_RGBA8Unorm,
+
+        FORMAT_R16 = WGPUTextureFormat_R16Float,
+        FORMAT_RG16 = WGPUTextureFormat_RG16Float,
+        FORMAT_RGB16 = WGPUTextureFormat_Undefined,
+        FORMAT_RGBA16 = WGPUTextureFormat_RGBA16Float,
+
+        FORMAT_R32 = WGPUTextureFormat_R32Float,
+        FORMAT_RG32 = WGPUTextureFormat_RG32Float,
+        FORMAT_RGB32 = WGPUTextureFormat_Undefined,
+        FORMAT_RGBA32 = WGPUTextureFormat_RGBA32Float,
+
+        FORMAT_DEPTH16 = WGPUTextureFormat_Depth16Unorm,
+        FORMAT_DEPTH24 = WGPUTextureFormat_Depth24UnormStencil8,
+        FORMAT_DEPTH32 = WGPUTextureFormat_Depth32Float,
+
+        FORMAT_STENCIL = WGPUTextureFormat_Stencil8,
     };
 
     enum SamplerFilter {

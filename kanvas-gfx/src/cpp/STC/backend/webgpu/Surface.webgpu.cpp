@@ -27,9 +27,9 @@ namespace stc {
         }
     }
 
-    void* Surface::initSwapChain(u32 width, u32 height) const {
+    SwapchainHandle Surface::initSwapChain(u32 width, u32 height) const {
         // no-op
-        return nullptr;
+        return {};
     }
 
     void Surface::releaseSwapChain() {

@@ -6,7 +6,7 @@ import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.event.EventListener
 import com.cws.kanvas.event.KeyCode
 import com.cws.kanvas.event.MouseCode
-import com.cws.kanvas.gfx.bridges.RenderBridge
+//import com.cws.kanvas.gfx.bridges.RenderBridge
 import com.cws.printer.Printer
 
 class GameLoop(
@@ -78,7 +78,7 @@ class GameLoop(
     }
 
     fun onViewportChanged(width: Int, height: Int) {
-        RenderBridge.resize(width, height)
+//        RenderBridge.resize(width, height)
     }
 
     fun onMotionEvent(event: Any?) {
@@ -89,7 +89,7 @@ class GameLoop(
 
     fun setSurface(surface: Any?) {
         this.surface = surface
-        RenderBridge.setSurface(surface)
+//        RenderBridge.setSurface(surface)
     }
 
     override fun onWindowResized(width: Int, height: Int) {

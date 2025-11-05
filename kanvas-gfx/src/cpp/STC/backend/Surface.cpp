@@ -7,12 +7,12 @@
 
 namespace stc {
 
-    Surface::Surface(Device &device, void* surface, u32 width, u32 height)
-    : device(device), width(width), height(height) {
-        if (!surface) return;
-        initSurface(surface);
-        swapchain = initSwapChain(width, height);
-        initImages(width, height);
+    Surface::Surface(Device &device, const SurfaceCreateInfo& create_info)
+    : device(device) {
+        if (!create_info.surface) return;
+        initSurface(create_info.surface);
+        swapchain = initSwapChain(create_info.width, create_info.height);
+        initImages(create_info.width, create_info.height);
     }
 
     Surface::~Surface() {
@@ -23,8 +23,8 @@ namespace stc {
 
     void Surface::recreateSwapChain() {
         device.wait();
-        u32 width = this->width;
-        u32 height = this->height;
+        u32 width = render_target->info.width;
+        u32 height = render_target->info.height;
         auto newSwapchain = initSwapChain(width, height);
         releaseImages();
         releaseSwapChain();

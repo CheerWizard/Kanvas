@@ -32,7 +32,7 @@ kotlin {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 // Graphics
-                api(project(":kanvas-gfx"))
+//                api(project(":kanvas-gfx"))
                 // Math
                 api(project(":kanvas-math"))
                 // Logging
@@ -47,6 +47,8 @@ kotlin {
                 api(libs.atomicfu)
                 api(libs.kotlinx.coroutines.core)
                 api(kotlin("stdlib-common"))
+                api(libs.kotlinx.serialization.core)
+                api(libs.kotlinx.serialization.json)
             }
         }
 
@@ -64,7 +66,6 @@ kotlin {
 
         val desktopMain by getting {
             dependencies {
-                // Compose
                 api(compose.desktop.currentOs)
             }
             dependsOn(commonMain)

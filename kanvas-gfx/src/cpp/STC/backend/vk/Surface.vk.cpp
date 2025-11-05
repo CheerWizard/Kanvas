@@ -8,78 +8,94 @@
 
 namespace stc {
 
-    Surface::Surface(Device &device, void* surface, u32 width, u32 height) : device(device) {
-        if (!surface) return;
-
+    void Surface::initSurface(void* surface) {
         handle = (VkSurfaceKHR) surface;
-        extent.x = width;
-        extent.y = height;
 
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.physicalDevice, handle, &capabilities);
 
+        std::vector<VkSurfaceFormatKHR> surface_formats;
         {
             u32 count;
             vkGetPhysicalDeviceSurfaceFormatsKHR(device.physicalDevice, handle, &count, nullptr);
-            surfaceFormats.resize(count);
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device.physicalDevice, handle, &count, surfaceFormats.data());
+            surface_formats.resize(count);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device.physicalDevice, handle, &count, surface_formats.data());
         }
 
+        std::vector<VkPresentModeKHR> present_modes;
         {
             u32 count;
             vkGetPhysicalDeviceSurfacePresentModesKHR(device.physicalDevice, handle, &count, nullptr);
-            presentModes.resize(count);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(device.physicalDevice, handle, &count, presentModes.data());
+            present_modes.resize(count);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device.physicalDevice, handle, &count, present_modes.data());
         }
 
         {
-            surfaceFormat = surfaceFormats[0];
-            for (const auto& format : surfaceFormats) {
+            surface_format = surface_formats[0];
+            for (const auto& format : surface_formats) {
                 if (format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                    surfaceFormat = format;
+                    surface_format = format;
                     break;
                 }
             }
         }
 
         {
-            presentMode = VK_PRESENT_MODE_FIFO_KHR;
-            for (const auto& mode : presentModes) {
+            present_mode = (PresentMode) VK_PRESENT_MODE_FIFO_KHR;
+            for (const auto& mode : present_modes) {
                 if (mode == VK_PRESENT_MODE_MAILBOX_KHR) {
-                    presentMode = mode;
+                    present_mode = (PresentMode) mode;
                     break;
                 }
             }
         }
-
-        swapchain.handle = (VkSwapchainKHR) createSwapChain(extent);
-
-        createImages(extent);
     }
 
-    Surface::~Surface() {
-        freeImages();
-        freeSwapChain();
-    }
+    void Surface::initImages(u32 width, u32 height) {
+        uint32_t swapImageCount;
+        vkGetSwapchainImagesKHR(device, swapchain.handle, &swapImageCount, nullptr);
+        images.resize(swapImageCount);
+        vkGetSwapchainImagesKHR(device, swapchain.handle, &swapImageCount, images.data());
 
-    void Surface::freeImages() {
-        render_target.Delete();
-        for (auto imageView : imageViews) {
-            imageView.Delete();
+        std::vector<ColorAttachment> color_attachments;
+        color_attachments.resize(swapImageCount);
+
+        for (u32 i = 0; i < swapImageCount; i++) {
+            color_attachments[i].New(device, VkImageViewCreateInfo {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                .image = images[i],
+                .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                .format = surface_format.format,
+                .components = {
+                    VK_COMPONENT_SWIZZLE_IDENTITY,
+                    VK_COMPONENT_SWIZZLE_IDENTITY,
+                    VK_COMPONENT_SWIZZLE_IDENTITY,
+                    VK_COMPONENT_SWIZZLE_IDENTITY
+                },
+                .subresourceRange = {
+                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                    .baseMipLevel = 0,
+                    .levelCount = 1,
+                    .baseArrayLayer = 0,
+                    .layerCount = 1,
+                }
+            });
         }
+
+        render_target.New(device, RenderTargetCreateInfo {
+            .width = width,
+            .height = height,
+            .colorAttachments = color_attachments,
+        });
     }
 
-    void Surface::recreateSwapChain() {
-        vkDeviceWaitIdle(device);
-        auto extent = this->extent;
-        auto newSwapchain = (VkSwapchainKHR) createSwapChain(extent);
-        freeImages();
-        freeSwapChain();
-        swapchain.handle = newSwapchain;
-        createImages(extent);
-        needsResize = false;
+    void Surface::releaseImages() {
+        for (auto& color_attachment : render_target->info.colorAttachments) {
+            color_attachment.Delete();
+        }
+        render_target.Delete();
     }
 
-    void* Surface::initSwapChain(const vec2<u32>& extent) const {
+    SwapchainHandle Surface::initSwapChain(u32 width, u32 height) const {
         u32 imageCount = capabilities.minImageCount + 1;
         if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount) {
             imageCount = capabilities.maxImageCount;
@@ -89,14 +105,14 @@ namespace stc {
             .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
             .surface = handle,
             .minImageCount = imageCount,
-            .imageFormat = surfaceFormat.format,
-            .imageColorSpace = surfaceFormat.colorSpace,
-            .imageExtent = { .width = extent.x, .height = extent.y },
+            .imageFormat = surface_format.format,
+            .imageColorSpace = surface_format.colorSpace,
+            .imageExtent = { .width = width, .height = height },
             .imageArrayLayers = 1,
             .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
             .preTransform = capabilities.currentTransform,
             .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-            .presentMode = presentMode,
+            .presentMode = (VkPresentModeKHR) present_mode,
             .clipped = VK_TRUE,
             .oldSwapchain = swapchain.handle,
         };
@@ -118,10 +134,10 @@ namespace stc {
 
         SwapchainHandle newSwapchain;
         newSwapchain.New(device, createInfo);
-        return newSwapchain.handle;
+        return newSwapchain;
     }
 
-    void Surface::freeSwapChain() {
+    void Surface::releaseSwapChain() {
         if (swapchain.handle) {
             vkDestroySwapchainKHR(device.handle, swapchain.handle, &VulkanAllocator::getInstance().callbacks);
             swapchain.handle = null;
@@ -129,12 +145,13 @@ namespace stc {
     }
 
     void Surface::resize(int width, int height) {
-        extent.x = width;
-        extent.y = height;
+        render_target->info.width = width;
+        render_target->info.height = height;
         needsResize = true;
     }
 
-    bool Surface::getImage(const Semaphore &semaphore, uint32_t& index) {
+    void* Surface::getImage(const Semaphore &semaphore) {
+        // TODO needs refactor on how to get surface image per API
         VkResult result = vkAcquireNextImageKHR(device, swapchain.handle, UINT64_MAX, semaphore.handle, VK_NULL_HANDLE, &index);
         if (result == VK_ERROR_OUT_OF_DATE_KHR || needsResize) {
             recreateSwapChain();
@@ -142,48 +159,6 @@ namespace stc {
         }
         ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR, TAG, "Failed to acquire next image from swap chain");
         return true;
-    }
-
-    void Surface::createImages(const vec2<uint32_t>& extent) {
-        uint32_t swapImageCount;
-        vkGetSwapchainImagesKHR(device, swapchain.handle, &swapImageCount, nullptr);
-        images.resize(swapImageCount);
-        vkGetSwapchainImagesKHR(device, swapchain.handle, &swapImageCount, images.data());
-
-        imageViews.resize(swapImageCount);
-
-        std::vector<ColorAttachment> color_attachments;
-        color_attachments.resize(swapImageCount);
-
-        for (size_t i = 0; i < swapImageCount; ++i) {
-            VkImageViewCreateInfo createInfo {
-                .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-                .image = images[i],
-                .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                .format = surfaceFormat.format,
-                .components = {
-                    VK_COMPONENT_SWIZZLE_IDENTITY,
-                    VK_COMPONENT_SWIZZLE_IDENTITY,
-                    VK_COMPONENT_SWIZZLE_IDENTITY,
-                    VK_COMPONENT_SWIZZLE_IDENTITY
-                },
-                .subresourceRange = {
-                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                    .baseMipLevel = 0,
-                    .levelCount = 1,
-                    .baseArrayLayer = 0,
-                    .layerCount = 1,
-                }
-            };
-            imageViews[i].New(device, createInfo);
-            color_attachments[i] = ColorAttachment { imageViews[i] };
-        }
-
-        render_target.New(device, RenderTargetCreateInfo {
-            .format = (TextureFormat) surfaceFormat.format,
-            .extent = extent,
-            .colorAttachments = color_attachments,
-        });
     }
 
 }

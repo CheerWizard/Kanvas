@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import com.cws.kanvas.audio.AudioPlayer
+import com.cws.kanvas.audio.AudioRecorder
 import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.sensor.InputSensorManager
 
@@ -41,6 +43,8 @@ abstract class GameActivity : ComponentActivity() {
     private fun initEngine(): Engine {
         return Engine(
             inputSensorManager = InputSensorManager(applicationContext),
+            audioPlayer = AudioPlayer(),
+            audioRecorder = AudioRecorder(),
         )
     }
 

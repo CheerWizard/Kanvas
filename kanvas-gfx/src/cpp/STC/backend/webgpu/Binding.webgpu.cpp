@@ -94,4 +94,8 @@ namespace stc {
         group.Delete();
     }
 
+    void BindingLayout::resetPool() {
+        // no-op
+    }
+
 }

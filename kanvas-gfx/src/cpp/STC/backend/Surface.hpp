@@ -16,8 +16,14 @@ namespace stc {
     struct SurfaceBackend {
         VkSurfaceKHR handle = null;
         VkSurfaceCapabilitiesKHR capabilities = {};
+        VkSurfaceFormatKHR surface_format;
         std::vector<VkImage> images;
-        std::vector<ImageViewHandle> imageViews;
+    };
+
+    enum PresentMode {
+        PRESENT_MODE_FIFO = VK_PRESENT_MODE_FIFO_KHR,
+        PRESENT_MODE_IMMEDIATE = VK_PRESENT_MODE_IMMEDIATE_KHR,
+        PRESENT_MODE_MAILBOX = VK_PRESENT_MODE_MAILBOX_KHR,
     };
 
 #elif METAL
@@ -28,29 +34,6 @@ namespace stc {
 
     struct SurfaceBackend {
         WGPUSurface handle = null;
-    };
-
-    enum SurfaceFormat {
-        SURFACE_FORMAT_R8 = WGPUTextureFormat_R8Unorm,
-        SURFACE_FORMAT_RG8 = WGPUTextureFormat_RG8Unorm,
-        SURFACE_FORMAT_RGB8 = WGPUTextureFormat_Undefined,
-        SURFACE_FORMAT_RGBA8 = WGPUTextureFormat_RGBA8Unorm,
-
-        SURFACE_FORMAT_R16 = WGPUTextureFormat_R16Float,
-        SURFACE_FORMAT_RG16 = WGPUTextureFormat_RG16Float,
-        SURFACE_FORMAT_RGB16 = WGPUTextureFormat_Undefined,
-        SURFACE_FORMAT_RGBA16 = WGPUTextureFormat_RGBA16Float,
-
-        SURFACE_FORMAT_R32 = WGPUTextureFormat_R32Float,
-        SURFACE_FORMAT_RG32 = WGPUTextureFormat_RG32Float,
-        SURFACE_FORMAT_RGB32 = WGPUTextureFormat_Undefined,
-        SURFACE_FORMAT_RGBA32 = WGPUTextureFormat_RGBA32Float,
-
-        SURFACE_FORMAT_DEPTH16 = WGPUTextureFormat_Depth16Unorm,
-        SURFACE_FORMAT_DEPTH24 = WGPUTextureFormat_Depth24UnormStencil8,
-        SURFACE_FORMAT_DEPTH32 = WGPUTextureFormat_Depth32Float,
-
-        SURFACE_FORMAT_STENCIL = WGPUTextureFormat_Stencil8,
     };
 
     enum PresentMode {
@@ -65,19 +48,20 @@ namespace stc {
     struct Device;
     struct CommandBuffer;
 
+    struct SurfaceCreateInfo {
+        void* surface = nullptr;
+        u32 width = 0;
+        u32 height = 0;
+    };
+
     struct Surface : SurfaceBackend {
         Device& device;
-        u32 width;
-        u32 height;
-        SurfaceFormat format;
         PresentMode present_mode;
-        std::vector<SurfaceFormat> formats;
-        std::vector<PresentMode> present_modes;
-        void* swapchain = nullptr;
+        SwapchainHandle swapchain;
         Ptr<RenderTarget> render_target;
         bool needsResize = false;
 
-        Surface(Device& device, void* surface, u32 width, u32 height);
+        Surface(Device& device, const SurfaceCreateInfo& create_info);
         ~Surface();
 
         void resize(int width, int height);
@@ -89,7 +73,7 @@ namespace stc {
         void initSurface(void* surface);
         void releaseSurface();
 
-        void* initSwapChain(u32 width, u32 height) const;
+        SwapchainHandle initSwapChain(u32 width, u32 height) const;
         void releaseSwapChain();
 
         void initImages(u32 width, u32 height);

@@ -1,5 +1,7 @@
 package com.cws.kanvas.core
 
+import com.cws.kanvas.audio.AudioPlayer
+import com.cws.kanvas.audio.AudioRecorder
 import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.event.EventListener
 import com.cws.kanvas.sensor.InputSensorManager
@@ -56,6 +58,8 @@ abstract class GameApplication : EventListener {
     private fun initEngine(): Engine {
         return Engine(
             inputSensorManager = InputSensorManager(),
+            audioPlayer = AudioPlayer(),
+            audioRecorder = AudioRecorder(),
         )
     }
 

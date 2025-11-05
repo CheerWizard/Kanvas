@@ -7,6 +7,6 @@ plugins {
     id("org.jetbrains.kotlin.multiplatform") apply false
 }
 
-extra["packageName"] = "com.cws.acatch"
+extra["packageName"] = "com.cws.flip"
 extra["versionCode"] = 1
 extra["versionName"] = "0.0.1"

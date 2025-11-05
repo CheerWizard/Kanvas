@@ -26,33 +26,19 @@ namespace stc {
             };
         }
 
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {
+        layout.New(device.handle, VkDescriptorSetLayoutCreateInfo {
             .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
             .bindingCount = bindings_count,
             .pBindings = vkBindings.data(),
-        };
-
-        New(device.handle, layoutInfo);
+        });
     }
 
     BindingLayout::~BindingLayout() {
         Delete();
+        CALL(vkFreeDescriptorSets(layout.device, , 1, &handle));
     }
 
     BindingSetPool::BindingSetPool(const Device &device, BindingType type, u32 size) {
-        VkDescriptorPoolSize poolSize = {
-            .type = (VkDescriptorType) type,
-            .descriptorCount = size
-        };
-
-        VkDescriptorPoolCreateInfo poolInfo = {
-            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-            .maxSets = 1,
-            .poolSizeCount = 1,
-            .pPoolSizes = &poolSize,
-        };
-
-        New(device.handle, poolInfo);
     }
 
     BindingSetPool::~BindingSetPool() {
@@ -73,10 +59,6 @@ namespace stc {
             .pSetLayouts = &layout.handle,
         };
         CALL(vkAllocateDescriptorSets(device, &allocInfo, &handle));
-    }
-
-    BindingSet::~BindingSet() {
-        CALL(vkFreeDescriptorSets(device, pool, 1, &handle));
     }
 
 }

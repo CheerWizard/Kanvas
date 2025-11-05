@@ -9,7 +9,9 @@ koin = "4.1.1"
 kotlinxBrowser = "0.14.0"
 kotlinxCoroutinesCore = "1.10.2"
 kotlinxDatetime = "0.7.1"
+kotlinxSerializationCore = "1.7.3"
 kotlinxSerializationJson = "1.6.3"
+kotlinxSerializationJsonVersion = "1.7.3"
 ktorSerializationKotlinxJson = "2.3.5"
 lifecycleRuntimeKtx = "2.8.6"
 timber = "5.0.1"
@@ -30,6 +32,7 @@ gradle-tooling-api = { module = "org.gradle:gradle-tooling-api", version.ref = "
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }

@@ -20,7 +20,7 @@ namespace stc {
 
     struct BindingLayoutBackend {
         DescriptorSetLayoutHandle layout;
-        DescriptorPoolHandle pool;
+        std::unordered_map<VkDescriptorType, DescriptorPoolHandle> pools;
         VkDescriptorSet set = null;
     };
 

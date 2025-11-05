@@ -1,9 +1,12 @@
 package com.cws.kanvas.core
 
+import com.cws.kanvas.audio.AudioPlayer
+import com.cws.kanvas.audio.AudioRecorder
 import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.sensor.InputSensorManager
 import com.cws.printer.Printer
 import kotlinx.cinterop.ExperimentalForeignApi
+import platform.AVFAudio.AVAudioEngine
 import platform.UIKit.UIViewAutoresizingFlexibleHeight
 import platform.UIKit.UIViewAutoresizingFlexibleWidth
 import platform.UIKit.UIViewController
@@ -27,10 +30,13 @@ abstract class GameViewController : UIViewController() {
         kanvasView.autoresizingMask = UIViewAutoresizingFlexibleWidth or UIViewAutoresizingFlexibleHeight
         view.addSubview(kanvasView)
 
-        val composeViewController = ComposeUIViewController(content = gameLoop.uiContent)
+        val composeViewController = ComposeUIViewController {
+            gameLoop.uiContent()
+        }
         addChildViewController(composeViewController)
         composeViewController.view.setFrame(view.bounds)
         composeViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth or UIViewAutoresizingFlexibleHeight
+
         view.addSubview(composeViewController.view)
 
         composeViewController.didMoveToParentViewController(this)
@@ -50,8 +56,11 @@ abstract class GameViewController : UIViewController() {
     }
 
     private fun initEngine(): Engine {
+        val audioEngine = AVAudioEngine()
         return Engine(
             inputSensorManager = InputSensorManager(),
+            audioPlayer = AudioPlayer(audioEngine),
+            audioRecorder = AudioRecorder(audioEngine),
         )
     }
 
