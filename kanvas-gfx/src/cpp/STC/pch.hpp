@@ -23,6 +23,7 @@
 #include <iostream>
 #include <sstream>
 #include <concepts>
+#include <ranges>
 
 #include "core/types.hpp"
 #include "core/math.hpp"

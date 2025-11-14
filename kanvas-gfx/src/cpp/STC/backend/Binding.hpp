@@ -5,7 +5,7 @@
 #ifndef STC_BINDING_HPP
 #define STC_BINDING_HPP
 
-#include "backend/Shader.hpp"
+#include "Resource.hpp"
 
 namespace stc {
 
@@ -20,8 +20,6 @@ namespace stc {
 
     struct BindingLayoutBackend {
         DescriptorSetLayoutHandle layout;
-        std::unordered_map<VkDescriptorType, DescriptorPoolHandle> pools;
-        VkDescriptorSet set = null;
     };
 
 #elif METAL
@@ -39,7 +37,6 @@ namespace stc {
 
     struct BindingLayoutBackend {
         BindGroupLayoutHandle layout;
-        BindGroupHandle group;
     };
 
 #endif
@@ -48,7 +45,7 @@ namespace stc {
         BindingType type;
         u32 slot;
         u32 shader_stages;
-        void* resource = nullptr;
+        Resource* resource = nullptr;
     };
 
     struct Device;
@@ -59,7 +56,8 @@ namespace stc {
         BindingLayout(const Device& device, const std::vector<Binding>& bindings);
         ~BindingLayout();
 
-        void resetPool();
+        void update(const std::vector<Binding>& bindings);
+        void updateResource(const Resource& resource);
     };
 
 }

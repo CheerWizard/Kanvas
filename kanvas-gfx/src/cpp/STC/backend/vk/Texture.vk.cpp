@@ -23,7 +23,7 @@ namespace stc {
             .compareOp = (VkCompareOp) create_info.compareOp,
             .minLod = create_info.minLod,
             .maxLod = create_info.maxLod,
-            .borderColor = (VkBorderColor) create_info.borderColor,
+            .borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, // can't be ported
             .unnormalizedCoordinates = create_info.unnormalizedCoordinates,
         };
         New(device.handle, createInfo);

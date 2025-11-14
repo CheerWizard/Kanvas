@@ -5,7 +5,7 @@
 #ifndef STC_INSTANCEBUFFER_HPP
 #define STC_INSTANCEBUFFER_HPP
 
-#include "ListBuffer.hpp"
+#include "StorageBuffer.hpp"
 
 namespace stc {
 
@@ -20,7 +20,13 @@ namespace stc {
         .shader_stages = SHADER_STAGE_VERTEX,
     };
 
-    struct InstanceBuffer : ListBuffer<InstanceData, 100, INSTANCE_BINDING> {};
+    struct InstanceBuffer : StorageBuffer {
+        InstanceBuffer(const Device& device) : StorageBuffer(device, StorageBufferCreateInfo {
+            .binding = INSTANCE_BINDING,
+            .itemSize = sizeof(InstanceData),
+            .itemCount = 100,
+        }) {}
+    };
 
 }
 

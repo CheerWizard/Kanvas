@@ -102,8 +102,8 @@ stc::Pipeline::Pipeline(const Device &device, const PipelineCreateInfo &create_i
 
     WGPUPrimitiveState primitive_state = {
         .topology = (WGPUPrimitiveTopology) create_info.primitiveTopology,
-        // indices always have u16 size
-        .stripIndexFormat = WGPUIndexFormat_Uint16,
+        // indices always have u32 size
+        .stripIndexFormat = WGPUIndexFormat_Uint32,
         .frontFace = (WGPUFrontFace) create_info.frontFace,
         .cullMode = (WGPUCullMode) create_info.cullMode,
     };

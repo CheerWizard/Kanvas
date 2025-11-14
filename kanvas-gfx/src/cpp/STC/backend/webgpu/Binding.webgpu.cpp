@@ -14,6 +14,20 @@ namespace stc {
         const Device& device,
         const std::vector<Binding> &bindings
     ) : bindings(bindings) {
+        group.New(device.handle, WGPUBindGroupDescriptor {
+            .layout = layout.handle,
+            .entryCount = (u32) wgpu_entries.size(),
+            .entries = wgpu_entries.data(),
+        });
+    }
+
+    BindingLayout::~BindingLayout() {
+        layout.Delete();
+    }
+
+    void BindingLayout::update(const std::vector<Binding> &bindings) {
+        this->bindings = bindings;
+
         u32 bindings_count = bindings.size();
 
         std::vector<WGPUBindGroupLayoutEntry> wgpu_bindings;
@@ -39,10 +53,10 @@ namespace stc {
                     wgpu_binding.buffer.hasDynamicOffset = false;
                     wgpu_binding.buffer.minBindingSize = 0;
 
-                    Buffer* buffer = (Buffer*) binding.resource;
+                    Buffer* buffer = static_cast<Buffer*>(binding.resource);
                     wgpu_entry.buffer = buffer->handle;
                     wgpu_entry.offset = 0;
-                    wgpu_entry.size = buffer->size;
+                    wgpu_entry.size = buffer->info.size;
                 } break;
 
                 case BINDING_TYPE_STORAGE_BUFFER: {
@@ -50,16 +64,16 @@ namespace stc {
                     wgpu_binding.buffer.hasDynamicOffset = false;
                     wgpu_binding.buffer.minBindingSize = 0;
 
-                    Buffer* buffer = (Buffer*) binding.resource;
+                    Buffer* buffer = static_cast<Buffer*>(binding.resource);
                     wgpu_entry.buffer = buffer->handle;
                     wgpu_entry.offset = 0;
-                    wgpu_entry.size = buffer->size;
+                    wgpu_entry.size = buffer->info.size;
                 } break;
 
                 case BINDING_TYPE_SAMPLER: {
                     wgpu_binding.sampler.type = WGPUSamplerBindingType_Filtering;
 
-                    Sampler* sampler = (Sampler*) binding.resource;
+                    Sampler* sampler = static_cast<Sampler*>(binding.resource);
                     wgpu_entry.sampler = sampler->handle;
                 } break;
 
@@ -68,7 +82,7 @@ namespace stc {
                     wgpu_binding.texture.viewDimension = WGPUTextureViewDimension_2D;
                     wgpu_binding.texture.multisampled = false;
 
-                    Texture* texture = (Texture*) binding.resource;
+                    Texture* texture = static_cast<Texture*>(binding.resource);
                     wgpu_entry.textureView = texture->view.handle;
                 } break;
 
@@ -77,25 +91,10 @@ namespace stc {
             }
         }
 
-        layout.New(device.handle, WGPUBindGroupLayoutDescriptor {
+        layout.New(device, WGPUBindGroupLayoutDescriptor {
             .entryCount = (u32) wgpu_bindings.size(),
             .entries = wgpu_bindings.data(),
         });
-
-        group.New(device.handle, WGPUBindGroupDescriptor {
-            .layout = layout.handle,
-            .entryCount = (u32) wgpu_entries.size(),
-            .entries = wgpu_entries.data(),
-        });
-    }
-
-    BindingLayout::~BindingLayout() {
-        layout.Delete();
-        group.Delete();
-    }
-
-    void BindingLayout::resetPool() {
-        // no-op
     }
 
 }

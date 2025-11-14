@@ -6,6 +6,7 @@
 #define STC_CONTEXT_HPP
 
 #include "Device.hpp"
+#include "Surface.hpp"
 #include "../bridges/RenderConfig.hpp"
 
 namespace stc {
@@ -16,6 +17,7 @@ namespace stc {
         DebugUtilsMessengerHandle debug_utils;
         std::vector<VkExtensionProperties> extensions;
         std::vector<VkLayerProperties> layers;
+        VkPhysicalDevice physical_device = null;
     };
 
 #elif METAL
@@ -33,9 +35,8 @@ namespace stc {
     };
 
     struct Context : ContextBackend {
-        std::vector<Ptr<Device>> devices;
-        Ptr<Device> device;
-        void* surface = nullptr;
+        Scope<Device> device;
+        Scope<Surface> surface;
 
         Context(const ContextCreateInfo& create_info);
         ~Context();
@@ -43,9 +44,8 @@ namespace stc {
     private:
         void initInstance(const ContextCreateInfo& create_info);
         void releaseInstance();
-        void initDevices();
-        void selectDevice();
-        void initSurface(const RenderConfig& render_config);
+        void findDevice();
+        void* findSurface(const RenderConfig& render_config);
         bool checkExtension(const char* extension);
         bool checkExtensions(const char** extension, u32 count);
         bool checkLayer(const char* extension);

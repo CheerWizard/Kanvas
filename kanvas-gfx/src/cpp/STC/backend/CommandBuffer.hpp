@@ -8,7 +8,6 @@
 #include "Binding.hpp"
 #include "Buffer.hpp"
 #include "RenderTarget.hpp"
-#include "Handle.hpp"
 #include "Surface.hpp"
 
 namespace stc {
@@ -16,7 +15,7 @@ namespace stc {
 #ifdef VK
 
     struct CommandBufferBackend {
-        VkCommandBuffer handle = null;
+        CommandBufferHandle handle = null;
     };
 
 #elif METAL
@@ -61,7 +60,7 @@ namespace stc {
     };
 
     struct AddToSubmitCommand {
-        CommandBufferBackend* secondary = nullptr;
+        CommandBufferHandle* secondary = nullptr;
         u32 secondaryCount = 0;
     };
 
@@ -72,15 +71,14 @@ namespace stc {
     };
 
     struct PresentCommand {
-        SwapchainHandle swapchain;
-        u32 imageIndex = 0;
+        Surface* surface = nullptr;
         SemaphoreBackend waitSemaphore;
     };
 
     struct CopyBufferCommand {
         BufferHandle srcBuffer;
-        size_t srcOffset = 0;
         BufferHandle dstBuffer;
+        size_t srcOffset = 0;
         size_t dstOffset = 0;
         size_t size = 0;
     };
@@ -102,6 +100,10 @@ namespace stc {
     struct CommandBuffer : CommandBufferBackend {
         DeviceQueue& device_queue;
 
+        operator CommandBufferHandle() const {
+            return handle;
+        }
+
         CommandBuffer(DeviceQueue& device_queue, bool isPrimary);
         ~CommandBuffer();
 
@@ -115,7 +117,7 @@ namespace stc {
         void setPipeline(const Pipeline& pipeline) const;
         void setVertexBuffer(const Buffer& buffer) const;
         void setIndexBuffer(const Buffer& buffer) const;
-        void setPipelineBinding(const Pipeline& pipeline, const BindingLayout& binding_layout) const;
+        void setResource(const Pipeline& pipeline, const Resource& resource) const;
 
         void setViewport(const Viewport& viewport) const;
         void setScissor(int x, int y, u32 w, u32 h) const;

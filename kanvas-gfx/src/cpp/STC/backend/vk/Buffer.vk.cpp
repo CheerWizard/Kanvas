@@ -2,22 +2,23 @@
 // Created by cheerwizard on 18.10.25.
 //
 
+#include "DescriptorPools.hpp"
 #include "../Buffer.hpp"
 #include "backend/Device.hpp"
 
 namespace stc {
 
-    Buffer::Buffer(const Device& device, MemoryType memoryType, u32 usages, size_t size)
-    : size(size) {
+    Buffer::Buffer(const Device& device, const BufferCreateInfo& create_info)
+    : info(create_info) {
         VkBufferCreateInfo createInfo = {
             .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-            .size = size,
-            .usage = usages,
+            .size = create_info.size,
+            .usage = create_info.usages,
             .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         };
 
         VmaMemoryUsage memoryUsage;
-        switch (memoryType) {
+        switch (create_info.memoryType) {
             case MEMORY_TYPE_HOST:
                 memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
                 break;
@@ -34,6 +35,10 @@ namespace stc {
         };
 
         CALL(vmaCreateBuffer(VulkanAllocator::getInstance().allocator, &createInfo, &allocInfo, &handle, &allocation, nullptr));
+
+        if (create_info.mapOnCreate) {
+            map();
+        }
     }
 
     Buffer::~Buffer() {
@@ -55,26 +60,6 @@ namespace stc {
             vmaUnmapMemory(VulkanAllocator::getInstance().allocator, allocation);
             mapped = nullptr;
         }
-    }
-
-    void Buffer::updateBinding(const Device& device, const BindingLayout& binding_layout, Binding& binding) {
-        VkDescriptorBufferInfo bufferInfo = {
-            .buffer = handle,
-            .offset = 0,
-            .range = size,
-        };
-
-        VkWriteDescriptorSet descriptorWrite = {
-            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-            .dstSet = binding_layout.set,
-            .dstBinding = binding.slot,
-            .dstArrayElement = 0,
-            .descriptorCount = 1,
-            .descriptorType = (VkDescriptorType) binding.type,
-            .pBufferInfo = &bufferInfo,
-        };
-
-        vkUpdateDescriptorSets(device.handle, 1, &descriptorWrite, 0, nullptr);
     }
 
 }

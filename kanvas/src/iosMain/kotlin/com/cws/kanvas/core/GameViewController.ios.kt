@@ -1,7 +1,7 @@
 package com.cws.kanvas.core
 
-import com.cws.kanvas.audio.AudioPlayer
-import com.cws.kanvas.audio.AudioRecorder
+import com.cws.kanvas.audio.AudioOutputStream
+import com.cws.kanvas.audio.AudioInputStream
 import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.sensor.InputSensorManager
 import com.cws.printer.Printer
@@ -59,8 +59,8 @@ abstract class GameViewController : UIViewController() {
         val audioEngine = AVAudioEngine()
         return Engine(
             inputSensorManager = InputSensorManager(),
-            audioPlayer = AudioPlayer(audioEngine),
-            audioRecorder = AudioRecorder(audioEngine),
+            audioPlayer = AudioOutputStream(audioEngine),
+            audioRecorder = AudioInputStream(audioEngine),
         )
     }
 

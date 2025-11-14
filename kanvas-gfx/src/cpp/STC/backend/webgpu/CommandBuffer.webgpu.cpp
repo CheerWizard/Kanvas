@@ -54,15 +54,15 @@ void stc::CommandBuffer::setPipeline(const Pipeline &pipeline) const {
 }
 
 void stc::CommandBuffer::setVertexBuffer(const Buffer& buffer) const {
-    wgpuRenderPassEncoderSetVertexBuffer(render_pass.handle, buffer.slot, buffer.handle, 0, buffer.size);
+    wgpuRenderPassEncoderSetVertexBuffer(render_pass.handle, 0, buffer.handle, 0, buffer.info.size);
 }
 
 void stc::CommandBuffer::setIndexBuffer(const Buffer& buffer) const {
-    wgpuRenderPassEncoderSetIndexBuffer(render_pass.handle, buffer.handle, WGPUIndexFormat_Uint16, 0, buffer.size);
+    wgpuRenderPassEncoderSetIndexBuffer(render_pass.handle, buffer.handle, WGPUIndexFormat_Uint32, 0, buffer.info.size);
 }
 
-void stc::CommandBuffer::setPipelineBinding(const Pipeline& pipeline, const BindingLayout &binding_layout) const {
-    wgpuRenderPassEncoderSetBindGroup(render_pass.handle, 0, binding_layout.group.handle, 0, nullptr);
+void stc::CommandBuffer::setResource(const Pipeline& pipeline, const Resource& resource) const {
+    wgpuRenderPassEncoderSetBindGroup(render_pass.handle, 0, resource.group.handle, 0, nullptr);
 }
 
 void stc::CommandBuffer::setScissor(int x, int y, u32 w, u32 h) const {
@@ -107,7 +107,7 @@ void stc::CommandBuffer::copyBuffer(const CopyBufferCommand &command) const {
 
 void stc::CommandBuffer::copyBufferToImage(const CopyBufferToImageCommand &command) const {
     WGPUImageCopyBuffer src = {
-        .buffer = command.srcBuffer.handle,
+        .buffer = command.srcBuffer,
     };
 
     WGPUImageCopyTexture dst = {

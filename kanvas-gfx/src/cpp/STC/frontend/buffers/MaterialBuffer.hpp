@@ -5,7 +5,7 @@
 #ifndef STC_MATERIALBUFFER_HPP
 #define STC_MATERIALBUFFER_HPP
 
-#include "ListBuffer.hpp"
+#include "StorageBuffer.hpp"
 
 namespace stc {
 
@@ -35,7 +35,13 @@ namespace stc {
         .shader_stages = SHADER_STAGE_FRAGMENT,
     };
 
-    struct MaterialBuffer : ListBuffer<MaterialData, 100, MATERIAL_BINDING> {};
+    struct MaterialBuffer : StorageBuffer {
+        MaterialBuffer(const Device& device) : StorageBuffer(device, StorageBufferCreateInfo {
+            .binding = MATERIAL_BINDING,
+            .itemSize = sizeof(MaterialData),
+            .itemCount = 100,
+        }) {}
+    };
 
 }
 

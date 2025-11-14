@@ -6,6 +6,8 @@
 
 #include <vulkan/vulkan_xlib.h>
 
+#include "DescriptorPools.hpp"
+
 #ifdef ANDROID
 
 #define SURFACE_EXTENSION_NAME VK_KHR_ANDROID_SURFACE_EXTENSION_NAME
@@ -111,7 +113,7 @@ namespace stc {
         VulkanAllocator::getInstance().Delete();
     }
 
-    void Context::initDevices() {
+    void Context::findDevice() {
         u32 count = 0;
         vkEnumeratePhysicalDevices(handle, &count, nullptr);
 
@@ -120,26 +122,46 @@ namespace stc {
         std::vector<VkPhysicalDevice> physical_devices(count);
         vkEnumeratePhysicalDevices(handle, &count, physical_devices.data());
 
-        devices.clear();
-        for (int i = 0 ; i < count ; i++) {
-            Ptr<Device> device;
-            device.New(DeviceCreateInfo {
-                .physical_device = physical_devices[i],
-            });
-            devices.emplace_back(device);
-        }
-    }
+        std::vector<VkQueueFamilyProperties> queue_families;
 
-    void Context::selectDevice() {
-        for (const auto& device : devices) {
-            for (const auto& queueFamily : device->queueFamilies) {
-                if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-                    VulkanAllocator::getInstance().New(handle, device->physicalDevice, device->handle);
-                    this->device = device;
+        // find a single device that supports graphics
+        for (int i = 0 ; i < count ; i++) {
+            auto physicalDevice = physical_devices[i];
+
+            vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, nullptr);
+            queue_families.resize(count);
+            vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, queue_families.data());
+
+            for (u32 j = 0 ; j < count ; j++) {
+                auto queueFlags = queue_families[j].queueFlags;
+                if (queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+                    device.New(DeviceCreateInfo {
+                        .instance = handle,
+                        .physical_device = physicalDevice,
+                    });
                 }
             }
         }
-        ASSERT(false, TAG, "Failed to find suitable GPU with graphics queue!");
+
+        ASSERT(device, TAG, "Failed to find suitable GPU with graphics queue!");
+    }
+
+    bool Context::checkExtension(const char *extension) {
+        for (const auto& entry : extensions) {
+            if (strcmp(extension, entry.extensionName) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool Context::checkLayer(const char *layer) {
+        for (const auto& entry : layers) {
+            if (strcmp(layer, entry.layerName) == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
@@ -150,12 +172,14 @@ namespace stc {
 
 namespace stc {
 
-    void Context::initSurface(const RenderConfig& render_config) {
+    void* Context::findSurface(const RenderConfig& render_config) {
         VkAndroidSurfaceCreateInfoKHR createInfo {
             .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
             .window = (ANativeWindow*) render_config.nativeWindow,
         };
-        CALL(vkCreateAndroidSurfaceKHR(handle, &createInfo, &VulkanAllocator::getInstance().callbacks, (VkSurfaceKHR*) &surface));
+        VkSurfaceKHR foundSurface;
+        CALL(vkCreateAndroidSurfaceKHR(handle, &createInfo, &VulkanAllocator::getInstance().callbacks, &foundSurface));
+        return foundSurface;
     }
 
 }
@@ -164,8 +188,9 @@ namespace stc {
 
 namespace stc {
 
-    void Context::initSurface(const RenderConfig& render_config) {
+    void* Context::findSurface(const RenderConfig& render_config) {
         // no-op
+        return nullptr;
     }
 
 }

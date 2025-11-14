@@ -150,9 +150,8 @@ namespace stc {
         needsResize = true;
     }
 
-    void* Surface::getImage(const Semaphore &semaphore) {
-        // TODO needs refactor on how to get surface image per API
-        VkResult result = vkAcquireNextImageKHR(device, swapchain.handle, UINT64_MAX, semaphore.handle, VK_NULL_HANDLE, &index);
+    bool Surface::getImage(const Semaphore &semaphore) {
+        VkResult result = vkAcquireNextImageKHR(device, swapchain.handle, UINT64_MAX, semaphore.handle, VK_NULL_HANDLE, &currentImageIndex);
         if (result == VK_ERROR_OUT_OF_DATE_KHR || needsResize) {
             recreateSwapChain();
             return false;

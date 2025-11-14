@@ -42,10 +42,10 @@ namespace stc {
         needsResize = true;
     }
 
-    void* Surface::getImage(const Semaphore &semaphore) {
+    bool Surface::getImage(const Semaphore &semaphore) {
         WGPUTexture texture = emscripten_webgpu_import_texture(wgpuGetCurrentTexture((int) handle));
-        WGPUTextureView textureView = wgpuTextureCreateView(texture, nullptr);
-        return textureView;
+        texture_view = wgpuTextureCreateView(texture, nullptr);
+        return textureView != null;
     }
 
     void Surface::initImages(u32 width, u32 height) {

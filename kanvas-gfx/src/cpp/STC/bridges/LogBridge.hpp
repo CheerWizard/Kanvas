@@ -5,6 +5,8 @@
 #ifndef STC_LOG_BRIDGE_HPP
 #define STC_LOG_BRIDGE_HPP
 
+typedef void (*LogBridgeFn) (int, const char*, const char*, const char*);
+
 extern "C" {
 
     void web_log_verbose(const char* tag, const char* msg);
@@ -13,6 +15,8 @@ extern "C" {
     void web_log_warning(const char* tag, const char* msg);
     void web_log_error(const char* tag, const char* msg);
     void web_log_assert(const char* tag, const char* msg);
+
+    void Log_init(LogBridgeFn callback);
 
 }
 
@@ -28,9 +32,7 @@ namespace stc {
         LOG_LEVEL_FATAL,
     };
 
-    struct LogBridge {
-        static void log(LogLevel level, const char* tag, const char* message, const char* exceptionMessage = nullptr);
-    };
+    void log(LogLevel level, const char* tag, const char* message, const char* exceptionMessage = nullptr);
 
 }
 

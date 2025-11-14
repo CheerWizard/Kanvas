@@ -6,6 +6,7 @@ import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.event.EventListener
 import com.cws.kanvas.event.KeyCode
 import com.cws.kanvas.event.MouseCode
+import com.cws.kanvas.utils.fps
 //import com.cws.kanvas.gfx.bridges.RenderBridge
 import com.cws.printer.Printer
 

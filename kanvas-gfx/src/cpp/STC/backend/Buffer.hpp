@@ -5,10 +5,10 @@
 #ifndef STC_BUFFER_HPP
 #define STC_BUFFER_HPP
 
-#include "Handle.hpp"
-#include "Binding.hpp"
+#include "Shader.hpp"
 
-#define PTR_OFFSET(T) (void*)((char*)mapped + frame * sizeof(T) + offset * sizeof(T))
+#define PTR_OFFSET(type_size) (void*)((char*)mapped + frame * type_size + offset * type_size)
+#define PTR_OFFSET_T(T) PTR_OFFSET(sizeof(T))
 
 namespace stc {
 
@@ -29,6 +29,8 @@ namespace stc {
         BUFFER_USAGE_INDEX_BUFFER = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
         BUFFER_USAGE_VERTEX_BUFFER = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
         BUFFER_USAGE_INDIRECT_BUFFER = VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
+        // BUFFER_USAGE_MAP_READ = VK_BUFFER_USAGE_MAPREAD,
+        // BUFFER_USAGE_MAP_WRITE = WGPUBufferUsage_MapWrite,
     };
 
 #elif METAL
@@ -53,18 +55,26 @@ namespace stc {
 
 #endif
 
-    struct Buffer : BufferBackend {
-        u32 slot = 0;
-        size_t size = 0;
+    struct BufferCreateInfo {
+        MemoryType memoryType;
+        u32 usages;
+        size_t size;
+        bool mapOnCreate = false;
+    };
+
+    struct Buffer : BufferBackend, Resource {
+        BufferCreateInfo info;
         void* mapped = nullptr;
 
-        Buffer(const Device& device, MemoryType memoryType, u32 usages, size_t size);
+        Buffer(const Device& device, const BufferCreateInfo& create_info);
         ~Buffer();
 
         void* map();
         void unmap();
 
-        void updateBinding(const Device& device, const BindingLayout& binding_layout, Binding& binding);
+        operator BufferHandle() const {
+            return handle;
+        }
 
     private:
         static constexpr auto TAG = "Buffer";

@@ -18,6 +18,7 @@ namespace stc {
         VkSurfaceCapabilitiesKHR capabilities = {};
         VkSurfaceFormatKHR surface_format;
         std::vector<VkImage> images;
+        u32 currentImageIndex = 0;
     };
 
     enum PresentMode {
@@ -34,6 +35,7 @@ namespace stc {
 
     struct SurfaceBackend {
         WGPUSurface handle = null;
+        WGPUTextureView texture_view = null;
     };
 
     enum PresentMode {
@@ -65,7 +67,7 @@ namespace stc {
         ~Surface();
 
         void resize(int width, int height);
-        void* getImage(const Semaphore& semaphore);
+        bool getImage(const Semaphore& semaphore);
         void recreateSwapChain();
         void present(const CommandBuffer& command_buffer);
 

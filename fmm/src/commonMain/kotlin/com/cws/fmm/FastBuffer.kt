@@ -6,16 +6,22 @@ expect class FastBuffer(capacity: Int) {
     val capacity: Int
 
     fun view(): Any
+
     fun release()
+
     fun resize(newCapacity: Int)
+
     fun setBytes(index: Int, bytes: ByteArray)
+
     fun clone(): FastBuffer
+
     fun copyTo(
         dest: FastBuffer,
         srcIndex: Int,
         destIndex: Int,
         size: Int,
     )
+
     fun setTo(value: Byte, destIndex: Int, size: Int)
 
     fun setByte(index: Int, value: Byte)

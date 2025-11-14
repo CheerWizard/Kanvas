@@ -65,10 +65,6 @@ namespace stc {
         COMPARE_OP_NOT_EQUAL = VK_COMPARE_OP_NOT_EQUAL,
     };
 
-    enum BorderColor {
-        BORDER_COLOR_FLOAT_OPAQUE_BLACK = VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
-    };
-
     struct SamplerBackend : SamplerHandle {};
 
     struct TextureBackend : ImageHandle {
@@ -136,11 +132,6 @@ namespace stc {
         COMPARE_OP_NOT_EQUAL = WGPUCompareFunction_NotEqual,
     };
 
-    enum BorderColor {
-        // TODO find alternative
-        BORDER_COLOR_FLOAT_OPAQUE_BLACK = 0,
-    };
-
     struct SamplerBackend : SamplerHandle {};
 
     struct TextureBackend : TextureHandle {
@@ -157,7 +148,6 @@ namespace stc {
         SamplerMode addressModeW = MODE_REPEAT;
         bool enableAnisotropy = true;
         float maxAnisotropy = 1.0f;
-        BorderColor borderColor = BORDER_COLOR_FLOAT_OPAQUE_BLACK;
         bool unnormalizedCoordinates = false;
         bool enableCompare = false;
         CompareOp compareOp = COMPARE_OP_ALWAYS;
@@ -169,7 +159,7 @@ namespace stc {
 
     struct Device;
 
-    struct Sampler : SamplerBackend {
+    struct Sampler : SamplerBackend, Resource {
         Sampler(const Device& device, const SamplerCreateInfo& details);
         ~Sampler();
 
@@ -188,13 +178,17 @@ namespace stc {
         u32 baseMip = 1;
     };
 
-    struct Texture : TextureBackend {
+    struct Texture : TextureBackend, Resource {
         TextureCreateInfo info;
 
         Texture(const Device& device, const TextureCreateInfo& info);
         ~Texture();
 
         void update();
+
+        operator TextureHandle() const {
+            return handle;
+        }
 
     private:
         static constexpr auto TAG = "Texture";

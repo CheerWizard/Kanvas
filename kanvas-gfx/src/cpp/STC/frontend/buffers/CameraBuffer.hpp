@@ -5,7 +5,7 @@
 #ifndef STC_CAMERABUFFER_HPP
 #define STC_CAMERABUFFER_HPP
 
-#include "ItemBuffer.hpp"
+#include "UniformBuffer.hpp"
 
 namespace stc {
 
@@ -21,7 +21,12 @@ namespace stc {
         .shader_stages = SHADER_STAGE_VERTEX | SHADER_STAGE_FRAGMENT,
     };
 
-    struct CameraBuffer : ItemBuffer<CameraData, CAMERA_BINDING> {};
+    struct CameraBuffer : UniformBuffer {
+        CameraBuffer(const Device& device) : UniformBuffer(device, UniformBufferCreateInfo {
+            .binding = CAMERA_BINDING,
+            .itemSize = sizeof(CameraData),
+        }) {}
+    };
 
 }
 

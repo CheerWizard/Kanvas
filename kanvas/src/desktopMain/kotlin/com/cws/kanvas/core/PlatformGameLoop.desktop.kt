@@ -1,12 +1,13 @@
 package com.cws.kanvas.core
 
+import com.cws.kanvas.core.concurrency.PlatformThread
 import kotlin.concurrent.thread
 
 actual open class PlatformGameLoop actual constructor(name: String, priority: Int) {
 
     protected actual var running: Boolean = false
 
-    private val thread: Thread = thread(
+    private val platformThread: PlatformThread = thread(
         start = false,
         name = name,
         priority = priority,
@@ -18,13 +19,13 @@ actual open class PlatformGameLoop actual constructor(name: String, priority: In
     actual fun startLoop() {
         if (running) return
         running = true
-        thread.start()
+        platformThread.start()
     }
 
     actual fun stopLoop() {
         if (!running) return
         running = false
-        thread.join()
+        platformThread.join()
     }
 
     private fun runLoop() {

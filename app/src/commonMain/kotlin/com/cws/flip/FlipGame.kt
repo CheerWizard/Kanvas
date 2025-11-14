@@ -14,7 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.cws.kanvas.audio.AudioData
+import com.cws.kanvas.audio.data.AudioData
 import com.cws.kanvas.core.Game
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,7 +96,7 @@ class FlipGame : Game() {
                             .clickable(
                                 onClick = {
                                     scope.launch {
-                                        engine.audioPlayer.load(audioData)
+                                        engine.audioPlayer.write(audioData)
                                         engine.audioPlayer.play(audioData.id)
                                     }
                                 }

@@ -59,20 +59,32 @@ namespace stc {
 
     using CommandBufferHandle = WGPUCommandBuffer;
 
+    // no-op struct
     struct InstanceHandle {
+        void New();
+        void Delete();
+    };
+
+    // no-op struct
+    struct SwapchainHandle {
         void New();
         void Delete();
     };
 
     struct DeviceHandle {
         WGPUDevice handle = null;
-        void New();
-        void Delete();
-    };
 
-    struct SwapchainHandle {
         void New();
         void Delete();
+
+        [[nodiscard]] WGPUDevice get() const {
+            return handle;
+        }
+
+        operator WGPUDevice() const {
+            return handle;
+        }
+
     };
 
     struct TextureViewHandle {

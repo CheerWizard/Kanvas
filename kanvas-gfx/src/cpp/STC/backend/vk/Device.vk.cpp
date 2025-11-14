@@ -4,6 +4,7 @@
 
 #ifdef VK
 
+#include "DescriptorPools.hpp"
 #include "../Device.hpp"
 
 namespace stc {
@@ -11,7 +12,7 @@ namespace stc {
     Device::Device(const DeviceCreateInfo &create_info) {
         physicalDevice = create_info.physical_device;
 
-        uint32_t count = 0;
+        u32 count = 0;
 
         vkEnumerateDeviceLayerProperties(physicalDevice, &count, nullptr);
         layers.resize(count);
@@ -27,7 +28,7 @@ namespace stc {
         queueFamilies.resize(count);
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, queueFamilies.data());
 
-        for (uint32_t i = 0 ; i < count ; i++) {
+        for (u32 i = 0 ; i < count ; i++) {
             auto queueFlags = queueFamilies[i].queueFlags;
             if (queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 queue_family_indices.graphics = i;
@@ -38,9 +39,7 @@ namespace stc {
                 queue_family_indices.transfer = i;
             }
         }
-    }
 
-    void Device::initialize() {
         float queuePriority = 1.0f;
 
         VkDeviceQueueCreateInfo queueCreateInfo {
@@ -70,6 +69,14 @@ namespace stc {
         createInfo.ppEnabledExtensionNames = extensions.data();
 
         New(physicalDevice, createInfo);
+
+        VulkanAllocator::getInstance().New(create_info.instance, physicalDevice, handle);
+
+        DescriptorPools::New(*this);
+    }
+
+    void Device::release() {
+        DescriptorPools::Delete();
     }
 
     bool Device::checkExtension(const char *extension) {

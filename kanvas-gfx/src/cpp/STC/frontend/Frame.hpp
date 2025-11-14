@@ -18,9 +18,7 @@
 
 namespace stc {
 
-    struct Command {
-        std::function<void()> onDone;
-    };
+    using Command = std::function<void()>;
 
     struct Model3D {
         bool visible = true;
@@ -31,10 +29,10 @@ namespace stc {
 
     struct Frame {
         std::vector<Command> predrawCommands;
-        std::vector<CommandBufferBackend> predrawBuffers;
+        std::vector<CommandBufferHandle> predrawBuffers;
 
         std::vector<Command> postdrawCommands;
-        std::vector<CommandBufferBackend> postdrawBuffers;
+        std::vector<CommandBufferHandle> postdrawBuffers;
 
         CameraData camera;
         std::vector<Model3D> models;

@@ -99,6 +99,8 @@ namespace stc {
     using MemoryHandle = VkDeviceMemory;
     using BufferHandle = VkBuffer;
     using DescriptorSetHandle = VkDescriptorSet;
+    using TextureHandle = ImageHandle;
+    using TextureViewHandle = ImageViewHandle;
 
 }
 

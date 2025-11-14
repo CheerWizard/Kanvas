@@ -8,9 +8,13 @@ namespace stc {
 
     Context::Context(const ContextCreateInfo& create_info) {
         initInstance(create_info);
-        initDevices();
-        selectDevice();
-        initSurface(create_info.render_config.nativeWindow);
+        findDevice();
+        void* foundSurface = findSurface(create_info.render_config);
+        surface.New(*device, SurfaceCreateInfo {
+            .surface = foundSurface,
+            .width = create_info.render_config.width,
+            .height = create_info.render_config.height,
+        });
     }
 
     Context::~Context() {

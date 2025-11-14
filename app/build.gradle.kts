@@ -91,11 +91,11 @@ kotlin {
 }
 
 android {
-    namespace = rootProject.extra["packageName"] as String
+    namespace = "com.cws.flip"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = rootProject.extra["packageName"] as String
+        applicationId = "com.cws.flip"
         minSdk = 26
         targetSdk = 36
         versionCode = rootProject.extra["versionCode"] as Int

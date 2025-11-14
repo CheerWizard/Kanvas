@@ -10,8 +10,8 @@ namespace stc {
     // must be reflected in Kotlin
     struct RenderConfig {
         void* nativeWindow = nullptr;
-        int width = 800;
-        int height = 600;
+        u32 width = 800;
+        u32 height = 600;
         std::string canvasID;
     };
 

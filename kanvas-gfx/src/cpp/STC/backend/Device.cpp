@@ -8,6 +8,7 @@ namespace stc {
 
     Device::~Device() {
         queues.clear();
+        release();
         Delete();
     }
 

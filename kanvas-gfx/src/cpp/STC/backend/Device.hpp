@@ -19,6 +19,7 @@ namespace stc {
     };
 
     struct DeviceCreateInfo {
+        VkInstance instance = null;
         VkPhysicalDevice physical_device = null;
     };
 
@@ -46,7 +47,7 @@ namespace stc {
         Device(const DeviceCreateInfo& create_info);
         ~Device();
 
-        void initialize();
+        void release();
 
         bool checkExtensions(const char** extensions, u32 count);
         bool checkLayers(const char** layers, u32 count);

@@ -27,6 +27,15 @@ kotlin {
     iosX64()
     iosSimulatorArm64()
 
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+        binaries.all {
+            linkerOpts(
+                "-framework", "AudioToolbox",
+                "-framework", "CoreAudio"
+            )
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")

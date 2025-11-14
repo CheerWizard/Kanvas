@@ -71,14 +71,14 @@ namespace stc {
         // no-op
     }
 
-    void Context::selectDevice() {
+    void Context::findDevice() {
         device.New(DeviceCreateInfo {});
     }
 
-    void Context::initSurface(const RenderConfig& render_config) {
+    void* Context::findSurface(const RenderConfig& render_config) {
         int result = wgpuCreateSurfaceFromCanvas(render_config.canvasID.c_str());
         CALL(result);
-        surface = emscripten_webgpu_import_surface(result);
+        return emscripten_webgpu_import_surface(result);
     }
 
     bool Context::checkExtension(const char *extension) {

@@ -11,14 +11,19 @@ namespace stc {
 
     struct DescriptorPools {
 
-        static void initPool(const Device& device);
-        static void releasePool();
+        static void New(const Device& device);
+        static void Delete();
 
-        static VkDescriptorSet initSet();
-        static void releaseSet(VkDescriptorSet set);
+        static DescriptorPoolHandle newPool(VkDescriptorType type, u32 size);
+        static void deletePool(VkDescriptorType type);
+
+        static VkDescriptorSet newSet(VkDescriptorType type, VkDescriptorSetLayout layout);
+        static void deleteSet(VkDescriptorType type);
 
     private:
+        inline static const Device* device = nullptr;
         inline static std::unordered_map<VkDescriptorType, DescriptorPoolHandle> pools;
+        inline static std::unordered_map<VkDescriptorType, VkDescriptorSet> sets;
     };
 
 }

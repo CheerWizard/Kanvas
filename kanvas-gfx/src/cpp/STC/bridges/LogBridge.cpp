@@ -29,3 +29,19 @@ void web_log_error(const char *tag, const char *msg) {
 void web_log_assert(const char *tag, const char *msg) {
     Logger::getInstance().log(LOG_LEVEL_FATAL, tag, msg);
 }
+
+LogBridgeFn g_callback = nullptr;
+
+void LogBridge_init(LogBridgeFn callback) {
+    g_callback = callback;
+}
+
+namespace stc {
+
+    void LogBridge::log(LogLevel level, const char *tag, const char *message, const char* exceptionMessage) {
+        if (g_callback) {
+            g_callback((int) level, tag, message, exceptionMessage);
+        }
+    }
+
+}

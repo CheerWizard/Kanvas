@@ -3,6 +3,7 @@
 //
 
 #include "../Binding.hpp"
+#include "DescriptorPools.hpp"
 #include "backend/Device.hpp"
 
 namespace stc {
@@ -24,6 +25,7 @@ namespace stc {
                 .stageFlags = (VkShaderStageFlags) binding.shader_stages,
                 .pImmutableSamplers = nullptr,
             };
+            DescriptorPools::newPool((VkDescriptorType) binding.type, 10);
         }
 
         layout.New(device.handle, VkDescriptorSetLayoutCreateInfo {
@@ -31,34 +33,38 @@ namespace stc {
             .bindingCount = bindings_count,
             .pBindings = vkBindings.data(),
         });
+
+        for (u32 i = 0 ; i < bindings_count ; i++) {
+            DescriptorPools::newSet((VkDescriptorType) bindings[i].type, layout.handle);
+        }
     }
 
     BindingLayout::~BindingLayout() {
-        Delete();
-        CALL(vkFreeDescriptorSets(layout.device, , 1, &handle));
+        layout.Delete();
     }
 
-    BindingSetPool::BindingSetPool(const Device &device, BindingType type, u32 size) {
+    void BindingLayout::update(const std::vector<Binding> &bindings) {
+
     }
 
-    BindingSetPool::~BindingSetPool() {
-        Delete();
-    }
-
-    void BindingSetPool::reset() {
-        CALL(vkResetDescriptorPool(device, handle, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT));
-    }
-
-    BindingSet::BindingSet(const BindingSetPool &pool, const BindingLayout &layout) {
-        this->device = pool.device;
-        this->pool = pool.handle;
-        VkDescriptorSetAllocateInfo allocInfo = {
-            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-            .descriptorPool = pool.handle,
-            .descriptorSetCount = 1,
-            .pSetLayouts = &layout.handle,
+    void BindingLayout::updateResource(const Resource &resource) {
+        VkDescriptorBufferInfo bufferInfo = {
+            .buffer = handle,
+            .offset = 0,
+            .range = info.size,
         };
-        CALL(vkAllocateDescriptorSets(device, &allocInfo, &handle));
+
+        VkWriteDescriptorSet descriptorWrite = {a
+            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+            .dstSet = set,
+            .dstBinding = binding.slot,
+            .dstArrayElement = 0,
+            .descriptorCount = 1,
+            .descriptorType = (VkDescriptorType) binding.type,
+            .pBufferInfo = &bufferInfo,
+        };
+
+        vkUpdateDescriptorSets(handle, 1, &descriptorWrite, 0, nullptr);
     }
 
 }

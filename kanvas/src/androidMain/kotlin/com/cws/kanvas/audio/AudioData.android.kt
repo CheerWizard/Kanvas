@@ -1,10 +1,14 @@
 package com.cws.kanvas.audio
 
 import android.media.AudioFormat
+import com.cws.kanvas.audio.data.AudioChannel
+import com.cws.kanvas.audio.data.AudioEncoding
 
 fun AudioEncoding.toEncoding(): Int {
     return when (this) {
+        AudioEncoding.PCM_8_BIT -> AudioFormat.ENCODING_PCM_8BIT
         AudioEncoding.PCM_16_BIT -> AudioFormat.ENCODING_PCM_16BIT
+        AudioEncoding.PCM_FLOAT -> AudioFormat.ENCODING_PCM_FLOAT
     }
 }
 

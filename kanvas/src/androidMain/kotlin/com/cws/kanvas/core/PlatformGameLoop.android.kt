@@ -2,10 +2,11 @@ package com.cws.kanvas.core
 
 import android.os.Looper
 import android.view.Choreographer
+import com.cws.kanvas.core.concurrency.PlatformThread
 import java.util.concurrent.CountDownLatch
 
 actual open class PlatformGameLoop actual constructor(name: String, priority: Int)
-    : Thread(), Choreographer.FrameCallback {
+    : PlatformThread(), Choreographer.FrameCallback {
 
     protected actual var running = false
 
