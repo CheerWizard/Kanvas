@@ -75,8 +75,8 @@ namespace stc {
         device.New(DeviceCreateInfo {});
     }
 
-    void* Context::findSurface(const RenderConfig& render_config) {
-        int result = wgpuCreateSurfaceFromCanvas(render_config.canvasID.c_str());
+    void* Context::findSurface(const RenderApiCreateInfo& render_api_create_info) {
+        int result = wgpuCreateSurfaceFromCanvas(render_api_create_info.canvasID.c_str());
         CALL(result);
         return emscripten_webgpu_import_surface(result);
     }

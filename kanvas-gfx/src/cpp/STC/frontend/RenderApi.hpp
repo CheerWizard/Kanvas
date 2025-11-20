@@ -7,6 +7,7 @@
 
 #include "Frame.hpp"
 #include "ShaderManager.hpp"
+#include "RenderApiCreateInfo.hpp"
 
 #include "buffers/CameraBuffer.hpp"
 #include "buffers/InstanceBuffer.hpp"
@@ -20,6 +21,22 @@
 namespace stc {
 
     struct RenderApi {
+        RenderApi(const RenderApiCreateInfo& create_info);
+        ~RenderApi();
+
+        void beginFrame();
+        void endFrame();
+
+        void resize(int w, int h);
+
+        void uploadMesh(const Mesh& mesh, bool& ready);
+
+    private:
+        void run();
+        void renderFrame(const Frame& frame);
+        CommandBuffer& getCommandBuffer(std::thread::id threadId);
+        void render(Scope<CommandBuffer> &command_buffer, u32 frame);
+
         Scope<Context> context;
         Scope<ShaderManager> shaderManager;
         Scope<MeshBuffer> meshBuffer;
@@ -27,22 +44,6 @@ namespace stc {
         Scope<InstanceBuffer> instanceBuffer;
         Scope<MaterialBuffer> materialBuffer;
         Scope<IndirectIndexBuffer> indirectIndexBuffer;
-
-        RenderApi(const RenderConfig& render_config);
-        ~RenderApi();
-
-        void runLoop();
-
-        void renderFrame(const Frame& frame);
-
-        void resize(int w, int h);
-
-        void render(Scope<CommandBuffer> &command_buffer, u32 frame);
-
-        void uploadMesh(const Mesh& mesh, bool& ready);
-
-    private:
-        CommandBuffer& getCommandBuffer(std::thread::id threadId);
 
         Scope<ThreadPool> threadPool;
         std::unordered_map<std::thread::id, Scope<CommandBuffer>> commandBufferMap;

@@ -1,6 +1,5 @@
-package com.cws.kanvas.core
+package com.cws.kanvas.core.concurrency
 
-import com.cws.kanvas.core.concurrency.Task
 import kotlinx.coroutines.DelicateCoroutinesApi
 import org.w3c.dom.Worker
 

@@ -57,7 +57,7 @@ endforeach()
 
 macro(build_windows)
     file(GLOB_RECURSE PLATFORM_SRC bridges/jni/*.cpp backend/vk/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             vulkan-1
@@ -66,7 +66,7 @@ endmacro()
 
 macro(build_linux)
     file(GLOB_RECURSE PLATFORM_SRC bridges/jni/*.cpp backend/vk/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             vulkan
@@ -75,7 +75,7 @@ endmacro()
 
 macro(build_macos)
     file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             metal
@@ -85,7 +85,7 @@ endmacro()
 macro(build_android)
     add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR=1)
     file(GLOB_RECURSE PLATFORM_SRC bridges/jni/*.cpp backend/vk/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
     target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,common-page-size=16384")
@@ -97,7 +97,7 @@ endmacro()
 
 macro(build_ios)
     file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             metal
@@ -106,7 +106,7 @@ endmacro()
 
 macro(build_web)
     file(GLOB_RECURSE PLATFORM_SRC backend/webgpu/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
 
     if (DEFINED EMSCRIPTEN)
         message(STATUS "Detected Emscripten SDK at: ${EMSCRIPTEN_ROOT_PATH}")
@@ -208,6 +208,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glslang)
 
+# protobuf
+find_package(Protobuf REQUIRED)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS proto/*.proto)
+
 # Build from scripts/premake.py:
 # - Tint (SPIR-V -> WGSL / MSL / HLSL)
 set(TINT_BUILD_SPV_READER  ON CACHE BOOL "Enable SPIR-V reader" FORCE)
@@ -223,6 +227,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${glslang_SOURCE_DIR}
         ${spirv-tools_SOURCE_DIR}
         ${tint_SOURCE_DIR}
+        ${Protobuf_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -231,4 +236,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         SPIRV
         SPIRV-Tools
         tint_api
+        ${Protobuf_LIBRARIES}
 )

@@ -5,10 +5,11 @@
 #ifndef STC_COMMAND_BUFFER_HPP
 #define STC_COMMAND_BUFFER_HPP
 
-#include "Binding.hpp"
+#include "Pipeline.hpp"
 #include "Buffer.hpp"
 #include "RenderTarget.hpp"
 #include "Surface.hpp"
+#include "DeviceQueue.hpp"
 
 namespace stc {
 
@@ -91,11 +92,6 @@ namespace stc {
         u32 dstHeight = 0;
         u32 dstDepth = 0;
     };
-
-    struct Viewport;
-    struct DeviceQueue;
-    struct Buffer;
-    struct Pipeline;
 
     struct CommandBuffer : CommandBufferBackend {
         DeviceQueue& device_queue;

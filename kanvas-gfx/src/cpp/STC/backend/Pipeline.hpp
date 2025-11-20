@@ -5,7 +5,10 @@
 #ifndef STC_PIPELINE_HPP
 #define STC_PIPELINE_HPP
 
-#include "Binding.hpp"
+#include "Shader.hpp"
+#include "RenderTarget.hpp"
+#include "Buffer.hpp"
+
 #include "../frontend/Vertex.hpp"
 #include "../frontend/Viewport.hpp"
 
@@ -16,8 +19,6 @@ namespace stc {
     struct PipelineBackend {
         VkPipeline handle = null;
         DeviceHandle device;
-        BufferHandle vertexBuffer = null;
-        BufferHandle indexBuffer = null;
         PipelineLayoutHandle layout;
     };
 
@@ -35,17 +36,6 @@ namespace stc {
 
     enum FrontFace {
         FRONT_FACE_CLOCKWISE = VK_FRONT_FACE_CLOCKWISE,
-    };
-
-    enum BlendFactor {
-        BLEND_FACTOR_SRC_ALPHA = VK_BLEND_FACTOR_SRC_ALPHA,
-        BLEND_FACTOR_ONE_MINUS_SRC_ALPHA = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-        BLEND_FACTOR_ONE = VK_BLEND_FACTOR_ONE,
-        BLEND_FACTOR_ZERO = VK_BLEND_FACTOR_ZERO,
-    };
-
-    enum BlendOp {
-        BLEND_OP_ADD = VK_BLEND_OP_ADD,
     };
 
 #elif METAL
@@ -91,21 +81,20 @@ namespace stc {
 #endif
 
     struct Device;
-    struct Shader;
-    struct BindingLayout;
-    struct RenderTarget;
 
     struct PipelineCreateInfo {
         std::vector<Attribute> vertexAttributes;
         bool instanced = false;
         uint32_t vertexBufferSlot;
-        PrimitiveTopology primitiveTopology = TRIANGLE_LIST;
+        PrimitiveTopology primitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         std::vector<BindingLayout*> binding_layouts;
         Ptr<Shader> vertexShader;
         Ptr<Shader> fragmentShader;
         Ptr<Shader> geometryShader;
         Ptr<Shader> tessEvalShader;
         Ptr<Shader> tessControlShader;
+        Ptr<Buffer> vertexBuffer;
+        Ptr<Buffer> indexBuffer;
         Viewport viewport;
         PolygonMode polygonMode = POLYGON_MODE_FILL;
         float lineWidth = 1.0f;

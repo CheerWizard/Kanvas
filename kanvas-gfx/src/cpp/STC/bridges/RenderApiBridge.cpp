@@ -6,27 +6,77 @@
 
 using namespace stc;
 
-static inline Scope<RenderApi> api;
+static inline RenderApi* api = nullptr;
 
-void RenderApiBridge_init(const RenderConfig &render_config) {
-    api.New(render_config);
+void RenderApi_init(u8* createInfo, usize createInfoSize) {
+    api = new RenderApi();
 }
 
-void RenderApiBridge_release() {
-    api.Delete();
+void RenderApi_release() {
+    delete api;
 }
 
-void RenderApiBridge_resize(int width, int height) {
+void RenderApi_resize(int width, int height) {
     api->resize(width, height);
 }
 
-void RenderApiBridge_render(const Mesh &mesh) {
-    bool uploaded = false;
-    api->uploadMesh(mesh, uploaded);
-    // TODO consider how to just render mesh
+void RenderApi_beginFrame() {
+    api->beginFrame();
 }
 
-// void stc::RenderBridge::update() {
+void RenderApi_endFrame() {
+    api->endFrame();
+}
+
+u32 RenderApi_createShader(u8 *createInfo, usize createInfoSize) {
+}
+
+u32 RenderApi_createTexture(u8 *createInfo, usize createInfoSize) {
+}
+
+u32 RenderApi_createSampler(u8 *createInfo, usize createInfoSize) {
+}
+
+u32 RenderApi_createBuffer(u8 *createInfo, usize createInfoSize) {
+}
+
+u32 RenderApi_createUniformBuffer(u8 *createInfo, usize createInfoSize) {
+}
+
+u32 RenderApi_createStorageBuffer(u8 *createInfo, usize createInfoSize) {
+}
+
+u32 RenderApi_createRenderTarget(u8 *createInfo, usize createInfoSize) {
+}
+
+u32 RenderApi_createPipeline(u8 *createInfo, usize createInfoSize) {
+}
+
+void RenderApi_destroyShader(u32 id) {
+}
+
+void RenderApi_destroyTexture(u32 id) {
+}
+
+void RenderApi_destroySampler(u32 id) {
+}
+
+void RenderApi_destroyBuffer(u32 id) {
+}
+
+void RenderApi_destroyUniformBuffer(u32 id) {
+}
+
+void RenderApi_destroyStorageBuffer(u32 id) {
+}
+
+void RenderApi_destroyRenderTarget(u32 id) {
+}
+
+void RenderApi_destroyPipeline(u32 id) {
+}
+
+// void stc::Render::update() {
 //     // MemoryManager::getInstance().log();
 //
 //     // filter and fill models into rendering buffers

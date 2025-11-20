@@ -67,7 +67,7 @@ namespace stc {
 
     struct SamplerBackend : SamplerHandle {};
 
-    struct TextureBackend : ImageHandle {
+    struct TextureBackend : TextureHandle {
         ImageViewHandle view;
         VmaAllocation allocation = {};
     };
@@ -185,10 +185,6 @@ namespace stc {
         ~Texture();
 
         void update();
-
-        operator TextureHandle() const {
-            return handle;
-        }
 
     private:
         static constexpr auto TAG = "Texture";

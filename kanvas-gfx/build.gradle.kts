@@ -1,9 +1,10 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    id("com.android.library")
+    id("com.google.protobuf") version "0.9.5"
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
-    id("com.android.library")
     id("com.google.devtools.ksp") version "2.2.10-2.0.2"
 }
 
@@ -30,7 +31,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+            proto.srcDir("src/commonMain/proto")
             dependencies {
+                // Protobuf
+                implementation("pro.streem.pbandk:pbandk-runtime:0.16.0")
                 // Math
                 implementation(project(":kanvas-math"))
                 // Logging
@@ -97,6 +101,24 @@ kotlin {
 
         val iosSimulatorArm64Main by getting {
             dependsOn(iosMain)
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.3"
+    }
+
+    plugins {
+        id("kotlin") {
+            artifact = "pro.streem.pbandk:protoc-gen-kotlin:0.14.0:jvm8@jar"
+        }
+    }
+
+    generateProtoTasks {
+        all().forEach { task ->
+            task.plugins { id("kotlin") }
         }
     }
 }

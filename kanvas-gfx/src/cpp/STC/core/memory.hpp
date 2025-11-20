@@ -166,10 +166,13 @@ namespace stc {
 
     template<typename T>
     struct Ptr {
+        u32 index = BLOCK_INDEX_NULL;
 
         Ptr() = default;
 
         ~Ptr() = default;
+
+        Ptr(u32 index) : index(index) {}
 
         // can copy
         Ptr(const Ptr& other) : index(other.index) {}
@@ -208,7 +211,6 @@ namespace stc {
         }
 
     protected:
-        u32 index = BLOCK_INDEX_NULL;
         MemoryPool& pool = MemoryManager::getInstance().getMemoryPool(sizeof(T));
     };
 

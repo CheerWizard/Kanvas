@@ -1,6 +1,5 @@
-package com.cws.kanvas.core
+package com.cws.kanvas.core.concurrency
 
-import com.cws.kanvas.core.concurrency.Task
 import kotlin.concurrent.thread
 
 actual open class PlatformThread actual constructor(

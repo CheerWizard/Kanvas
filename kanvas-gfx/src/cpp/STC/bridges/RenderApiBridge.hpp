@@ -5,36 +5,38 @@
 #ifndef RENDER_BRIDGE_HPP
 #define RENDER_BRIDGE_HPP
 
+#include "../frontend/RenderApi.hpp"
+
 using namespace stc;
 
 // Render API exposed to Kotlin Native and Kotlin WASM
 extern "C" {
 
-    void RenderApiBridge_init(
-        u8* buffer,
+    void RenderApi_init(u8* createInfo, usize createInfoSize);
+    void RenderApi_release();
 
-    );
+    void RenderApi_resize(int width, int height);
 
-    void RenderApiBridge_release();
+    void RenderApi_beginFrame();
+    void RenderApi_endFrame();
 
-    void RenderApiBridge_resize(int width, int height);
+    u32 RenderApi_createShader(u8* createInfo, usize createInfoSize);
+    u32 RenderApi_createTexture(u8* createInfo, usize createInfoSize);
+    u32 RenderApi_createSampler(u8* createInfo, usize createInfoSize);
+    u32 RenderApi_createBuffer(u8* createInfo, usize createInfoSize);
+    u32 RenderApi_createUniformBuffer(u8* createInfo, usize createInfoSize);
+    u32 RenderApi_createStorageBuffer(u8* createInfo, usize createInfoSize);
+    u32 RenderApi_createRenderTarget(u8* createInfo, usize createInfoSize);
+    u32 RenderApi_createPipeline(u8* createInfo, usize createInfoSize);
 
-    u32 RenderApiBridge_createMesh(
-        float* vertices,
-        u32 vertices_size,
-        u32* indices,
-        u32 indices_size
-    );
-
-    void RenderAPIBridge_loadShaderText(ShaderSourceType type, const std::string& name, const std::string& textSource);
-
-    void RenderAPIBridge_loadShaderSPIRV(
-        u8* buffer,
-        u32 name_offset,
-        u32 name_size,
-        u32 spirv_offset,
-        u32 spirv_size
-    );
+    void RenderApi_destroyShader(u32 id);
+    void RenderApi_destroyTexture(u32 id);
+    void RenderApi_destroySampler(u32 id);
+    void RenderApi_destroyBuffer(u32 id);
+    void RenderApi_destroyUniformBuffer(u32 id);
+    void RenderApi_destroyStorageBuffer(u32 id);
+    void RenderApi_destroyRenderTarget(u32 id);
+    void RenderApi_destroyPipeline(u32 id);
 
 }
 

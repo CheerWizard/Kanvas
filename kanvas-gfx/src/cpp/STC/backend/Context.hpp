@@ -7,7 +7,7 @@
 
 #include "Device.hpp"
 #include "Surface.hpp"
-#include "../bridges/RenderConfig.hpp"
+#include "frontend/RenderApiCreateInfo.hpp"
 
 namespace stc {
 
@@ -31,7 +31,7 @@ namespace stc {
 #endif
 
     struct ContextCreateInfo {
-        RenderConfig render_config;
+        RenderApiCreateInfo render_api_create_info;
     };
 
     struct Context : ContextBackend {
@@ -45,7 +45,7 @@ namespace stc {
         void initInstance(const ContextCreateInfo& create_info);
         void releaseInstance();
         void findDevice();
-        void* findSurface(const RenderConfig& render_config);
+        void* findSurface(const RenderApiCreateInfo& render_api_create_info);
         bool checkExtension(const char* extension);
         bool checkExtensions(const char** extension, u32 count);
         bool checkLayer(const char* extension);

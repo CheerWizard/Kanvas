@@ -7,9 +7,9 @@
 
 namespace stc {
 
-    RenderApi::RenderApi(const RenderConfig& render_config) {
+    RenderApi::RenderApi(const RenderApiCreateInfo& create_info) {
         context.New(ContextCreateInfo {
-            .render_config = render_config,
+            .render_api_create_info = create_info,
         });
         shaderManager.New(*context->device);
         meshBuffer.New(*context->device, 1000, 1000);
@@ -40,7 +40,7 @@ namespace stc {
         //     .renderPass = context.surface->renderPass,
         // }.build(context.device);
 
-        thread.New([this] { runLoop(); });
+        thread.New([this] { run(); });
         thread->detach();
     }
 
@@ -51,7 +51,7 @@ namespace stc {
         thread->join();
     }
 
-    void RenderApi::runLoop() {
+    void RenderApi::run() {
         running = true;
 
         auto& deviceQueue = context->device->getQueue(
@@ -226,6 +226,14 @@ namespace stc {
             return *newCommandBuffer;
         }
         return *commandBuffer->second;
+    }
+
+    void RenderApi::beginFrame() {
+        currentFrameState = {};
+    }
+
+    void RenderApi::endFrame() {
+        frame_queue.push(currentFrameState);
     }
 
 }
