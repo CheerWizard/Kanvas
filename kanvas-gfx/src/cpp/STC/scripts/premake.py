@@ -1,4 +1,5 @@
 # premake.py
-from build_tint import build_tint
+from build_tint import *
 
 build_tint()
+run("brew install protobuf")

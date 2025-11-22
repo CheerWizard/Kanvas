@@ -35,6 +35,10 @@ namespace stc {
 
 #elif METAL
 
+    struct BufferBackend {
+        void* handle = null;
+    };
+
 #elif WEBGPU
 
     struct BufferBackend : BufferHandle {};

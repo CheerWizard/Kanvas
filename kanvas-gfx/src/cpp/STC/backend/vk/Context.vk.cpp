@@ -172,10 +172,10 @@ namespace stc {
 
 namespace stc {
 
-    void* Context::findSurface(const RenderApiCreateInfo& render_api_create_info) {
+    void* Context::findSurface(void* native_window, const RenderApiCreateInfo& render_api_create_info) {
         VkAndroidSurfaceCreateInfoKHR createInfo {
             .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
-            .window = (ANativeWindow*) render_api_create_info.nativeWindow,
+            .window = (ANativeWindow*) native_window,
         };
         VkSurfaceKHR foundSurface;
         CALL(vkCreateAndroidSurfaceKHR(handle, &createInfo, &VulkanAllocator::getInstance().callbacks, &foundSurface));
@@ -188,7 +188,7 @@ namespace stc {
 
 namespace stc {
 
-    void* Context::findSurface(const RenderApiCreateInfo& render_api_create_info) {
+    void* Context::findSurface(void* native_window, const RenderApiCreateInfo& render_api_create_info) {
         // no-op
         return nullptr;
     }

@@ -11,7 +11,7 @@
 
 #elif METAL
 
-#include "metal/Handle.metal.hpp"
+#include "metal/Handle.mtl.hpp"
 
 #elif WEBGPU
 

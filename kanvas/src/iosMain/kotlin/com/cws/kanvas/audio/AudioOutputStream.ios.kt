@@ -16,7 +16,7 @@ import platform.posix.memset
 actual class AudioOutputStream {
 
     companion object {
-        private const val TAG = "PlatformAudioPlayer"
+        private const val TAG = "AudioOutputStream"
 
         private val writeSamplesCallback = staticCFunction { ref, _, _, _, frames, data ->
             val instance = ref.asStableRef<AudioOutputStream>().get()

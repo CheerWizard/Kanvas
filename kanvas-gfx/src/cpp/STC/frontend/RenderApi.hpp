@@ -6,8 +6,8 @@
 #define VULKAN_RESOURCE_HPP
 
 #include "Frame.hpp"
+#include "generated/render_api.pb.h"
 #include "ShaderManager.hpp"
-#include "RenderApiCreateInfo.hpp"
 
 #include "buffers/CameraBuffer.hpp"
 #include "buffers/InstanceBuffer.hpp"
@@ -19,9 +19,10 @@
 #include "backend/CommandBuffer.hpp"
 
 namespace stc {
+    class RenderApiCreateInfo;
 
     struct RenderApi {
-        RenderApi(const RenderApiCreateInfo& create_info);
+        RenderApi(void* nativeWindow, const RenderApiCreateInfo& create_info);
         ~RenderApi();
 
         void beginFrame();
