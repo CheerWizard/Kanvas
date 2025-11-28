@@ -9,11 +9,11 @@ namespace stc {
     Context::Context(const ContextCreateInfo& create_info) {
         initInstance(create_info);
         findDevice();
-        void* foundSurface = findSurface(create_info.render_config);
+        void* foundSurface = findSurface(create_info.native_window, create_info.render_api_create_info);
         surface.New(*device, SurfaceCreateInfo {
             .surface = foundSurface,
-            .width = create_info.render_config.width,
-            .height = create_info.render_config.height,
+            .width = create_info.render_api_create_info.width(),
+            .height = create_info.render_api_create_info.height(),
         });
     }
 

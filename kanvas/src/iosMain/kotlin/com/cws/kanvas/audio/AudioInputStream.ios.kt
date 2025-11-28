@@ -20,7 +20,7 @@ import platform.Foundation.NSError
 actual class AudioInputStream actual constructor() {
 
     companion object {
-        private const val TAG = "PlatformAudioRecorder"
+        private const val TAG = "AudioInputStream"
     }
 
     private var format: AVAudioFormat? = null

@@ -7,8 +7,9 @@
 
 namespace stc {
 
-    RenderApi::RenderApi(const RenderApiCreateInfo& create_info) {
+    RenderApi::RenderApi(void* native_window, const RenderApiCreateInfo& create_info) {
         context.New(ContextCreateInfo {
+            .native_window = native_window,
             .render_api_create_info = create_info,
         });
         shaderManager.New(*context->device);

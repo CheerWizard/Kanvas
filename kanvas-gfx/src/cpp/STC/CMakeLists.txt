@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(STC)
+project(STC LANGUAGES CXX OBJCXX)
 
 # print project info
 message("CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
@@ -10,6 +10,7 @@ message("CMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}")
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
     if(NOT DEFINED ENV{JAVA_HOME})
@@ -57,7 +58,7 @@ endforeach()
 
 macro(build_windows)
     file(GLOB_RECURSE PLATFORM_SRC bridges/jni/*.cpp backend/vk/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             vulkan-1
@@ -66,7 +67,7 @@ endmacro()
 
 macro(build_linux)
     file(GLOB_RECURSE PLATFORM_SRC bridges/jni/*.cpp backend/vk/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             vulkan
@@ -74,8 +75,8 @@ macro(build_linux)
 endmacro()
 
 macro(build_macos)
-    file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
+    file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.mm)
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             metal
@@ -85,7 +86,7 @@ endmacro()
 macro(build_android)
     add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR=1)
     file(GLOB_RECURSE PLATFORM_SRC bridges/jni/*.cpp backend/vk/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
     target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,common-page-size=16384")
@@ -96,8 +97,8 @@ macro(build_android)
 endmacro()
 
 macro(build_ios)
-    file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
+    file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.mm)
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             metal
@@ -106,7 +107,7 @@ endmacro()
 
 macro(build_web)
     file(GLOB_RECURSE PLATFORM_SRC backend/webgpu/*.cpp)
-    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC} ${PROTO_SRCS} ${PROTO_HDRS})
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
 
     if (DEFINED EMSCRIPTEN)
         message(STATUS "Detected Emscripten SDK at: ${EMSCRIPTEN_ROOT_PATH}")
@@ -210,7 +211,30 @@ FetchContent_MakeAvailable(glslang)
 
 # protobuf
 find_package(Protobuf REQUIRED)
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS proto/*.proto)
+
+set(Protobuf_PROTOC_EXECUTABLE /opt/homebrew/bin/protoc)
+set(CMAKE_CURRENT_BINARY_DIR "${CMAKE_SOURCE_DIR}/generated")
+
+message(STATUS "Using protoc = ${Protobuf_PROTOC_EXECUTABLE}")
+
+file(GLOB_RECURSE PROTO_FILES "../../commonMain/proto/*.proto")
+
+message(STATUS "Found protos: ${PROTO_FILES}")
+
+protobuf_generate_cpp(
+        PROTO_SRCS
+        PROTO_HDRS
+        ${PROTO_FILES}
+)
+
+message(STATUS "Generated SRC = ${PROTO_SRCS}")
+message(STATUS "Generated HDR = ${PROTO_HDRS}")
+
+add_library(PROTO ${PROTO_SRCS} ${PROTO_HDRS})
+
+target_link_libraries(PROTO PUBLIC protobuf::libprotobuf)
+target_include_directories(PROTO PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+# protobuf
 
 # Build from scripts/premake.py:
 # - Tint (SPIR-V -> WGSL / MSL / HLSL)
@@ -236,5 +260,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         SPIRV
         SPIRV-Tools
         tint_api
-        ${Protobuf_LIBRARIES}
+        ${PROTO}
 )

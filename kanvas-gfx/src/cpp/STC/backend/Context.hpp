@@ -7,7 +7,7 @@
 
 #include "Device.hpp"
 #include "Surface.hpp"
-#include "frontend/RenderApiCreateInfo.hpp"
+#include "generated/render_api.pb.h"
 
 namespace stc {
 
@@ -22,7 +22,7 @@ namespace stc {
 
 #elif METAL
 
-
+    struct ContextBackend {};
 
 #elif WEBGPU
 
@@ -31,6 +31,7 @@ namespace stc {
 #endif
 
     struct ContextCreateInfo {
+        void* native_window = nullptr;
         RenderApiCreateInfo render_api_create_info;
     };
 
@@ -42,14 +43,16 @@ namespace stc {
         ~Context();
 
     private:
+        bool checkExtensions(const char** extension, u32 count);
+        bool checkLayers(const char** extension, u32 count);
+
+        // platform implementation
         void initInstance(const ContextCreateInfo& create_info);
         void releaseInstance();
         void findDevice();
-        void* findSurface(const RenderApiCreateInfo& render_api_create_info);
+        void* findSurface(void* native_window, const RenderApiCreateInfo& render_api_create_info);
         bool checkExtension(const char* extension);
-        bool checkExtensions(const char** extension, u32 count);
         bool checkLayer(const char* extension);
-        bool checkLayers(const char** extension, u32 count);
 
         static constexpr auto TAG = "Context";
     };

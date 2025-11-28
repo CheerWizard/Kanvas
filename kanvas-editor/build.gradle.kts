@@ -33,7 +33,7 @@ kotlin {
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
-                implementation(libs.gradle.tooling.api)
+                runtimeOnly(libs.gradle.tooling.api)
                 implementation(project(":kanvas"))
             }
         }
