@@ -1,4 +1,4 @@
-package com.cws.kanvas.sensor
+package com.cws.kanvas.event
 
 import android.content.Context
 import android.hardware.Sensor
@@ -8,9 +8,9 @@ import android.hardware.SensorManager
 import com.cws.kanvas.math.*
 import kotlin.math.abs
 
-actual class InputSensorManager(context: Context) : SensorEventListener {
+actual class SensorManager(context: Context) : SensorEventListener {
 
-    actual val sensor: InputSensor = InputSensor()
+    actual val sensor: SensorVector = SensorVector()
 
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)

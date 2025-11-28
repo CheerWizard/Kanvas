@@ -3,7 +3,7 @@ package com.cws.kanvas.audio
 import com.cws.kanvas.audio.data.AudioConfig
 import com.cws.kanvas.audio.data.AudioData
 import com.cws.kanvas.audio.data.AudioSamples
-import com.cws.kanvas.core.concurrency.PlatformThread
+import com.cws.kanvas.core.async.PlatformThread
 import kotlin.math.roundToInt
 
 class AudioRecorder {

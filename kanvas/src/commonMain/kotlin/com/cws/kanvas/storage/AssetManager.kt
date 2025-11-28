@@ -1,10 +1,13 @@
 package com.cws.kanvas.storage
 
+import kotlinx.serialization.Serializable
+
 interface Asset {
     fun serialize(byteArray: ByteArray, offset: Int): Int
     fun deserialize(byteArray: ByteArray, offset: Int): Int
 }
 
+@Serializable
 data class AssetPackage(
     val id: String,
     val assetIds: List<String>

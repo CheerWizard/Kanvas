@@ -3,7 +3,7 @@ package com.cws.kanvas.core
 import com.cws.kanvas.audio.AudioOutputStream
 import com.cws.kanvas.audio.AudioInputStream
 import com.cws.kanvas.config.GameConfig
-import com.cws.kanvas.sensor.InputSensorManager
+import com.cws.kanvas.event.SensorManager
 import com.cws.printer.Printer
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AVFAudio.AVAudioEngine
@@ -58,7 +58,7 @@ abstract class GameViewController : UIViewController() {
     private fun initEngine(): Engine {
         val audioEngine = AVAudioEngine()
         return Engine(
-            inputSensorManager = InputSensorManager(),
+            sensorManager = SensorManager(),
             audioPlayer = AudioOutputStream(audioEngine),
             audioRecorder = AudioInputStream(audioEngine),
         )

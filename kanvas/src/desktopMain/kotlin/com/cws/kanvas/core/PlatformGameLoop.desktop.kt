@@ -1,6 +1,6 @@
 package com.cws.kanvas.core
 
-import com.cws.kanvas.core.concurrency.PlatformThread
+import com.cws.kanvas.core.async.PlatformThread
 import kotlin.concurrent.thread
 
 actual open class PlatformGameLoop actual constructor(name: String, priority: Int) {

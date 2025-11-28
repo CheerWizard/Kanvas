@@ -1,4 +1,4 @@
-package com.cws.kanvas.sensor
+package com.cws.kanvas.event
 
 import com.cws.printer.Printer
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -8,13 +8,13 @@ import platform.Foundation.NSOperationQueue
 import com.cws.kanvas.math.*
 
 @OptIn(ExperimentalForeignApi::class)
-actual class InputSensorManager {
+actual class SensorManager {
 
     companion object {
-        private const val TAG = "InputSensorManager"
+        private const val TAG = "SensorManager"
     }
 
-    actual val sensor: InputSensor = InputSensor()
+    actual val sensor: SensorVector = SensorVector()
 
     private val motionManager = CMMotionManager()
 

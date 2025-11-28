@@ -5,7 +5,7 @@ import androidx.compose.ui.window.application
 import com.cws.kanvas.audio.AudioOutputStream
 import com.cws.kanvas.audio.AudioInputStream
 import com.cws.kanvas.config.GameConfig
-import com.cws.kanvas.sensor.InputSensorManager
+import com.cws.kanvas.event.SensorManager
 import com.cws.printer.Printer
 
 abstract class GameApplication {
@@ -53,7 +53,7 @@ abstract class GameApplication {
 
     private fun initEngine(): Engine {
         return Engine(
-            inputSensorManager = InputSensorManager(),
+            sensorManager = SensorManager(),
             audioPlayer = AudioOutputStream(),
             audioRecorder = AudioInputStream(),
         )

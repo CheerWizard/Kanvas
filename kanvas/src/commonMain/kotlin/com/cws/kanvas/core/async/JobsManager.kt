@@ -1,4 +1,4 @@
-package com.cws.kanvas.core.concurrency
+package com.cws.kanvas.core.async
 
 import com.cws.printer.Printer
 import kotlinx.atomicfu.locks.ReentrantLock

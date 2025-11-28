@@ -1,4 +1,4 @@
-package com.cws.kanvas.core.concurrency
+package com.cws.kanvas.core.async
 
 expect open class PlatformThread(
     start: Boolean = false,

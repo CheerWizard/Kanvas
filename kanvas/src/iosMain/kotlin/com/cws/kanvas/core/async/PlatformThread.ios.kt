@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalForeignApi::class)
 
-package com.cws.kanvas.core.concurrency
+package com.cws.kanvas.core.async
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.StableRef

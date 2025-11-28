@@ -3,11 +3,11 @@ package com.cws.kanvas.core
 import com.cws.kanvas.audio.AudioPlayer
 import com.cws.kanvas.audio.AudioRecorder
 import com.cws.kanvas.config.GameConfig
-import com.cws.kanvas.core.concurrency.JobsManager
-import com.cws.kanvas.sensor.InputSensorManager
+import com.cws.kanvas.core.async.JobsManager
+import com.cws.kanvas.event.SensorManager
 
 class Engine(
-    val inputSensorManager: InputSensorManager,
+    val sensorManager: SensorManager,
 ) {
 
     val jobsManager: JobsManager = JobsManager()
@@ -17,14 +17,14 @@ class Engine(
     val audioRecorder: AudioRecorder = AudioRecorder()
 
     fun init(gameConfig: GameConfig) {
-        inputSensorManager.init()
+        sensorManager.init()
         audioPlayer.init()
         audioRecorder.init()
 //        RenderBridge.init(gameConfig.renderConfig)
     }
 
     fun release() {
-        inputSensorManager.release()
+        sensorManager.release()
 //        RenderBridge.free()
     }
 
