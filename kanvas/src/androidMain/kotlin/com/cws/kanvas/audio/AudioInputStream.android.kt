@@ -1,7 +1,9 @@
 package com.cws.kanvas.audio
 
+import android.Manifest
 import android.media.AudioRecord
 import android.media.MediaRecorder
+import androidx.annotation.RequiresPermission
 import com.cws.kanvas.audio.data.AudioConfig
 import com.cws.kanvas.audio.data.AudioSamples
 
@@ -9,6 +11,7 @@ actual class AudioInputStream {
 
     private var audioRecord: AudioRecord? = null
 
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     actual fun init(config: AudioConfig) {
         audioRecord = AudioRecord(
             MediaRecorder.AudioSource.MIC,

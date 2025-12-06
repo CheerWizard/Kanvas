@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(STC LANGUAGES CXX OBJCXX)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    project(STC LANGUAGES CXX OBJCXX)
+else ()
+    project(STC LANGUAGES CXX)
+endif ()
 
 # print project info
 message("CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
@@ -210,16 +215,19 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glslang)
 
 # protobuf
-find_package(Protobuf REQUIRED)
-
-set(Protobuf_PROTOC_EXECUTABLE /opt/homebrew/bin/protoc)
+set(Protobuf_ROOT "/opt/homebrew")
+set(Protobuf_PROTOC_EXECUTABLE "/opt/homebrew/bin/protoc")
 set(CMAKE_CURRENT_BINARY_DIR "${CMAKE_SOURCE_DIR}/generated")
+
+find_package(Protobuf REQUIRED)
 
 message(STATUS "Using protoc = ${Protobuf_PROTOC_EXECUTABLE}")
 
 file(GLOB_RECURSE PROTO_FILES "../../commonMain/proto/*.proto")
 
 message(STATUS "Found protos: ${PROTO_FILES}")
+
+include(FindProtobuf)
 
 protobuf_generate_cpp(
         PROTO_SRCS
