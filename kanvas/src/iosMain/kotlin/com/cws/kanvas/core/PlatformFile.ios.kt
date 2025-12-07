@@ -6,12 +6,22 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.pin
 import platform.posix.__sFILE
 import platform.posix.fclose
+import platform.posix.feof
+import platform.posix.fflush
 import platform.posix.fopen
 import platform.posix.fread
+import platform.posix.fseek
 import platform.posix.fwrite
 
 @OptIn(ExperimentalForeignApi::class)
 actual class PlatformFile actual constructor(filepath: String) : AutoCloseable {
+
+    actual val size: Int get() {
+        return if (file == null) 0 else feof(file)
+    }
+
+    actual val isOpened: Boolean
+        get() = file != null
 
     init {
         open(filepath)
@@ -21,6 +31,7 @@ actual class PlatformFile actual constructor(filepath: String) : AutoCloseable {
 
     actual override fun close() {
         fclose(file)
+        file = null
     }
 
     actual fun open(filepath: String) {
@@ -28,7 +39,7 @@ actual class PlatformFile actual constructor(filepath: String) : AutoCloseable {
     }
 
     actual fun write(bytes: ByteArray, offset: Int, size: Int): Int {
-        if (file != null) {
+        file?.let { file ->
             return fwrite(
                 bytes.pin().addressOf(offset),
                 1u,
@@ -40,15 +51,21 @@ actual class PlatformFile actual constructor(filepath: String) : AutoCloseable {
     }
 
     actual fun read(bytes: ByteArray, offset: Int, size: Int): Int {
-        if (file != null) {
+        file?.let { file ->
             return fread(
                 bytes.pin().addressOf(offset),
                 1u,
                 size.toULong(),
-                file
+                file,
             ).toInt()
         }
         return 0
+    }
+
+    actual fun flush() {
+        file?.let { file ->
+            fflush(file)
+        }
     }
 
 }
