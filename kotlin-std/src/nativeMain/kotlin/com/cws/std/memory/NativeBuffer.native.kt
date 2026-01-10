@@ -26,8 +26,8 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
         get() = _position
 
     actual val capacity: Int get() = _capacity
-
     var buffer: CPointer<ByteVar> = malloc(capacity.toULong()) as CPointer<ByteVar>
+
     private var _position = 0
     private var _capacity = capacity
 

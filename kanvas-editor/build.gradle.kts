@@ -10,18 +10,12 @@ kotlin {
     jvm("desktop")
 
     sourceSets {
-        val commonMain by getting {
+        val desktopMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
+                implementation(libs.gradle.tooling.api)
                 implementation(project(":kanvas"))
             }
-        }
-
-        val desktopMain by getting {
-            dependencies {
-                implementation(libs.gradle.tooling.api)
-            }
-            dependsOn(commonMain)
         }
     }
 }

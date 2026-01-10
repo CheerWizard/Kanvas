@@ -1,4 +1,0 @@
-language = C
-headers = vulkan/vulkan.h
-compilerOpts = -I../../../libs/MoltenVK/MoltenVK/include
-linkerOpts = -L../../../libs/MoltenVK/MoltenVK/lib -lMoltenVK -framework Metal -framework QuartzCore

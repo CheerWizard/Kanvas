@@ -1,5 +1,3 @@
-val lwjglVersion = "3.3.6"
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -56,6 +54,8 @@ kotlin {
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
+                // Rendering
+                api(project(":kanvas-rendering"))
                 // Math
                 api(project(":kanvas-math"))
                 // Logging
@@ -75,83 +75,23 @@ kotlin {
             }
         }
 
-        val glslMain by creating {
-            dependsOn(commonMain)
-        }
-
-        val wgslMain by creating {
-            dependsOn(commonMain)
-        }
-
-        val vkMain by creating {
-            dependencies {
-                // LWJGL Vulkan
-                val osName = System.getProperty("os.name").lowercase()
-                val lwjglNatives = when {
-                    osName.contains("windows") -> "natives-windows"
-                    osName.contains("mac") -> "natives-macos"
-                    osName.contains("linux") -> "natives-linux"
-                    else -> throw GradleException("Unsupported OS: $osName")
-                }
-                implementation("org.lwjgl:lwjgl-vulkan:${lwjglVersion}")
-                implementation("org.lwjgl:lwjgl-vma:${lwjglVersion}")
-                implementation("org.lwjgl:lwjgl-shaderc:${lwjglVersion}:${lwjglNatives}")
-                runtimeOnly("org.lwjgl:lwjgl-vulkan:${lwjglVersion}:${lwjglNatives}")
-                runtimeOnly("org.lwjgl:lwjgl-vma:${lwjglVersion}:${lwjglNatives}")
-                runtimeOnly("org.lwjgl:lwjgl-shaderc:${lwjglVersion}:${lwjglNatives}")
-            }
-            dependsOn(glslMain)
-        }
-
-        val moltenVkMain by creating {
-            dependencies {}
-            dependsOn(glslMain)
-        }
-
-        val wgpuMain by creating {
-            dependencies {
-                // TODO create WGPU bindings
-            }
-            dependsOn(wgslMain)
-        }
-
         val androidMain by getting {
-            dependencies {
-                // Compose
-                api("androidx.activity:activity-compose:1.10.1")
-                api(libs.androidx.core.ktx)
-            }
-            dependsOn(vkMain)
+            dependencies {}
+            dependsOn(commonMain)
         }
 
         val iosMain by creating {
-            dependsOn(moltenVkMain)
+            dependsOn(commonMain)
         }
 
         val desktopMain by getting {
-            dependencies {
-                // LWJGL Window
-                val osName = System.getProperty("os.name").lowercase()
-                val lwjglNatives = when {
-                    osName.contains("windows") -> "natives-windows"
-                    osName.contains("mac") -> "natives-macos"
-                    osName.contains("linux") -> "natives-linux"
-                    else -> throw GradleException("Unsupported OS: $osName")
-                }
-                implementation("org.lwjgl:lwjgl:${lwjglVersion}")
-                runtimeOnly("org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}")
-                // Compose
-                api(compose.desktop.currentOs)
-            }
-            dependsOn(vkMain)
+            dependencies {}
+            dependsOn(commonMain)
         }
 
         val jsMain by getting {
-            dependencies {
-                api(compose.html.core)
-                api(compose.runtime)
-            }
-            dependsOn(wgpuMain)
+            dependencies {}
+            dependsOn(commonMain)
         }
 
         val iosX64Main by getting {
