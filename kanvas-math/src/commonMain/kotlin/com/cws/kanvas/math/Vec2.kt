@@ -1,7 +1,9 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.StackMemory
-import com.cws.fmm.stackPush
+import com.cws.std.memory.INativeData
+import com.cws.std.memory.NativeDataList
+import com.cws.std.memory.Stack
+import com.cws.std.memory.stackPush
 import kotlin.math.sqrt
 
 // Used to generate fresh version
@@ -11,13 +13,31 @@ import kotlin.math.sqrt
 //    var y: Float
 //)
 
-interface Vec2
+interface Vec2 : INativeData {
+
+    companion object {
+        const val SIZE_BYTES = Float.SIZE_BYTES * 2
+    }
+
+    override val sizeBytes: Int get() = SIZE_BYTES
+
+    override fun serialize(list: NativeDataList) {
+        list.addFloat(x)
+        list.addFloat(y)
+    }
+
+    override fun deserialize(list: NativeDataList) = Vec2(
+        list.getFloat(),
+        list.getFloat(),
+    )
+
+}
 
 expect fun Vec2(): Vec2
 expect fun Vec2(x: Float, y: Float): Vec2
 
-expect fun StackMemory.Vec2(): Vec2
-expect fun StackMemory.Vec2(x: Float, y: Float): Vec2
+expect fun Stack.Vec2(): Vec2
+expect fun Stack.Vec2(x: Float, y: Float): Vec2
 
 expect fun Vec2.clone(): Vec2
 

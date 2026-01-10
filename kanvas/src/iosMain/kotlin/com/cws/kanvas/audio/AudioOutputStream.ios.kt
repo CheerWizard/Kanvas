@@ -4,7 +4,7 @@ package com.cws.kanvas.audio
 
 import com.cws.kanvas.audio.data.AudioConfig
 import com.cws.kanvas.audio.data.AudioSamples
-import com.cws.printer.Printer
+import com.cws.print.Print
 import kotlinx.cinterop.*
 import platform.AudioToolbox.*
 import platform.CoreAudio.*
@@ -55,7 +55,7 @@ actual class AudioOutputStream {
             val component = AudioComponentFindNext(null, desc.ptr)
 
             if (component == null) {
-                Printer.e(TAG, "No RemoteIO component found!")
+                Print.e(TAG, "No RemoteIO component found!")
                 return
             }
 
@@ -65,7 +65,7 @@ actual class AudioOutputStream {
             audioUnit = unitPtr.value
 
             if (audioUnit == null) {
-                Printer.e(TAG, "Failed to create AudioUnit!")
+                Print.e(TAG, "Failed to create AudioUnit!")
             }
 
             val callbackStruct = alloc<AURenderCallbackStruct>()

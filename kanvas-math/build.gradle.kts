@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    ksp(project(":fmm-ksp"))
+    "ksp"(project(":kotlin-std-gen"))
 }
 
 kotlin {
@@ -41,7 +41,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":fmm"))
+                // Standard
+                implementation(project(":kotlin-std"))
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.atomicfu)
             }

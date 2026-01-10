@@ -1,22 +1,36 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.HeapMemory
-import com.cws.fmm.StackMemory
-import com.cws.fmm.stackPush
+import com.cws.std.memory.INativeData
+import com.cws.std.memory.NativeDataList
+import com.cws.std.memory.Stack
+import com.cws.std.memory.stackPush
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.tan
 
-// Used to generate fresh version
-//@FastObject
-//class _Mat4(
-//    var v1: Vec4,
-//    var v2: Vec4,
-//    var v3: Vec4,
-//    var v4: Vec4
-//)
+interface Mat4 : INativeData {
 
-interface Mat4
+    companion object {
+        const val SIZE_BYTES = Vec4.SIZE_BYTES * 4
+    }
+
+    override val sizeBytes: Int get() = SIZE_BYTES
+
+    override fun serialize(list: NativeDataList) {
+        list.set(v1)
+        list.set(v2)
+        list.set(v3)
+        list.set(v4)
+    }
+
+    override fun deserialize(list: NativeDataList) = Mat4(
+        list.get(v1),
+        list.get(v2),
+        list.get(v3),
+        list.get(v4),
+    )
+
+}
 
 expect fun Mat4(): Mat4
 expect fun Mat4(
@@ -44,8 +58,8 @@ expect fun Mat4(
     v4: Vec4
 ): Mat4
 
-expect fun StackMemory.Mat4(): Mat4
-expect fun StackMemory.Mat4(
+expect fun Stack.Mat4(): Mat4
+expect fun Stack.Mat4(
     m00: Float,
     m01: Float,
     m02: Float,
@@ -63,7 +77,7 @@ expect fun StackMemory.Mat4(
     m32: Float,
     m33: Float,
 ): Mat4
-expect fun StackMemory.Mat4(
+expect fun Stack.Mat4(
     v1: Vec4,
     v2: Vec4,
     v3: Vec4,

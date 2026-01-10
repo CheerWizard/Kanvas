@@ -6,10 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.cws.kanvas.audio.AudioOutputStream
-import com.cws.kanvas.audio.AudioInputStream
-import com.cws.kanvas.config.GameConfig
-import com.cws.kanvas.event.SensorManager
 
 abstract class GameActivity : ComponentActivity() {
 
@@ -27,25 +23,10 @@ abstract class GameActivity : ComponentActivity() {
         }
     }
 
-    protected abstract fun provideGame(): Game
-    protected abstract fun provideGameConfig(): GameConfig
-
     private fun initGameLoop() {
         if (!::gameLoop.isInitialized) {
-            gameLoop = GameLoop(
-                config = provideGameConfig(),
-                engine = initEngine(),
-                game = provideGame(),
-            )
+            gameLoop = GameLoop(applicationContext)
         }
-    }
-
-    private fun initEngine(): Engine {
-        return Engine(
-            sensorManager = SensorManager(applicationContext),
-            audioPlayer = AudioOutputStream(),
-            audioRecorder = AudioInputStream(),
-        )
     }
 
 }

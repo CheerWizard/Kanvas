@@ -1,6 +1,7 @@
 package com.cws.kanvas.event
 
-import com.cws.printer.Printer
+import com.cws.kanvas.core.Context
+import com.cws.print.Print
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.CoreMotion.CMMotionManager
@@ -8,7 +9,7 @@ import platform.Foundation.NSOperationQueue
 import com.cws.kanvas.math.*
 
 @OptIn(ExperimentalForeignApi::class)
-actual class SensorManager {
+actual class SensorManager actual constructor(context: Context) {
 
     companion object {
         private const val TAG = "SensorManager"
@@ -20,7 +21,7 @@ actual class SensorManager {
 
     actual fun init() {
         if (!motionManager.isAccelerometerAvailable()) {
-            Printer.e(TAG, "Accelerometer is not available on Native platform")
+            Print.e(TAG, "Accelerometer is not available on Native platform")
             return
         }
 

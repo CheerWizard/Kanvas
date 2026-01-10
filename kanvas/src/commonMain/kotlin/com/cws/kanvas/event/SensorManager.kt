@@ -1,6 +1,8 @@
 package com.cws.kanvas.event
 
-expect class SensorManager {
+import com.cws.kanvas.core.Context
+
+expect class SensorManager(context: Context) {
 
     val sensor: SensorVector
 

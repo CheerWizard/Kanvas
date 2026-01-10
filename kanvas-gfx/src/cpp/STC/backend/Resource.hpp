@@ -17,7 +17,9 @@ namespace stc {
 
 #elif METAL
 
-
+    struct Resource {
+        MTL::ArgumentEncoder* handle = null;
+    };
 
 #elif WEBGPU
 

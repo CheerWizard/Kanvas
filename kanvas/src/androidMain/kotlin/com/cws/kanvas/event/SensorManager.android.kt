@@ -1,18 +1,22 @@
 package com.cws.kanvas.event
 
-import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import com.cws.kanvas.core.Context
+import com.cws.kanvas.core.toAndroidContext
 import com.cws.kanvas.math.*
 import kotlin.math.abs
 
-actual class SensorManager(context: Context) : SensorEventListener {
+actual class SensorManager actual constructor(context: Context) : SensorEventListener {
 
     actual val sensor: SensorVector = SensorVector()
 
-    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val sensorManager = context
+        .toAndroidContext()
+        .getSystemService(android.content.Context.SENSOR_SERVICE) as SensorManager
+
     private val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
     actual fun init() {

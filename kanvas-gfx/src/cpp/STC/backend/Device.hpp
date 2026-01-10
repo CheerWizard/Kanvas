@@ -25,7 +25,9 @@ namespace stc {
 
 #elif METAL
 
+    struct DeviceBackend : DeviceHandle {};
 
+    struct DeviceCreateInfo {};
 
 #elif WEBGPU
 

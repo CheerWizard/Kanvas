@@ -22,7 +22,13 @@ namespace stc {
 
 #elif METAL
 
+    struct ShaderBackend : ShaderModuleHandle {};
 
+    enum ShaderStage {
+        SHADER_STAGE_VERTEX = MTL::RenderStageVertex,
+        SHADER_STAGE_FRAGMENT = MTL::RenderStageFragment,
+        SHADER_STAGE_DEFAULT = SHADER_STAGE_VERTEX,
+    };
 
 #elif WEBGPU
 

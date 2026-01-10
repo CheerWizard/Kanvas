@@ -1,6 +1,5 @@
 package com.cws.kanvas.core
 
-import com.cws.kanvas.config.WindowConfig
 import com.cws.kanvas.event.KeyCode
 import com.cws.kanvas.event.MouseCode
 import kotlinx.browser.window
@@ -124,6 +123,31 @@ actual class Window : BaseWindow {
             4.toShort() -> MouseCode.Middle
             else -> MouseCode.None
         }
+    }
+
+    override fun setTitle(title: String) {
+        super.setTitle(title)
+        window.name = title
+    }
+
+    override fun setX(x: Int) {
+        super.setX(x)
+        window.moveTo(x, config.y)
+    }
+
+    override fun setY(y: Int) {
+        super.setY(y)
+        window.moveTo(config.x, y)
+    }
+
+    override fun setWidth(width: Int) {
+        super.setWidth(width)
+        window.resizeTo(width, config.height)
+    }
+
+    override fun setHeight(height: Int) {
+        super.setHeight(height)
+        window.resizeTo(config.width, height)
     }
 
 }

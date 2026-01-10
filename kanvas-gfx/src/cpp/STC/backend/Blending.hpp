@@ -64,27 +64,27 @@ namespace stc {
 #elif METAL
 
     enum BlendOp {
-        BLEND_OP_ADD = WGPUBlendOperation_Add,
-        BLEND_OP_SUBTRACT = WGPUBlendOperation_Subtract,
-        BLEND_OP_REVERSE_SUBTRACT = WGPUBlendOperation_ReverseSubtract,
-        BLEND_OP_MIN = WGPUBlendOperation_Min,
-        BLEND_OP_MAX = WGPUBlendOperation_Max,
+        BLEND_OP_ADD = MTL::BlendOperationAdd,
+        BLEND_OP_SUBTRACT = MTL::BlendOperationSubtract,
+        BLEND_OP_REVERSE_SUBTRACT = MTL::BlendOperationReverseSubtract,
+        BLEND_OP_MIN = MTL::BlendOperationMin,
+        BLEND_OP_MAX = MTL::BlendOperationMax,
     };
 
     enum BlendFactor {
-        BLEND_FACTOR_ZERO = WGPUBlendFactor_Zero,
-        BLEND_FACTOR_ONE = WGPUBlendFactor_One,
-        BLEND_FACTOR_SRC = WGPUBlendFactor_Src,
-        BLEND_FACTOR_ONE_MINUS_SRC = WGPUBlendFactor_OneMinusSrc,
-        BLEND_FACTOR_SRC_ALPHA = WGPUBlendFactor_SrcAlpha,
-        BLEND_FACTOR_ONE_MINUS_SRC_ALPHA = WGPUBlendFactor_OneMinusSrcAlpha,
-        BLEND_FACTOR_DST = WGPUBlendFactor_Dst,
-        BLEND_FACTOR_ONE_MINUS_DST = WGPUBlendFactor_OneMinusDst,
-        BLEND_FACTOR_DST_ALPHA = WGPUBlendFactor_DstAlpha,
-        BLEND_FACTOR_ONE_MINUS_DST_ALPHA = WGPUBlendFactor_OneMinusDstAlpha,
-        BLEND_FACTOR_SRC_ALPHA_SATURATED = WGPUBlendFactor_SrcAlphaSaturated,
-        BLEND_FACTOR_CONSTANT = WGPUBlendFactor_Constant,
-        BLEND_FACTOR_ONE_MINUS_CONSTANT = WGPUBlendFactor_OneMinusConstant,
+        BLEND_FACTOR_ZERO = MTL::BlendFactorZero,
+        BLEND_FACTOR_ONE = MTL::BlendFactorOne,
+        BLEND_FACTOR_SRC = MTL::BlendFactorSourceColor,
+        BLEND_FACTOR_ONE_MINUS_SRC = MTL::BlendFactorOneMinusSourceColor,
+        BLEND_FACTOR_SRC_ALPHA = MTL::BlendFactorSourceAlpha,
+        BLEND_FACTOR_ONE_MINUS_SRC_ALPHA = MTL::BlendFactorOneMinusSourceAlpha,
+        BLEND_FACTOR_DST = MTL::BlendFactorDestinationColor,
+        BLEND_FACTOR_ONE_MINUS_DST = MTL::BlendFactorOneMinusDestinationColor,
+        BLEND_FACTOR_DST_ALPHA = MTL::BlendFactorDestinationAlpha,
+        BLEND_FACTOR_ONE_MINUS_DST_ALPHA = MTL::BlendFactorOneMinusDestinationAlpha,
+        BLEND_FACTOR_SRC_ALPHA_SATURATED = MTL::BlendFactorSourceAlphaSaturated,
+        BLEND_FACTOR_CONSTANT = 0,
+        BLEND_FACTOR_ONE_MINUS_CONSTANT = 0,
     };
 
 #endif

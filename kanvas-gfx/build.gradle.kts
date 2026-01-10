@@ -32,14 +32,12 @@ kotlin {
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
-                // Protobuf
-                implementation("com.squareup.wire:wire-runtime:5.1.0")
                 // Math
                 implementation(project(":kanvas-math"))
                 // Logging
-                implementation(project(":printer"))
-                // Fast Memory Model
-                implementation(project(":fmm"))
+                implementation(project(":print"))
+                // Standard
+                implementation(project(":kotlin-std"))
                 // Compose
                 implementation("org.jetbrains.compose.runtime:runtime:1.7.1")
                 implementation("org.jetbrains.compose.foundation:foundation:1.7.1")
@@ -77,6 +75,7 @@ kotlin {
 
         val desktopMain by getting {
             dependencies {
+                // Compose
                 implementation(compose.desktop.currentOs)
             }
             dependsOn(jniMain)
@@ -84,6 +83,7 @@ kotlin {
 
         val jsMain by getting {
             dependencies {
+                // Compose
                 implementation(compose.html.core)
                 implementation(compose.runtime)
             }
@@ -101,16 +101,6 @@ kotlin {
         val iosSimulatorArm64Main by getting {
             dependsOn(iosMain)
         }
-    }
-}
-
-// Protobuf output generated code
-wire {
-    kotlin {
-        out = "build/generated/wire"
-    }
-    sourcePath {
-        srcDir("src/commonMain/proto")
     }
 }
 
@@ -158,7 +148,7 @@ android {
 }
 
 dependencies {
-    "ksp"(project(":fmm-ksp"))
+    "ksp"(project(":kotlin-std-gen"))
 }
 
 afterEvaluate {

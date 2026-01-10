@@ -1,9 +1,0 @@
-syntax = "proto2";
-
-package stc;
-
-message RenderApiCreateInfo {
-    required uint32 width = 1;
-    required uint32 height = 2;
-    required string canvas_id = 3;
-}

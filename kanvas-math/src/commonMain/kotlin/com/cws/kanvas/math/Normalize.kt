@@ -1,6 +1,6 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.stackPush
+import com.cws.std.memory.stackPush
 
 fun normalize(v: Vec2, out: Vec2): Vec2 {
     val l = v.length

@@ -1,7 +1,9 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.StackMemory
-import com.cws.fmm.stackPush
+import com.cws.std.memory.INativeData
+import com.cws.std.memory.NativeDataList
+import com.cws.std.memory.Stack
+import com.cws.std.memory.stackPush
 
 // Used to generate fresh version
 //@FastObject
@@ -10,7 +12,25 @@ import com.cws.fmm.stackPush
 //    var v2: Vec2
 //)
 
-interface Mat2
+interface Mat2 : INativeData {
+
+    companion object {
+        const val SIZE_BYTES = Vec2.SIZE_BYTES * 2
+    }
+
+    override val sizeBytes: Int get() = SIZE_BYTES
+
+    override fun serialize(list: NativeDataList) {
+        list.set(v1)
+        list.set(v2)
+    }
+
+    override fun deserialize(list: NativeDataList) = Mat2(
+        list.get(v1),
+        list.get(v2),
+    )
+
+}
 
 expect fun Mat2(): Mat2
 expect fun Mat2(
@@ -21,14 +41,14 @@ expect fun Mat2(
 ): Mat2
 expect fun Mat2(v1: Vec2, v2: Vec2): Mat2
 
-expect fun StackMemory.Mat2(): Mat2
-expect fun StackMemory.Mat2(
+expect fun Stack.Mat2(): Mat2
+expect fun Stack.Mat2(
     m00: Float,
     m01: Float,
     m10: Float,
     m11: Float
 ): Mat2
-expect fun StackMemory.Mat2(v1: Vec2, v2: Vec2): Mat2
+expect fun Stack.Mat2(v1: Vec2, v2: Vec2): Mat2
 
 expect fun Mat2.reset()
 

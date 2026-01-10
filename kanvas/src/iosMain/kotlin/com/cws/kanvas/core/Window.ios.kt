@@ -1,6 +1,6 @@
 package com.cws.kanvas.core
 
-import com.cws.kanvas.config.WindowConfig
+import com.cws.kanvas.core.WindowConfig
 import kotlinx.cinterop.ExperimentalForeignApi
 
 actual class Window : BaseWindow {

@@ -2,25 +2,21 @@ package com.cws.kanvas.core
 
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
-import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.event.EventListener
-import com.cws.kanvas.event.KeyCode
-import com.cws.kanvas.event.MouseCode
 import com.cws.kanvas.utils.fps
-//import com.cws.kanvas.gfx.bridges.RenderBridge
-import com.cws.printer.Printer
+import com.cws.print.Print
 
-class GameLoop(
-    val engine: Engine,
-    val config: GameConfig,
-    private var game: Game? = null,
-) : PlatformGameLoop(name = TAG, priority = 1), EventListener {
+class GameLoop(context: Context) : PlatformGameLoop(name = TAG, priority = 1), EventListener {
 
     companion object {
         private const val TAG = "GameLoop"
     }
 
+    private val engine = Engine(context)
+
     private lateinit var window: Window
+
+    private var gameModuleManager: GameModuleManager? = null
 
     lateinit var onWindowCreated: (Window) -> Unit
 
@@ -28,54 +24,37 @@ class GameLoop(
 
     private var surface: Any? = null
 
-    fun setGame(game: Game?) {
-        if (game == null) return
-        this.game = game
-        game.engine = engine
-        window.addEventListener(game)
-        game.onCreate()
-    }
-
-    fun removeGame() {
-        this.game?.let { game ->
-            game.onDestroy()
-            window.removeEventListener(game)
-        }
-        this.game = null
-    }
-
     override fun onCreate() {
-        window = Window(config.window)
+        window = Window()
         if (::onWindowCreated.isInitialized) {
             onWindowCreated(window)
         }
         window.addEventListener(this)
-        engine.init(config)
-        setGame(game)
+        engine.init()
     }
 
     override fun onDestroy() {
-        removeGame()
+        gameModuleManager?.clearModules()
         engine.release()
         window.removeEventListener(this)
     }
 
     override fun onUpdate(dtMillis: Float) {
-        Printer.d(TAG, "dt=${dtMillis}ms FPS=${dtMillis.fps}")
+        Print.d(TAG, "dt=${dtMillis}ms FPS=${dtMillis.fps}")
         window.pollEvents()
-        game?.onUpdate(dtMillis)
+        gameModuleManager?.onUpdate(dtMillis)
         engine.jobsManager.execute()
         render(dtMillis)
         running = !window.isClosed()
     }
 
     private fun render(dt: Float) {
-        game?.onRender(dt)
+        gameModuleManager?.onRender(dt)
     }
 
     @Composable
     private fun BoxScope.renderUI() {
-        game?.onRenderUI()
+        gameModuleManager?.onRenderUI()
     }
 
     fun onViewportChanged(width: Int, height: Int) {
@@ -91,61 +70,6 @@ class GameLoop(
     fun setSurface(surface: Any?) {
         this.surface = surface
 //        RenderBridge.setSurface(surface)
-    }
-
-    override fun onWindowResized(width: Int, height: Int) {
-        super.onWindowResized(width, height)
-        game?.onWindowResized(width, height)
-    }
-
-    override fun onWindowMoved(x: Int, y: Int) {
-        super.onWindowMoved(x, y)
-        game?.onWindowMoved(x, y)
-    }
-
-    override fun onKeyPressed(code: KeyCode, hold: Boolean) {
-        super.onKeyPressed(code, hold)
-        game?.onKeyPressed(code, hold)
-    }
-
-    override fun onKeyReleased(code: KeyCode) {
-        super.onKeyReleased(code)
-        game?.onKeyReleased(code)
-    }
-
-    override fun onKeyTyped(char: Char) {
-        super.onKeyTyped(char)
-        game?.onKeyTyped(char)
-    }
-
-    override fun onMousePressed(code: MouseCode, hold: Boolean) {
-        super.onMousePressed(code, hold)
-        game?.onMousePressed(code, hold)
-    }
-
-    override fun onMouseReleased(code: MouseCode) {
-        super.onMouseReleased(code)
-        game?.onMouseReleased(code)
-    }
-
-    override fun onMouseMove(x: Double, y: Double) {
-        super.onMouseMove(x, y)
-        game?.onMouseMove(x, y)
-    }
-
-    override fun onMouseScroll(x: Double, y: Double) {
-        super.onMouseScroll(x, y)
-        game?.onMouseScroll(x, y)
-    }
-
-    override fun onTapPressed(x: Float, y: Float) {
-        super.onTapPressed(x, y)
-        game?.onTapPressed(x, y)
-    }
-
-    override fun onTapReleased(x: Float, y: Float) {
-        super.onTapReleased(x, y)
-        game?.onTapReleased(x, y)
     }
 
 }

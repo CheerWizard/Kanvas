@@ -1,10 +1,10 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.HeapMemory
-import com.cws.fmm.MemoryHandle
-import com.cws.fmm.NULL
-import com.cws.fmm.StackMemory
-import com.cws.fmm.checkNotNull
+import com.cws.std.memory.Heap
+import com.cws.std.memory.MemoryHandle
+import com.cws.std.memory.NULL
+import com.cws.std.memory.Stack
+import com.cws.std.memory.checkNotNull
 import com.cws.kanvas.math.JsVec2.Companion.SIZE_BYTES
 
 value class JsVec2(
@@ -13,21 +13,21 @@ value class JsVec2(
     var _x: Float
         get() {
             handle.checkNotNull()
-            return HeapMemory.getFloat(handle)
+            return Heap.getFloat(handle)
         }
         set(`value`) {
             handle.checkNotNull()
-            HeapMemory.setFloat(handle, value)
+            Heap.setFloat(handle, value)
         }
 
     var _y: Float
         get() {
             handle.checkNotNull()
-            return HeapMemory.getFloat(handle + Float.SIZE_BYTES)
+            return Heap.getFloat(handle + Float.SIZE_BYTES)
         }
         set(`value`) {
             handle.checkNotNull()
-            HeapMemory.setFloat(handle + Float.SIZE_BYTES, value)
+            Heap.setFloat(handle + Float.SIZE_BYTES, value)
         }
 
     constructor(
@@ -40,13 +40,13 @@ value class JsVec2(
     }
 
     fun free(): Vec2 {
-        HeapMemory.free(handle, SIZE_BYTES)
+        Heap.free(handle, SIZE_BYTES)
         return JsVec2(NULL)
     }
 
     infix fun `=`(other: Vec2) {
         other as JsVec2
-        HeapMemory.copy(other.handle, handle, SIZE_BYTES)
+        Heap.copy(other.handle, handle, SIZE_BYTES)
     }
 
     override fun toString(): String {
@@ -56,7 +56,7 @@ value class JsVec2(
     companion object {
         const val SIZE_BYTES: Int = Float.SIZE_BYTES + Float.SIZE_BYTES
 
-        fun create(): JsVec2 = JsVec2(HeapMemory.allocate(SIZE_BYTES))
+        fun create(): JsVec2 = JsVec2(Heap.allocate(SIZE_BYTES))
     }
 
 }
@@ -65,14 +65,14 @@ actual fun Vec2(): Vec2 = JsVec2()
 
 actual fun Vec2(x: Float, y: Float): Vec2 = JsVec2(x,y)
 
-actual fun StackMemory.Vec2(): Vec2 = JsVec2(push(SIZE_BYTES))
+actual fun Stack.Vec2(): Vec2 = JsVec2(push(SIZE_BYTES))
 
-actual fun StackMemory.Vec2(x: Float, y: Float): Vec2 = JsVec2(x,y, push(SIZE_BYTES))
+actual fun Stack.Vec2(x: Float, y: Float): Vec2 = JsVec2(x,y, push(SIZE_BYTES))
 
 actual fun Vec2.clone(): Vec2 {
     this as JsVec2
     val clone = JsVec2()
-    HeapMemory.copy(handle, clone.handle, SIZE_BYTES)
+    Heap.copy(handle, clone.handle, SIZE_BYTES)
     return clone
 }
 
@@ -96,10 +96,10 @@ actual operator fun Vec2.component2(): Float {
 
 actual operator fun Vec2.get(i: Int): Float {
     this as JsVec2
-    return HeapMemory.getFloat(handle + i * Float.SIZE_BYTES)
+    return Heap.getFloat(handle + i * Float.SIZE_BYTES)
 }
 
 actual operator fun Vec2.set(i: Int, v: Float) {
     this as JsVec2
-    HeapMemory.setFloat(handle + i * Float.SIZE_BYTES, v)
+    Heap.setFloat(handle + i * Float.SIZE_BYTES, v)
 }

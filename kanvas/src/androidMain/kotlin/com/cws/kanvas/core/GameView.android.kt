@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import com.cws.printer.Printer
+import com.cws.print.Print
 
 @Composable
 fun GameView(
@@ -46,12 +46,12 @@ class GameView(
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
-        Printer.d(TAG, "onSurfaceTextureSizeChanged")
+        Print.d(TAG, "onSurfaceTextureSizeChanged")
         gameLoop?.onViewportChanged(width = width, height = height)
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        Printer.d(TAG, "onSurfaceTextureAvailable")
+        Print.d(TAG, "onSurfaceTextureAvailable")
         gameLoop?.let { gameLoop ->
             gameLoop.setSurface(Surface(surface))
             gameLoop.startLoop()
@@ -59,17 +59,17 @@ class GameView(
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-        Printer.d(TAG, "onSurfaceTextureDestroyed")
+        Print.d(TAG, "onSurfaceTextureDestroyed")
         gameLoop?.stopLoop()
         return true
     }
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-        Printer.d(TAG, "onSurfaceTextureUpdated")
+        Print.d(TAG, "onSurfaceTextureUpdated")
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        Printer.d(TAG, "onTouchEvent $event")
+        Print.d(TAG, "onTouchEvent $event")
         gameLoop?.onMotionEvent(event)
         return super.onTouchEvent(event)
     }

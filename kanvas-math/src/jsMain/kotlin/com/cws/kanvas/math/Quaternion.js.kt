@@ -1,10 +1,10 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.HeapMemory
-import com.cws.fmm.MemoryHandle
-import com.cws.fmm.NULL
-import com.cws.fmm.StackMemory
-import com.cws.fmm.checkNotNull
+import com.cws.std.memory.Heap
+import com.cws.std.memory.MemoryHandle
+import com.cws.std.memory.NULL
+import com.cws.std.memory.Stack
+import com.cws.std.memory.checkNotNull
 import com.cws.kanvas.math.JsVec3.Companion.SIZE_BYTES
 
 value class JsQuaternion(
@@ -13,41 +13,41 @@ value class JsQuaternion(
     var _x: Float
         get() {
             handle.checkNotNull()
-            return HeapMemory.getFloat(handle)
+            return Heap.getFloat(handle)
         }
         set(`value`) {
             handle.checkNotNull()
-            HeapMemory.setFloat(handle, value)
+            Heap.setFloat(handle, value)
         }
 
     var _y: Float
         get() {
             handle.checkNotNull()
-            return HeapMemory.getFloat(handle + Float.SIZE_BYTES)
+            return Heap.getFloat(handle + Float.SIZE_BYTES)
         }
         set(`value`) {
             handle.checkNotNull()
-            HeapMemory.setFloat(handle + Float.SIZE_BYTES, value)
+            Heap.setFloat(handle + Float.SIZE_BYTES, value)
         }
 
     var _z: Float
         get() {
             handle.checkNotNull()
-            return HeapMemory.getFloat(handle + Float.SIZE_BYTES + Float.SIZE_BYTES)
+            return Heap.getFloat(handle + Float.SIZE_BYTES + Float.SIZE_BYTES)
         }
         set(`value`) {
             handle.checkNotNull()
-            HeapMemory.setFloat(handle + Float.SIZE_BYTES + Float.SIZE_BYTES, value)
+            Heap.setFloat(handle + Float.SIZE_BYTES + Float.SIZE_BYTES, value)
         }
 
     var _w: Float
         get() {
             handle.checkNotNull()
-            return HeapMemory.getFloat(handle + Float.SIZE_BYTES + Float.SIZE_BYTES + Float.SIZE_BYTES)
+            return Heap.getFloat(handle + Float.SIZE_BYTES + Float.SIZE_BYTES + Float.SIZE_BYTES)
         }
         set(`value`) {
             handle.checkNotNull()
-            HeapMemory.setFloat(handle + Float.SIZE_BYTES + Float.SIZE_BYTES + Float.SIZE_BYTES, value)
+            Heap.setFloat(handle + Float.SIZE_BYTES + Float.SIZE_BYTES + Float.SIZE_BYTES, value)
         }
 
     constructor(
@@ -64,13 +64,13 @@ value class JsQuaternion(
     }
 
     fun free(): Quaternion {
-        HeapMemory.free(handle, SIZE_BYTES)
+        Heap.free(handle, SIZE_BYTES)
         return JsQuaternion(NULL)
     }
 
     infix fun `=`(other: Vec3) {
         other as JsVec3
-        HeapMemory.copy(other.handle, handle, SIZE_BYTES)
+        Heap.copy(other.handle, handle, SIZE_BYTES)
     }
 
     override fun toString(): String {
@@ -80,7 +80,7 @@ value class JsQuaternion(
     companion object {
         const val SIZE_BYTES: Int = Float.SIZE_BYTES + Float.SIZE_BYTES + Float.SIZE_BYTES
 
-        fun create(): JsVec3 = JsVec3(HeapMemory.allocate(SIZE_BYTES))
+        fun create(): JsVec3 = JsVec3(Heap.allocate(SIZE_BYTES))
     }
 
 }
@@ -89,14 +89,14 @@ actual fun Quaternion(): Quaternion = JsQuaternion()
 
 actual fun Quaternion(x: Float, y: Float, z: Float, w: Float): Quaternion = JsQuaternion(x,y,z,w)
 
-actual fun StackMemory.Quaternion(): Quaternion = JsQuaternion(push(SIZE_BYTES))
+actual fun Stack.Quaternion(): Quaternion = JsQuaternion(push(SIZE_BYTES))
 
-actual fun StackMemory.Quaternion(x: Float, y: Float, z: Float, w: Float): Quaternion = JsQuaternion(x,y,z,w,push(SIZE_BYTES))
+actual fun Stack.Quaternion(x: Float, y: Float, z: Float, w: Float): Quaternion = JsQuaternion(x,y,z,w,push(SIZE_BYTES))
 
 actual fun Quaternion.clone(): Quaternion {
     this as JsQuaternion
     val clone = JsQuaternion()
-    HeapMemory.copy(handle, clone.handle, SIZE_BYTES)
+    Heap.copy(handle, clone.handle, SIZE_BYTES)
     return clone
 }
 
@@ -138,10 +138,10 @@ actual operator fun Quaternion.component4(): Float {
 
 actual operator fun Quaternion.get(i: Int): Float {
     this as JsQuaternion
-    return HeapMemory.getFloat(handle + i * Float.SIZE_BYTES)
+    return Heap.getFloat(handle + i * Float.SIZE_BYTES)
 }
 
 actual operator fun Quaternion.set(i: Int, v: Float) {
     this as JsQuaternion
-    HeapMemory.setFloat(handle + i * Float.SIZE_BYTES, v)
+    Heap.setFloat(handle + i * Float.SIZE_BYTES, v)
 }

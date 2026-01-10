@@ -1,17 +1,62 @@
 package com.cws.kanvas.core
 
-import com.cws.kanvas.config.WindowConfig
 import com.cws.kanvas.event.EventListener
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.withLock
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class WindowConfig(
+    var title: String = "Kanvas",
+    var x: Int = 0,
+    var y: Int = 0,
+    var width: Int = 800,
+    var height: Int = 600,
+)
 
 open class BaseWindow(
-    val config: WindowConfig
+    val config: WindowConfig,
 ) {
 
-    val eventListeners = mutableSetOf<EventListener>()
-    val events = ArrayDeque<Any>()
-    val lock = ReentrantLock()
+    var title: String = config.title
+        set(value) {
+            config.title = value
+            setTitle(value)
+        }
+
+    var x: Int = config.x
+        set(value) {
+            config.x = value
+            setX(value)
+        }
+
+    var y: Int = config.y
+        set(value) {
+            config.y = value
+            setY(value)
+        }
+
+    var width: Int = config.width
+        set(value) {
+            config.width = value
+            setWidth(value)
+        }
+
+    var height: Int = config.height
+        set(value) {
+            config.height = value
+            setHeight(value)
+        }
+
+    protected val eventListeners = mutableSetOf<EventListener>()
+    private val events = ArrayDeque<Any>()
+    private val lock = ReentrantLock()
+
+    protected open fun setTitle(title: String) {}
+    protected open fun setX(x: Int) {}
+    protected open fun setY(y: Int) {}
+    protected open fun setWidth(width: Int) {}
+    protected open fun setHeight(height: Int) {}
 
     fun addEventListener(eventListener: EventListener) {
         lock.withLock {
@@ -45,7 +90,7 @@ open class BaseWindow(
 
 expect class Window : BaseWindow {
 
-    constructor(config: WindowConfig)
+    constructor(config: WindowConfig = WindowConfig())
 
     fun isClosed(): Boolean
 

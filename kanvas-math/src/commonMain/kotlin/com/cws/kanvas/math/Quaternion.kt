@@ -1,16 +1,9 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.HeapMemory
-import com.cws.fmm.MemoryHandle
-import com.cws.fmm.NULL
-import com.cws.fmm.StackMemory
-import com.cws.fmm.checkNotNull
-import com.cws.fmm.stackPush
-import com.cws.kanvas.math.w
-import com.cws.kanvas.math.x
-import com.cws.kanvas.math.y
-import com.cws.kanvas.math.z
-import kotlin.jvm.JvmInline
+import com.cws.std.memory.INativeData
+import com.cws.std.memory.NativeDataList
+import com.cws.std.memory.Stack
+import com.cws.std.memory.stackPush
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -25,13 +18,35 @@ import kotlin.math.sqrt
 //    var w: Float
 //)
 
-interface Quaternion
+interface Quaternion : INativeData {
+
+    companion object {
+        const val SIZE_BYTES = Float.SIZE_BYTES * 4
+    }
+
+    override val sizeBytes: Int get() = SIZE_BYTES
+
+    override fun serialize(list: NativeDataList) {
+        list.addFloat(x)
+        list.addFloat(y)
+        list.addFloat(z)
+        list.addFloat(w)
+    }
+
+    override fun deserialize(list: NativeDataList) = Quaternion(
+        list.getFloat(),
+        list.getFloat(),
+        list.getFloat(),
+        list.getFloat(),
+    )
+
+}
 
 expect fun Quaternion(): Quaternion
 expect fun Quaternion(x: Float, y: Float, z: Float, w: Float): Quaternion
 
-expect fun StackMemory.Quaternion(): Quaternion
-expect fun StackMemory.Quaternion(x: Float, y: Float, z: Float, w: Float): Quaternion
+expect fun Stack.Quaternion(): Quaternion
+expect fun Stack.Quaternion(x: Float, y: Float, z: Float, w: Float): Quaternion
 
 expect fun Quaternion.clone(): Quaternion
 

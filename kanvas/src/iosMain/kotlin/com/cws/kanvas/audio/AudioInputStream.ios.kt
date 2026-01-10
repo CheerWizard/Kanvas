@@ -2,7 +2,7 @@ package com.cws.kanvas.audio
 
 import com.cws.kanvas.audio.data.AudioConfig
 import com.cws.kanvas.audio.data.AudioSamples
-import com.cws.printer.Printer
+import com.cws.print.Print
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
@@ -49,12 +49,12 @@ actual class AudioInputStream actual constructor() {
             if (!success) {
                 val error = audioError.value
                 if (error != null) {
-                    Printer.d(TAG, "AVAudioEngine failed to initialize. ${error.localizedDescription}")
+                    Print.d(TAG, "AVAudioEngine failed to initialize. ${error.localizedDescription}")
                 } else {
-                    Printer.d(TAG, "AVAudioEngine failed to initialize. Unknown Error!")
+                    Print.d(TAG, "AVAudioEngine failed to initialize. Unknown Error!")
                 }
             } else {
-                Printer.d(TAG, "AVAudioEngine is initialized!")
+                Print.d(TAG, "AVAudioEngine is initialized!")
             }
         }
     }

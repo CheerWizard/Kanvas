@@ -6,7 +6,6 @@
 #define STC_FRAMEBUFFER_HPP
 
 #include "Handle.hpp"
-#include "Texture.hpp"
 #include "Blending.hpp"
 
 namespace stc {
@@ -17,6 +16,8 @@ namespace stc {
 
     struct DepthAttachmentBackend : ImageViewHandle {};
 
+    struct StencilAttachmentBackend : ImageViewHandle {};
+
     struct RenderTargetBackend {
         RenderPassHandle render_pass;
         FramebufferHandle frame_buffer;
@@ -24,13 +25,23 @@ namespace stc {
 
 #elif METAL
 
+    struct ColorAttachmentBackend : TextureHandle {};
 
+    struct DepthAttachmentBackend : TextureHandle {};
+
+    struct StencilAttachmentBackend : TextureHandle {};
+
+    struct RenderTargetBackend {
+        RenderPassHandle render_pass;
+    };
 
 #elif WEBGPU
 
     struct ColorAttachmentBackend : TextureViewHandle {};
 
     struct DepthAttachmentBackend : TextureViewHandle {};
+
+    struct StencilAttachmentBackend : TextureViewHandle {};
 
     struct RenderTargetBackend {
         RenderPassHandle render_pass;
@@ -52,6 +63,18 @@ namespace stc {
     };
 
     struct DepthAttachment : DepthAttachmentBackend {
+        bool enabled = false;
+        TextureFormat format;
+        u32 samples = 1;
+        float depthClearValue = 1.0f;
+        CompareOp depthCompareOp = COMPARE_OP_LESS;
+        u32 stencilClearValue = 1.0;
+        bool depthReadOnly = false;
+        bool depthWriteEnabled = false;
+        bool stencilReadOnly = false;
+    };
+
+    struct StencilAttachment : StencilAttachmentBackend {
         bool enabled = false;
         TextureFormat format;
         u32 samples = 1;

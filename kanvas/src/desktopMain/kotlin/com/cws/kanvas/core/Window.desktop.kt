@@ -11,11 +11,8 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.window.WindowState
-import com.cws.kanvas.config.WindowConfig
 import com.cws.kanvas.event.KeyCode
 import com.cws.kanvas.event.MouseCode
-import com.cws.kanvas.gfx.bridges.RenderBridge
-import com.cws.kanvas.gfx.texture.Pixels
 import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 
@@ -33,7 +30,7 @@ class WindowPixels(width: Int, height: Int) {
 
 }
 
-actual class Window : BaseWindow, RenderBridge.OffscreenCallback {
+actual class Window : BaseWindow {
 
     lateinit var onBitmapChanged: (ImageBitmap?) -> Unit
 

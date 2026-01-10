@@ -3,7 +3,7 @@ package com.cws.kanvas.audio
 import com.cws.kanvas.audio.data.AudioConfig
 import com.cws.kanvas.audio.data.AudioData
 import com.cws.kanvas.audio.data.AudioSamples
-import com.cws.kanvas.core.async.PlatformThread
+import com.cws.std.async.Thread
 import kotlin.math.roundToInt
 
 class AudioRecorder {
@@ -17,7 +17,7 @@ class AudioRecorder {
         private const val TAG = "AudioRecorder"
     }
 
-    private val recorderThread = PlatformThread(
+    private val recorderThread = Thread(
         name = TAG,
         priority = 1,
         task = ::runRecorder
@@ -43,6 +43,7 @@ class AudioRecorder {
         this.audioData = AudioData(
             id = "Recorded",
             config = audioConfig,
+            samplesFilepath = "",
         )
         state = State.RECORDING
         audioInputStream.start()

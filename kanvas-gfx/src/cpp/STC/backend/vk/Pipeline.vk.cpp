@@ -46,7 +46,7 @@ stc::Pipeline::Pipeline(const Device &device, const PipelineCreateInfo &create_i
         .pVertexAttributeDescriptions = vk_attributes.data(),
     };
 
-    VkPipelineVertexInputStateCreateInfo* pVertexInputInfo = nullptr;
+    VkPipelineVertexInputStateCreateInfo* pVertexInputInfo = null;
     if (vk_attributes.size() > 0) {
         pVertexInputInfo = &vertexInputInfo;
     }

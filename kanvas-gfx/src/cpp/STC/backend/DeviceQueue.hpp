@@ -19,6 +19,8 @@ namespace stc {
 
 #elif METAL
 
+    struct DeviceQueueBackend : QueueHandle {};
+
 #elif WEBGPU
 
     struct DeviceQueueBackend : QueueHandle {

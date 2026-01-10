@@ -1,15 +1,15 @@
 package com.cws.flip.game
 
-import com.cws.flip.FlipGame
+import com.cws.flip.FlipGameModule
 import com.cws.kanvas.config.GameConfig
-import com.cws.kanvas.config.WindowConfig
-import com.cws.kanvas.core.Game
+import com.cws.kanvas.core.WindowConfig
+import com.cws.kanvas.core.GameModule
 import com.cws.kanvas.core.GameApplication
 
 class MainApplication : GameApplication() {
 
-    override fun provideGame(): Game {
-        return FlipGame()
+    override fun provideGame(): GameModule {
+        return FlipGameModule()
     }
 
     override fun provideGameConfig(): GameConfig {

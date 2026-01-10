@@ -1,6 +1,6 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.stackPush
+import com.cws.std.memory.stackPush
 
 fun cross(v1: Vec2, v2: Vec2): Float {
     return v1.x * v2.y - v1.y * v2.x

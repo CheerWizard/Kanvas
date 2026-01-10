@@ -1,6 +1,6 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.StackMemory
+import com.cws.std.memory.Stack
 
 data class StdQuaternion(
     var _x: Float = 0f,
@@ -13,9 +13,9 @@ actual fun Quaternion(): Quaternion = StdQuaternion()
 
 actual fun Quaternion(x: Float, y: Float, z: Float, w: Float): Quaternion = StdQuaternion(x, y, z, w)
 
-actual fun StackMemory.Quaternion(): Quaternion = StdQuaternion()
+actual fun Stack.Quaternion(): Quaternion = StdQuaternion()
 
-actual fun StackMemory.Quaternion(x: Float, y: Float, z: Float, w: Float): Quaternion = StdQuaternion(x, y, z, w)
+actual fun Stack.Quaternion(x: Float, y: Float, z: Float, w: Float): Quaternion = StdQuaternion(x, y, z, w)
 
 actual fun Quaternion.clone(): Quaternion {
     this as StdQuaternion

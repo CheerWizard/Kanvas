@@ -5,14 +5,14 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import com.cws.kanvas.config.GameConfig
-import com.cws.kanvas.config.WindowConfig
-import com.cws.kanvas.core.Game
+import com.cws.kanvas.core.WindowConfig
+import com.cws.kanvas.core.GameModule
 import com.cws.kanvas.core.GameActivity
 
 class MainActivity : GameActivity() {
 
-    override fun provideGame(): Game {
-        return FlipGame()
+    override fun provideGame(): GameModule {
+        return FlipGameModule()
     }
 
     override fun provideGameConfig(): GameConfig {

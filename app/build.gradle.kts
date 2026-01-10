@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id("com.android.application")
     id("com.google.devtools.ksp") version "2.2.10-2.0.2"
+//    id("kotlin-std-compiler-plugin")
 }
 
 kotlin {
@@ -116,9 +117,8 @@ android {
 
     sourceSets["main"].assets.srcDir("$buildDir/generated/commonAssets")
 }
-
 dependencies {
-    ksp(project(":fmm-ksp"))
+    "ksp"(project(":kotlin-std-gen"))
 }
 
 afterEvaluate {

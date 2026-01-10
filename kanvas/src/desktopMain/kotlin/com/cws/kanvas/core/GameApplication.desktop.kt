@@ -2,11 +2,7 @@ package com.cws.kanvas.core
 
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.application
-import com.cws.kanvas.audio.AudioOutputStream
-import com.cws.kanvas.audio.AudioInputStream
-import com.cws.kanvas.config.GameConfig
-import com.cws.kanvas.event.SensorManager
-import com.cws.printer.Printer
+import com.cws.print.Print
 
 abstract class GameApplication {
 
@@ -17,16 +13,17 @@ abstract class GameApplication {
     protected lateinit var gameLoop: GameLoop
 
     private fun init() {
-        Printer.init()
-        application(exitProcessOnExit = true) {
-            onCreate()
-            initGameLoop()
-            GameView(
-                gameLoop = gameLoop,
-                onWindowClose = {
-                    onDestroy()
-                }
-            )
+        Print.install(Unit) {
+            application(exitProcessOnExit = true) {
+                onCreate()
+                initGameLoop()
+                GameView(
+                    gameLoop = gameLoop,
+                    onWindowClose = {
+                        onDestroy()
+                    }
+                )
+            }
         }
     }
 
@@ -38,25 +35,10 @@ abstract class GameApplication {
         exitApplication()
     }
 
-    protected abstract fun provideGame(): Game
-    protected abstract fun provideGameConfig(): GameConfig
-
     private fun initGameLoop() {
         if (!::gameLoop.isInitialized) {
-            gameLoop = GameLoop(
-                config = provideGameConfig(),
-                engine = initEngine(),
-                game = provideGame(),
-            )
+            gameLoop = GameLoop(Unit)
         }
-    }
-
-    private fun initEngine(): Engine {
-        return Engine(
-            sensorManager = SensorManager(),
-            audioPlayer = AudioOutputStream(),
-            audioRecorder = AudioInputStream(),
-        )
     }
 
 }

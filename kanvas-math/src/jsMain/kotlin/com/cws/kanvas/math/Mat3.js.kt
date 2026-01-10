@@ -1,11 +1,11 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.HeapMemory
-import com.cws.fmm.MemoryHandle
-import com.cws.fmm.NULL
-import com.cws.fmm.StackMemory
-import com.cws.fmm.checkNotNull
-import com.cws.fmm.stackPush
+import com.cws.std.memory.Heap
+import com.cws.std.memory.MemoryHandle
+import com.cws.std.memory.NULL
+import com.cws.std.memory.Stack
+import com.cws.std.memory.checkNotNull
+import com.cws.std.memory.stackPush
 import com.cws.kanvas.math.JsMat2.Companion.SIZE_BYTES
 
 value class JsMat3(
@@ -19,7 +19,7 @@ value class JsMat3(
         set(`value`) {
             handle.checkNotNull()
             value as JsVec3
-            HeapMemory.copy(value.handle, handle, JsVec3.SIZE_BYTES)
+            Heap.copy(value.handle, handle, JsVec3.SIZE_BYTES)
         }
 
     var _v2: Vec3
@@ -30,7 +30,7 @@ value class JsMat3(
         set(`value`) {
             handle.checkNotNull()
             value as JsVec3
-            HeapMemory.copy(value.handle, handle + JsVec3.SIZE_BYTES, JsVec3.SIZE_BYTES)
+            Heap.copy(value.handle, handle + JsVec3.SIZE_BYTES, JsVec3.SIZE_BYTES)
         }
 
     var _v3: Vec3
@@ -41,7 +41,7 @@ value class JsMat3(
         set(`value`) {
             handle.checkNotNull()
             value as JsVec3
-            HeapMemory.copy(value.handle, handle + JsVec3.SIZE_BYTES + JsVec3.SIZE_BYTES, JsVec3.SIZE_BYTES)
+            Heap.copy(value.handle, handle + JsVec3.SIZE_BYTES + JsVec3.SIZE_BYTES, JsVec3.SIZE_BYTES)
         }
 
     constructor(
@@ -79,19 +79,19 @@ value class JsMat3(
     }
 
     fun free(): Mat3 {
-        HeapMemory.free(handle, SIZE_BYTES)
+        Heap.free(handle, SIZE_BYTES)
         return JsMat3(NULL)
     }
 
     infix fun `=`(other: Mat3) {
         other as JsMat3
-        HeapMemory.copy(other.handle, handle, SIZE_BYTES)
+        Heap.copy(other.handle, handle, SIZE_BYTES)
     }
 
     companion object {
         const val SIZE_BYTES: Int = JsVec3.SIZE_BYTES + JsVec3.SIZE_BYTES + JsVec3.SIZE_BYTES
 
-        fun create(): JsMat3 = JsMat3(HeapMemory.allocate(SIZE_BYTES))
+        fun create(): JsMat3 = JsMat3(Heap.allocate(SIZE_BYTES))
     }
 
 }
@@ -112,9 +112,9 @@ actual fun Mat3(
 
 actual fun Mat3(v1: Vec3, v2: Vec3, v3: Vec3): Mat3 = JsMat3(v1, v2, v3)
 
-actual fun StackMemory.Mat3(): Mat3 = JsMat3(push(SIZE_BYTES))
+actual fun Stack.Mat3(): Mat3 = JsMat3(push(SIZE_BYTES))
 
-actual fun StackMemory.Mat3(
+actual fun Stack.Mat3(
     m00: Float,
     m01: Float,
     m02: Float,
@@ -126,18 +126,18 @@ actual fun StackMemory.Mat3(
     m22: Float,
 ): Mat3 = JsMat3(m00, m01, m02, m10, m11, m12, m20, m21, m22, push(SIZE_BYTES))
 
-actual fun StackMemory.Mat3(v1: Vec3, v2: Vec3, v3: Vec3): Mat3 = JsMat3(v1, v2, v3, push(SIZE_BYTES))
+actual fun Stack.Mat3(v1: Vec3, v2: Vec3, v3: Vec3): Mat3 = JsMat3(v1, v2, v3, push(SIZE_BYTES))
 
 actual fun Mat3.reset() {
     this as JsMat3
-    HeapMemory.reset(handle, SIZE_BYTES)
+    Heap.reset(handle, SIZE_BYTES)
 }
 
 actual fun Mat3.clone(stackScope: Boolean): Mat3 {
     val clone = if (stackScope) stackPush { Mat3() } else Mat3()
     this as JsMat3
     clone as JsMat3
-    HeapMemory.copy(handle, clone.handle, SIZE_BYTES)
+    Heap.copy(handle, clone.handle, SIZE_BYTES)
     return clone
 }
 

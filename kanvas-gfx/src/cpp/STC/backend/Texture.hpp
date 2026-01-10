@@ -5,6 +5,8 @@
 #ifndef STC_TEXTURE_HPP
 #define STC_TEXTURE_HPP
 
+#include <spirv/unified1/spirv.hpp>
+
 #include "Handle.hpp"
 
 namespace stc {
@@ -74,7 +76,63 @@ namespace stc {
 
 #elif METAL
 
+    enum TextureType {
+        TEXTURE_2D = MTL::TextureType::TextureType2D,
+        TEXTURE_3D = MTL::TextureType::TextureType3D,
+        TEXTURE_CUBE_MAP = MTL::TextureType::TextureTypeCube,
+        TEXTURE_ARRAY = MTL::TextureType::TextureType2DArray,
+    };
 
+    enum TextureFormat {
+        FORMAT_R8 = MTL::PixelFormatR8Uint,
+        FORMAT_RG8 = MTL::PixelFormatRG8Uint,
+        FORMAT_RGB8 = MTL::PixelFormatRGBA8Uint,
+        FORMAT_RGBA8 = MTL::PixelFormatRGBA8Uint,
+
+        FORMAT_R16 = MTL::PixelFormatR16Float,
+        FORMAT_RG16 = MTL::PixelFormatRG16Float,
+        FORMAT_RGB16 = MTL::PixelFormatRGBA16Float,
+        FORMAT_RGBA16 = MTL::PixelFormatRGBA16Float,
+
+        FORMAT_R32 = MTL::PixelFormatR32Float,
+        FORMAT_RG32 = MTL::PixelFormatRG32Float,
+        FORMAT_RGB32 = MTL::PixelFormatRGBA32Float,
+        FORMAT_RGBA32 = MTL::PixelFormatRGBA32Float,
+
+        FORMAT_DEPTH16 = MTL::PixelFormatDepth16Unorm,
+        FORMAT_DEPTH24 = MTL::PixelFormatDepth24Unorm_Stencil8,
+        FORMAT_DEPTH32 = MTL::PixelFormatDepth32Float,
+
+        FORMAT_STENCIL = MTL::PixelFormatStencil8,
+    };
+
+    enum SamplerFilter {
+        FILTER_LINEAR = spv::SamplerFilterModeLinear,
+    };
+
+    enum SamplerMode {
+        MODE_REPEAT = spv::SamplerAddressingModeRepeat,
+    };
+
+    enum SamplerMipMapMode {
+        MIPMAP_LINEAR = 0,
+    };
+
+    enum CompareOp {
+        COMPARE_OP_NONE = -1,
+        COMPARE_OP_ALWAYS = MTL::CompareFunctionAlways,
+        COMPARE_OP_NEVER = MTL::CompareFunctionNever,
+        COMPARE_OP_LESS = MTL::CompareFunctionLess,
+        COMPARE_OP_LESS_EQUAL = MTL::CompareFunctionLessEqual,
+        COMPARE_OP_GREATER = MTL::CompareFunctionGreater,
+        COMPARE_OP_GREATER_EQUAL = MTL::CompareFunctionGreaterEqual,
+        COMPARE_OP_EQUAL = MTL::CompareFunctionEqual,
+        COMPARE_OP_NOT_EQUAL = MTL::CompareFunctionNotEqual,
+    };
+
+    struct SamplerBackend : SamplerHandle {};
+
+    struct TextureBackend : TextureHandle {};
 
 #elif WEBGPU
 

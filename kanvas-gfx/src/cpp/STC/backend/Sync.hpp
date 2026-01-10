@@ -21,7 +21,11 @@ namespace stc {
 
 #elif METAL
 
+    struct FenceBackend {
+        FenceHandle handle;
+    };
 
+    struct SemaphoreBackend {};
 
 #elif WEBGPU
 

@@ -2,9 +2,8 @@ package com.cws.kanvas.audio
 
 import com.cws.kanvas.audio.data.AudioConfig
 import com.cws.kanvas.audio.data.AudioData
-import com.cws.kanvas.core.async.PlatformThread
-import com.cws.printer.Printer
-import io.ktor.util.collections.ConcurrentMap
+import com.cws.std.async.Thread
+import com.cws.print.Print
 
 class AudioPlayer {
 
@@ -18,14 +17,14 @@ class AudioPlayer {
         private const val TAG = "AudioPlayer"
     }
 
-    private val playerThread = PlatformThread(
+    private val playerThread = Thread(
         name = TAG,
         priority = 1,
         task = ::runPlayer,
     )
 
     private var audioOutputStream = AudioOutputStream()
-    private val audioDataMap = ConcurrentMap<String, AudioData>()
+    private val audioDataMap = mutableMapOf<String, AudioData>()
     private val audioQueue = ArrayDeque<AudioData>()
 
     private var state = State.STOPPED
@@ -55,7 +54,7 @@ class AudioPlayer {
 
     fun play(id: String) {
         if (!audioDataMap.containsKey(id)) {
-            Printer.w(TAG, "Failed to find to play audio $id")
+            Print.w(TAG, "Failed to find to play audio $id")
             return
         }
         val audioData = audioDataMap.getValue(id)
@@ -71,7 +70,7 @@ class AudioPlayer {
 
     fun pause(id: String) {
         if (!audioDataMap.containsKey(id)) {
-            Printer.w(TAG, "Failed to find to play audio $id")
+            Print.w(TAG, "Failed to find to play audio $id")
             return
         }
         pause()

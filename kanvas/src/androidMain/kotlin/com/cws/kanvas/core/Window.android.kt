@@ -1,7 +1,6 @@
 package com.cws.kanvas.core
 
 import android.view.MotionEvent
-import com.cws.kanvas.config.WindowConfig
 
 actual class Window : BaseWindow {
 

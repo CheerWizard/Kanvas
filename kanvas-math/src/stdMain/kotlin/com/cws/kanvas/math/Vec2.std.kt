@@ -1,6 +1,6 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.StackMemory
+import com.cws.std.memory.Stack
 
 data class StdVec2(
     var _x: Float = 0f,
@@ -11,9 +11,9 @@ actual fun Vec2(): Vec2 = StdVec2()
 
 actual fun Vec2(x: Float, y: Float): Vec2 = StdVec2(x, y)
 
-actual fun StackMemory.Vec2(): Vec2 = StdVec2()
+actual fun Stack.Vec2(): Vec2 = StdVec2()
 
-actual fun StackMemory.Vec2(x: Float, y: Float): Vec2 = StdVec2(x, y)
+actual fun Stack.Vec2(x: Float, y: Float): Vec2 = StdVec2(x, y)
 
 actual fun Vec2.clone(): Vec2 {
     this as StdVec2

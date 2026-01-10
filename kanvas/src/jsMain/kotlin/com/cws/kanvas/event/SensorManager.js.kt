@@ -1,6 +1,8 @@
 package com.cws.kanvas.event
 
-actual class SensorManager {
+import com.cws.kanvas.core.Context
+
+actual class SensorManager actual constructor(context: Context) {
 
     actual val sensor: SensorVector = SensorVector()
 

@@ -1,11 +1,7 @@
 package com.cws.kanvas.core
 
-import com.cws.kanvas.audio.AudioOutputStream
-import com.cws.kanvas.audio.AudioInputStream
-import com.cws.kanvas.config.GameConfig
 import com.cws.kanvas.event.EventListener
-import com.cws.kanvas.event.SensorManager
-import com.cws.printer.Printer
+import com.cws.print.Print
 
 abstract class GameApplication : EventListener {
 
@@ -17,13 +13,14 @@ abstract class GameApplication : EventListener {
     private lateinit var window: Window
 
     private fun init() {
-        Printer.init()
-        onCreate()
-        initGameLoop()
-        GameView(gameLoop)
-        gameLoop.onWindowCreated = { window ->
-            this.window = window
-            window.addEventListener(this)
+        Print.install(Unit) {
+            onCreate()
+            initGameLoop()
+            GameView(gameLoop)
+            gameLoop.onWindowCreated = { window ->
+                this.window = window
+                window.addEventListener(this)
+            }
         }
     }
 
@@ -42,25 +39,10 @@ abstract class GameApplication : EventListener {
         // no-op
     }
 
-    protected abstract fun provideGame(): Game
-    protected abstract fun provideGameConfig(): GameConfig
-
     private fun initGameLoop() {
         if (!::gameLoop.isInitialized) {
-            gameLoop = GameLoop(
-                config = provideGameConfig(),
-                engine = initEngine(),
-                game = provideGame(),
-            )
+            gameLoop = GameLoop(Unit)
         }
-    }
-
-    private fun initEngine(): Engine {
-        return Engine(
-            sensorManager = SensorManager(),
-            audioPlayer = AudioOutputStream(),
-            audioRecorder = AudioInputStream(),
-        )
     }
 
 }

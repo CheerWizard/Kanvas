@@ -20,6 +20,13 @@ namespace stc {
 
 #elif METAL
 
+    enum AttributeFormat {
+        ATTRIBUTE_FORMAT_FLOAT = MTL::AttributeFormatFloat,
+        ATTRIBUTE_FORMAT_FLOAT2 = MTL::AttributeFormatFloat2,
+        ATTRIBUTE_FORMAT_FLOAT3 = MTL::AttributeFormatFloat3,
+        ATTRIBUTE_FORMAT_FLOAT4 = MTL::AttributeFormatFloat4,
+    };
+
 #elif WEBGPU
 
     enum AttributeFormat {

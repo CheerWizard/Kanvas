@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    project(STC LANGUAGES CXX OBJCXX)
-else ()
-    project(STC LANGUAGES CXX)
-endif ()
+project(STC LANGUAGES CXX)
 
 # print project info
 message("CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
@@ -80,11 +75,25 @@ macro(build_linux)
 endmacro()
 
 macro(build_macos)
-    file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.mm)
+    file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.cpp)
     add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
+    include_metal()
+endmacro()
+
+macro(include_metal)
+    include_directories(vendor/metal-cpp)
+
+    find_library(METAL_FRAMEWORK Metal)
+    find_library(FOUNDATION_FRAMEWORK Foundation)
+    find_library(QUARTZCORE_FRAMEWORK QuartzCore)
+    find_library(APPKIT_FRAMEWORK AppKit)
+
     target_link_libraries(${PROJECT_NAME} PRIVATE
-            metal
+            ${METAL_FRAMEWORK}
+            ${FOUNDATION_FRAMEWORK}
+            ${QUARTZCORE_FRAMEWORK}
+            ${APPKIT_FRAMEWORK}
     )
 endmacro()
 
@@ -102,12 +111,10 @@ macro(build_android)
 endmacro()
 
 macro(build_ios)
-    file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.mm)
+    file(GLOB_RECURSE PLATFORM_SRC backend/metal/*.cpp)
     add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
     target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-            metal
-    )
+    include_metal()
 endmacro()
 
 macro(build_web)

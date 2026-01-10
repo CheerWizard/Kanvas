@@ -1,7 +1,9 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.StackMemory
-import com.cws.fmm.stackPush
+import com.cws.std.memory.INativeData
+import com.cws.std.memory.NativeDataList
+import com.cws.std.memory.Stack
+import com.cws.std.memory.stackPush
 
 // Used to generate fresh version
 //@FastObject
@@ -11,7 +13,27 @@ import com.cws.fmm.stackPush
 //    var v3: Vec3
 //)
 
-interface Mat3
+interface Mat3 : INativeData {
+
+    companion object {
+        const val SIZE_BYTES = Vec3.SIZE_BYTES * 3
+    }
+
+    override val sizeBytes: Int get() = SIZE_BYTES
+
+    override fun serialize(list: NativeDataList) {
+        list.set(v1)
+        list.set(v2)
+        list.set(v3)
+    }
+
+    override fun deserialize(list: NativeDataList) = Mat3(
+        list.get(v1),
+        list.get(v2),
+        list.get(v3),
+    )
+
+}
 
 expect fun Mat3(): Mat3
 expect fun Mat3(
@@ -27,8 +49,8 @@ expect fun Mat3(
 ): Mat3
 expect fun Mat3(v1: Vec3, v2: Vec3, v3: Vec3): Mat3
 
-expect fun StackMemory.Mat3(): Mat3
-expect fun StackMemory.Mat3(
+expect fun Stack.Mat3(): Mat3
+expect fun Stack.Mat3(
     m00: Float,
     m01: Float,
     m02: Float,
@@ -39,7 +61,7 @@ expect fun StackMemory.Mat3(
     m21: Float,
     m22: Float,
 ): Mat3
-expect fun StackMemory.Mat3(v1: Vec3, v2: Vec3, v3: Vec3): Mat3
+expect fun Stack.Mat3(v1: Vec3, v2: Vec3, v3: Vec3): Mat3
 
 expect fun Mat3.reset()
 

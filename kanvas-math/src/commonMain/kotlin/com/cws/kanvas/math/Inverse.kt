@@ -1,6 +1,6 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.stackPush
+import com.cws.std.memory.stackPush
 
 fun inverse(m: Mat2, out: Mat2): Mat2 {
     val d = det(m)

@@ -24,7 +24,16 @@ namespace stc {
 
 #elif METAL
 
+    enum BindingType {
+        BINDING_TYPE_UNIFORM_BUFFER = MTL::BindingType::BindingTypeBuffer,
+        BINDING_TYPE_STORAGE_BUFFER = MTL::BindingType::BindingTypeBuffer,
+        BINDING_TYPE_TEXTURE = MTL::BindingType::BindingTypeTexture,
+        BINDING_TYPE_SAMPLER = MTL::BindingType::BindingTypeSampler,
+    };
 
+    struct BindingLayoutBackend {
+        MTL::Binding handle;
+    };
 
 #elif WEBGPU
 

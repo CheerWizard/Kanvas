@@ -1,7 +1,7 @@
 package com.cws.kanvas.math
 
-import com.cws.fmm.HeapMemory
-import com.cws.fmm.profile
+import com.cws.std.memory.Heap
+import com.cws.std.profile
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -15,7 +15,7 @@ data class TestVec2(
 
 class Vec2Test {
 
-    private val heap = HeapMemory
+    private val heap = Heap
 
     @Test
     fun testArithmetics() {

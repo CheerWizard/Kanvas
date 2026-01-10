@@ -29,7 +29,16 @@ namespace stc {
 
 #elif METAL
 
+    struct SurfaceBackend {
+        SurfaceHandle handle;
+        u32 currentImageIndex = 0;
+    };
 
+    enum PresentMode {
+        PRESENT_MODE_FIFO = 0,
+        PRESENT_MODE_IMMEDIATE = 0,
+        PRESENT_MODE_MAILBOX = 0,
+    };
 
 #elif WEBGPU
 

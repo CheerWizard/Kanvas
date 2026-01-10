@@ -25,9 +25,9 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
+    implementation(project(":print"))
 
     // logging
-    implementation(project(":printer"))
 
     // Testing
     testImplementation(kotlin("test"))

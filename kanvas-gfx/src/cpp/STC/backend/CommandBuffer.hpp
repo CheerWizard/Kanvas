@@ -21,7 +21,10 @@ namespace stc {
 
 #elif METAL
 
-
+    struct CommandBufferBackend {
+        CommandBufferHandle handle;
+        RenderPassHandle render_pass;
+    };
 
 #elif WEBGPU
 
