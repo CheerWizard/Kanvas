@@ -1,0 +1,94 @@
+name: Kanvas VK Native Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  macos:
+    name: macOS + iOS
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build macOS + iOS
+        run: |
+          ./gradlew \
+            :kanvas-vk-native:linkReleaseSharedMacosArm64 \
+            :kanvas-vk-native:linkReleaseSharedMacosX64 \
+            :kanvas-vk-native:linkReleaseSharedIosArm64 \
+            :kanvas-vk-native:linkReleaseSharedIosSimulatorArm64
+
+      - name: Upload macOS/iOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanvas-native-macos-ios
+          path: |
+            kanvas-vk-native/build/bin/**/releaseShared/*
+
+  linux:
+    name: Linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Vulkan headers
+        run: sudo apt-get update && sudo apt-get install -y libvulkan-dev
+
+      - name: Build Linux
+        run: |
+          ./gradlew \
+            :kanvas-vk-native:linkReleaseSharedLinuxX64
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanvas-native-linux
+          path: |
+            kanvas-vk-native/build/bin/linuxX64/releaseShared/*
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Vulkan SDK
+        uses: humbletim/install-vulkan-sdk@v1
+        with:
+          version: 1.3.280.0
+
+      - name: Build Windows
+        shell: bash
+        run: |
+          ./gradlew \
+            :kanvas-vk-native:linkReleaseSharedMingwX64
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanvas-native-windows
+          path: |
+            kanvas-vk-native/build/bin/mingwX64/releaseShared/*

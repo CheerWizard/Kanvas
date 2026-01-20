@@ -47,6 +47,18 @@ class #TList(
 
     operator fun get(index: Int): #T = buffer[index]
 
+    fun push(element: #T) {
+        add(element)
+    }
+
+    fun pop(): #T {
+        if (position > 0) {
+            return buffer[position--]
+        } else {
+            throw IndexOutOfBoundsException("list position <= 0")
+        }
+    }
+
     fun clear() {
         position = 0
     }

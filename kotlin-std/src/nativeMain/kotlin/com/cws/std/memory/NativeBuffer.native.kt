@@ -9,6 +9,7 @@ import kotlinx.cinterop.get
 import kotlinx.cinterop.plus
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.set
+import kotlinx.cinterop.toCPointer
 import kotlinx.cinterop.toCValues
 import platform.posix.free
 import platform.posix.malloc
@@ -19,6 +20,15 @@ import platform.posix.realloc
 @OptIn(ExperimentalForeignApi::class)
 actual open class NativeBuffer actual constructor(capacity: Int) {
 
+    constructor(ptr: Long, capacity: Int) : this(capacity) {
+        this.buffer = ptr.toCPointer<ByteVar>()
+            ?: throw RuntimeException("Failed to convert Long ptr to Native CPointer!")
+    }
+
+    constructor(ptr: CPointer<ByteVar>, capacity: Int) : this(capacity) {
+        this.buffer = ptr
+    }
+
     actual var position: Int
         set(value) {
             _position = value
@@ -27,6 +37,7 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
 
     actual val capacity: Int get() = _capacity
     var buffer: CPointer<ByteVar> = malloc(capacity.toULong()) as CPointer<ByteVar>
+    val address: Long = buffer.rawValue.toLong()
 
     private var _position = 0
     private var _capacity = capacity

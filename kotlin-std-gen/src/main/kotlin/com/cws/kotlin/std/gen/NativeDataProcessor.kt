@@ -33,6 +33,8 @@ class NativeDataProcessor(
     data class Field(
         val name: String,
         val offset: String,
+        val std140_offset: String,
+        val std430_offset: String,
         val typeName: TypeName,
         val type: String,
         val generatedTypeName: TypeName,
@@ -84,8 +86,11 @@ class NativeDataProcessor(
         val generatedClassName = ClassName(pkg, generatedName)
         val nativeDataInterface = ClassName("com.cws.std.memory", "INativeData")
         val nativeDataList = ClassName("com.cws.std.memory", "NativeDataList")
+        val memoryLayout = ClassName("com.cws.std.memory", "MemoryLayout")
         val fields = mutableListOf<Field>()
         var offset = "0"
+        var std140_offset = "0"
+        var std430_offset = "0"
 
         declaration.getAllProperties()
             .asIterable()
@@ -126,6 +131,8 @@ class NativeDataProcessor(
                 fields += Field(
                     name = prop.simpleName.asString(),
                     offset = offset,
+                    std140_offset = std140_offset,
+                    std430_offset = std430_offset,
                     generatedType = type,
                     generatedTypeName = typeName,
                     type = type,
@@ -135,8 +142,12 @@ class NativeDataProcessor(
                 )
 
                 val typeSize = if (type in smallTypes) "Int.SIZE_BYTES" else "$type.SIZE_BYTES"
+                val std140_typeSize = if (type in smallTypes) "Int.STD140_SIZE_BYTES" else "$type.STD140_SIZE_BYTES"
+                val std430_typeSize = if (type in smallTypes) "Int.STD430_SIZE_BYTES" else "$type.STD430_SIZE_BYTES"
 
                 offset += " + $typeSize"
+                std140_offset += " + $std140_typeSize"
+                std430_offset += " + $std430_typeSize"
             }
 
         val fileSpec = FileSpec.builder(pkg, generatedName)
@@ -146,6 +157,22 @@ class NativeDataProcessor(
                 "Int.SIZE_BYTES"
             } else {
                 "${it.generatedType}.SIZE_BYTES"
+            }
+        }
+
+        val std140_size = fields.joinToString(" + ") {
+            if (it.type in smallTypes) {
+                "Int.STD140_SIZE_BYTES"
+            } else {
+                "${it.generatedType}.STD140_SIZE_BYTES"
+            }
+        }
+
+        val std430_size = fields.joinToString(" + ") {
+            if (it.type in smallTypes) {
+                "Int.STD430_SIZE_BYTES"
+            } else {
+                "${it.generatedType}.STD430_SIZE_BYTES"
             }
         }
 
@@ -174,12 +201,34 @@ class NativeDataProcessor(
                             .initializer(size)
                             .build()
                     )
+                    .addProperty(
+                        PropertySpec.builder("STD140_SIZE_BYTES", INT)
+                            .addModifiers(KModifier.CONST)
+                            .initializer(std140_size)
+                            .build()
+                    )
+                    .addProperty(
+                        PropertySpec.builder("STD430_SIZE_BYTES", INT)
+                            .addModifiers(KModifier.CONST)
+                            .initializer(std430_size)
+                            .build()
+                    )
                     .build()
             )
-            .addProperty(
-                PropertySpec.builder("sizeBytes", INT)
+            .addFunction(
+                FunSpec.builder("sizeBytes")
                     .addModifiers(KModifier.OVERRIDE)
-                    .initializer("SIZE_BYTES")
+                    .addParameter(
+                        ParameterSpec
+                            .builder("layout", memoryLayout)
+                            .build()
+                    )
+                    .returns(INT)
+                    .addCode("return when (layout) {\n" +
+                            "MemoryLayout.KOTLIN -> SIZE_BYTES" +
+                            "MemoryLayout.STD140 -> STD140_SIZE_BYTES" +
+                            "MemoryLayout.STD430 -> STD430_SIZE_BYTES" +
+                            "\n}")
                     .build()
             )
             .addFunction(

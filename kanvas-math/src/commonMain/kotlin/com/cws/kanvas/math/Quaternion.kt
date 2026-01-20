@@ -1,7 +1,10 @@
 package com.cws.kanvas.math
 
 import com.cws.std.memory.INativeData
+import com.cws.std.memory.MemoryLayout
 import com.cws.std.memory.NativeDataList
+import com.cws.std.memory.STD140_SIZE_BYTES
+import com.cws.std.memory.STD430_SIZE_BYTES
 import com.cws.std.memory.Stack
 import com.cws.std.memory.stackPush
 import kotlin.math.acos
@@ -21,19 +24,27 @@ import kotlin.math.sqrt
 interface Quaternion : INativeData {
 
     companion object {
-        const val SIZE_BYTES = Float.SIZE_BYTES * 4
+        val SIZE_BYTES = Float.SIZE_BYTES * 4
+        val STD140_SIZE_BYTES = Float.STD140_SIZE_BYTES * 4
+        val STD430_SIZE_BYTES = Float.STD430_SIZE_BYTES * 4
     }
 
-    override val sizeBytes: Int get() = SIZE_BYTES
+    override fun sizeBytes(layout: MemoryLayout): Int {
+        return when (layout) {
+            MemoryLayout.KOTLIN -> SIZE_BYTES
+            MemoryLayout.STD140 -> STD140_SIZE_BYTES
+            MemoryLayout.STD430 -> STD430_SIZE_BYTES
+        }
+    }
 
     override fun serialize(list: NativeDataList) {
-        list.addFloat(x)
-        list.addFloat(y)
-        list.addFloat(z)
-        list.addFloat(w)
+        list.setFloat(x)
+        list.setFloat(y)
+        list.setFloat(z)
+        list.setFloat(w)
     }
 
-    override fun deserialize(list: NativeDataList) = Quaternion(
+    override fun deserialize(list: NativeDataList) = Vec4(
         list.getFloat(),
         list.getFloat(),
         list.getFloat(),

@@ -1,19 +1,6 @@
 package com.cws.kanvas.rendering.backend
 
 import com.cws.std.memory.NativeBuffer
-import com.cws.kanvas.rendering.backend.MemoryType
-import org.lwjgl.system.MemoryStack
-import org.lwjgl.system.MemoryUtil
-import org.lwjgl.util.vma.Vma.VMA_MEMORY_USAGE_AUTO
-import org.lwjgl.util.vma.Vma.VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE
-import org.lwjgl.util.vma.Vma.VMA_MEMORY_USAGE_AUTO_PREFER_HOST
-import org.lwjgl.util.vma.Vma.vmaCreateBuffer
-import org.lwjgl.util.vma.Vma.vmaDestroyBuffer
-import org.lwjgl.util.vma.Vma.vmaMapMemory
-import org.lwjgl.util.vma.Vma.vmaUnmapMemory
-import org.lwjgl.util.vma.VmaAllocationCreateInfo
-import org.lwjgl.vulkan.VK10.*
-import org.lwjgl.vulkan.VkBufferCreateInfo
 
 actual enum class BufferUsage(actual val value: Int) {
     TRANSFER_SRC(VK_BUFFER_USAGE_TRANSFER_SRC_BIT),

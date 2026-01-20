@@ -2,21 +2,6 @@ package com.cws.kanvas.rendering.backend
 
 import com.cws.kanvas.core.Version
 import com.cws.print.Print
-import org.lwjgl.vulkan.EXTDebugUtils.*
-import org.lwjgl.vulkan.KHRGetPhysicalDeviceProperties2.VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
-import org.lwjgl.vulkan.KHRSurface.VK_KHR_SURFACE_EXTENSION_NAME
-import org.lwjgl.vulkan.VK10.*
-import org.lwjgl.vulkan.VK13.VK_API_VERSION_1_3
-import org.lwjgl.vulkan.VkApplicationInfo
-import org.lwjgl.vulkan.VkDebugUtilsMessengerCallbackDataEXT
-import org.lwjgl.vulkan.VkDebugUtilsMessengerCallbackEXT
-import org.lwjgl.vulkan.VkDebugUtilsMessengerCreateInfoEXT
-import org.lwjgl.vulkan.VkExtensionProperties
-import org.lwjgl.vulkan.VkInstance
-import org.lwjgl.vulkan.VkInstanceCreateInfo
-import org.lwjgl.vulkan.VkLayerProperties
-import org.lwjgl.vulkan.VkPhysicalDevice
-import org.lwjgl.vulkan.VkQueueFamilyProperties
 
 actual typealias RenderContextHandle = VkInstance
 

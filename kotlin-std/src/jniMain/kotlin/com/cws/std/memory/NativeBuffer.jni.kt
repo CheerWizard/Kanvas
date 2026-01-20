@@ -10,8 +10,14 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
         this.buffer = buffer
     }
 
+    constructor(ptr: Long, capacity: Int) : this(capacity) {
+        this.buffer = CMemory.toByteBuffer(ptr, capacity) ?: throw RuntimeException("Failed to allocate for NativeBuffer $capacity bytes from ptr $ptr")
+    }
+
     var buffer: ByteBuffer = CMemory.malloc(capacity)
         ?: throw RuntimeException("Failed to allocate for NativeBuffer $capacity bytes")
+
+    val address: Long = CMemory.addressOf(buffer)
 
     actual var position: Int
         set(value) {
@@ -20,6 +26,7 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
         get() = buffer.position()
 
     actual val capacity: Int get() = buffer.capacity()
+    val size: Int get() = buffer.remaining()
 
     private var intView: IntBuffer = buffer.asIntBuffer()
     private var floatView: FloatBuffer = buffer.asFloatBuffer()

@@ -1,10 +1,11 @@
 #include <jni.h>
 #include <sys/mman.h>
 #include "../cmemory.hpp"
+#include <jni.h>
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_cws_std_CMemory_malloc(JNIEnv* env, jobject thiz, jint size) {
+Java_com_cws_std_memory_CMemory_malloc(JNIEnv* env, jobject thiz, jint size) {
     void* ptr = cmemory::malloc(size);
     if (!ptr) return nullptr;
     return env->NewDirectByteBuffer(ptr, size);
@@ -12,14 +13,14 @@ Java_com_cws_std_CMemory_malloc(JNIEnv* env, jobject thiz, jint size) {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_cws_std_CMemory_free(JNIEnv* env, jobject thiz, jobject buffer) {
+Java_com_cws_std_memory_CMemory_free(JNIEnv* env, jobject thiz, jobject buffer) {
     void* ptr = env->GetDirectBufferAddress(buffer);
     cmemory::free(ptr);
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_cws_std_CMemory_realloc(JNIEnv* env, jobject thiz, jobject buffer, jint size) {
+Java_com_cws_std_memory_CMemory_realloc(JNIEnv* env, jobject thiz, jobject buffer, jint size) {
     void* oldPtr = env->GetDirectBufferAddress(buffer);
     void* ptr = nullptr;
     jobject newBuffer = nullptr;
@@ -35,4 +36,16 @@ Java_com_cws_std_CMemory_realloc(JNIEnv* env, jobject thiz, jobject buffer, jint
     }
 
     return newBuffer;
+}
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_cws_std_memory_CMemory_addressOf(JNIEnv * env, jobject thiz, jobject buffer) {
+    return reinterpret_cast<jlong>(env->GetDirectBufferAddress(buffer));
+}
+
+extern "C"
+JNIEXPORT jobject JNICALL
+Java_com_cws_std_memory_CMemory_toByteBuffer(JNIEnv * env, jobject thiz, jlong ptr, jint capacity) {
+    return env->NewDirectByteBuffer(ptr, capacity);
 }

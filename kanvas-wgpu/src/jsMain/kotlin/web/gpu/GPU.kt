@@ -5,6 +5,7 @@ package web.gpu
 import js.promise.Promise
 import js.promise.await
 import kotlin.js.JsName
+import kotlin.js.Promise
 import kotlin.js.definedExternally
 
 /**

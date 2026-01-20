@@ -1,6 +1,7 @@
 package com.cws.kanvas.math
 
 import com.cws.std.memory.INativeData
+import com.cws.std.memory.MemoryLayout
 import com.cws.std.memory.NativeDataList
 import com.cws.std.memory.Stack
 import com.cws.std.memory.stackPush
@@ -16,10 +17,18 @@ import com.cws.std.memory.stackPush
 interface Mat3 : INativeData {
 
     companion object {
-        const val SIZE_BYTES = Vec3.SIZE_BYTES * 3
+        val SIZE_BYTES = Vec3.SIZE_BYTES * 3
+        val STD140_SIZE_BYTES = Vec3.STD140_SIZE_BYTES * 3
+        val STD430_SIZE_BYTES = Vec3.STD430_SIZE_BYTES * 3
     }
 
-    override val sizeBytes: Int get() = SIZE_BYTES
+    override fun sizeBytes(layout: MemoryLayout): Int {
+        return when (layout) {
+            MemoryLayout.KOTLIN -> SIZE_BYTES
+            MemoryLayout.STD140 -> STD140_SIZE_BYTES
+            MemoryLayout.STD430 -> STD430_SIZE_BYTES
+        }
+    }
 
     override fun serialize(list: NativeDataList) {
         list.set(v1)

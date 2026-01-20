@@ -62,10 +62,16 @@ kotlin {
             dependsOn(commonMain)
         }
 
-        val vkMain by creating {
+        val vkJvmMain by creating {
             dependencies {
-                // VK Native API
-                runtimeOnly(project(":kanvas-vk"))
+                implementation(project(":kanvas-vk-jvm"))
+            }
+            dependsOn(glslMain)
+        }
+
+        val vkNativeMain by creating {
+            dependencies {
+                implementation(project(":kanvas-vk-native"))
             }
             dependsOn(glslMain)
         }
@@ -83,11 +89,11 @@ kotlin {
                 api("androidx.activity:activity-compose:1.10.1")
                 api(libs.androidx.core.ktx)
             }
-            dependsOn(vkMain)
+            dependsOn(vkJvmMain)
         }
 
         val iosMain by creating {
-            dependsOn(vkMain)
+            dependsOn(vkNativeMain)
         }
 
         val desktopMain by getting {
@@ -95,7 +101,7 @@ kotlin {
                 // Compose
                 api(compose.desktop.currentOs)
             }
-            dependsOn(vkMain)
+            dependsOn(vkJvmMain)
         }
 
         val jsMain by getting {

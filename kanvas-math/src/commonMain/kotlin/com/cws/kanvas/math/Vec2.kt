@@ -1,8 +1,12 @@
 package com.cws.kanvas.math
 
 import com.cws.std.memory.INativeData
+import com.cws.std.memory.MemoryLayout
 import com.cws.std.memory.NativeDataList
+import com.cws.std.memory.STD140_SIZE_BYTES
+import com.cws.std.memory.STD430_SIZE_BYTES
 import com.cws.std.memory.Stack
+import com.cws.std.memory.sizeBytes
 import com.cws.std.memory.stackPush
 import kotlin.math.sqrt
 
@@ -16,14 +20,22 @@ import kotlin.math.sqrt
 interface Vec2 : INativeData {
 
     companion object {
-        const val SIZE_BYTES = Float.SIZE_BYTES * 2
+        val SIZE_BYTES = Float.SIZE_BYTES * 2
+        val STD140_SIZE_BYTES = Float.STD140_SIZE_BYTES * 2
+        val STD430_SIZE_BYTES = Float.STD430_SIZE_BYTES * 2
     }
 
-    override val sizeBytes: Int get() = SIZE_BYTES
+    override fun sizeBytes(layout: MemoryLayout): Int {
+        return when (layout) {
+            MemoryLayout.KOTLIN -> SIZE_BYTES
+            MemoryLayout.STD140 -> STD140_SIZE_BYTES
+            MemoryLayout.STD430 -> STD430_SIZE_BYTES
+        }
+    }
 
     override fun serialize(list: NativeDataList) {
-        list.addFloat(x)
-        list.addFloat(y)
+        list.setFloat(x)
+        list.setFloat(y)
     }
 
     override fun deserialize(list: NativeDataList) = Vec2(
