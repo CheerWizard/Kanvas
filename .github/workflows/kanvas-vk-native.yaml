@@ -6,22 +6,19 @@ on:
   pull_request:
 
 jobs:
-  build-native:
-    name: Build Native ${{ matrix.os }} / ${{ matrix.target }}
-    runs-on: ${{ matrix.os }}
+  # =========================
+  # macOS + iOS
+  # =========================
+  macos:
+    name: macOS + iOS
+    runs-on: macos-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        target: [linuxX64, macosArm64, macosX64, iosArm64, iosSimulatorArm64, mingwX64, androidNativeArm64, androidNativeX64]
-
+        target: [macosArm64, macosX64, iosArm64, iosSimulatorArm64]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Make gradlew executable
-        if: runner.os != 'Windows'
-        run: chmod +x ./gradlew
-
-      - name: Set up JDK
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -33,53 +30,112 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
-
-      - name: Install Vulkan / Android dependencies
-        run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            if [[ "${{ matrix.target }}" == linuxX64 ]]; then
-              sudo apt-get update && sudo apt-get install -y libvulkan-dev
-            fi
-            if [[ "${{ matrix.target }}" == androidNative* ]]; then
-              sudo apt-get update && sudo apt-get install -y unzip wget
-              curl -s https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -o cmdline-tools.zip
-              unzip -q cmdline-tools.zip -d $HOME/Android
-              mkdir -p $HOME/Android/cmdline-tools/latest
-              mv $HOME/Android/cmdline-tools/* $HOME/Android/cmdline-tools/latest/
-              export ANDROID_HOME=$HOME/Android
-              export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-              yes | sdkmanager --licenses
-              sdkmanager "platform-tools" "ndk;26.1.10909125"
-              echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/26.1.10909125" >> $GITHUB_ENV
-            fi
-          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            if [[ "${{ matrix.target }}" == ios* ]]; then
-              echo "iOS toolchain already available on macOS runner"
-            fi
-          elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            if [[ "${{ matrix.target }}" == mingwX64 ]]; then
-              powershell -Command "
-                $version='1.3.280.0';
-                $url='https://sdk.lunarg.com/sdk/download/$version/windows/VulkanSDK-$version-Installer.exe';
-                $installer='$env:TEMP\VulkanSDK.exe';
-                Invoke-WebRequest $url -OutFile $installer;
-                Start-Process $installer -ArgumentList '/S' -Wait;
-                echo 'VULKAN_SDK=C:\VulkanSDK\$version' >> $env:GITHUB_ENV;
-                echo 'PATH=C:\VulkanSDK\$version\Bin;$env:PATH' >> $env:GITHUB_ENV
-              "
-            fi
-          fi
-        shell: bash
+          key: gradle-macos-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
       - name: Build target
-        run: |
-          ./gradlew ":kanvas-vk-native:linkReleaseShared${{ matrix.target }}" --info
+        run: ./gradlew ":kanvas-vk-native:linkReleaseShared${{ matrix.target }}" --info
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: kanvas-native-${{ matrix.target }}
           path: kanvas-vk-native/build/bin/${{ matrix.target }}/releaseShared/*
+
+  # =========================
+  # Linux + Android Native
+  # =========================
+  linux:
+    name: Linux + Android Native
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [linuxX64, androidNativeArm64, androidNativeX64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-linux-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
+      - name: Install Vulkan / Android NDK
+        run: |
+          if [[ "${{ matrix.target }}" == linuxX64 ]]; then
+            sudo apt-get update && sudo apt-get install -y libvulkan-dev
+          fi
+
+          if [[ "${{ matrix.target }}" == androidNative* ]]; then
+            sudo apt-get update && sudo apt-get install -y unzip wget curl
+            curl -s https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -o cmdline-tools.zip
+            unzip -q cmdline-tools.zip -d $HOME/Android
+            mkdir -p $HOME/Android/cmdline-tools/latest
+            mv $HOME/Android/cmdline-tools/* $HOME/Android/cmdline-tools/latest/
+            export ANDROID_HOME=$HOME/Android
+            export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+            yes | sdkmanager --licenses
+            sdkmanager "platform-tools" "ndk;26.1.10909125"
+            echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/26.1.10909125" >> $GITHUB_ENV
+          fi
+        shell: bash
+
+      - name: Build target
+        run: ./gradlew ":kanvas-vk-native:linkReleaseShared${{ matrix.target }}" --info
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanvas-native-${{ matrix.target }}
+          path: kanvas-vk-native/build/bin/${{ matrix.target }}/releaseShared/*
+
+  # =========================
+  # Windows (mingwX64)
+  # =========================
+  windows:
+    name: Windows (mingwX64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-windows-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
+      - name: Install Vulkan SDK
+        shell: powershell
+        run: |
+          $version='1.3.280.0';
+          $url="https://sdk.lunarg.com/sdk/download/$version/windows/VulkanSDK-$version-Installer.exe";
+          $installer="$env:TEMP\VulkanSDK.exe";
+          Invoke-WebRequest $url -OutFile $installer;
+          Start-Process $installer -ArgumentList '/S' -Wait;
+          echo "VULKAN_SDK=C:\VulkanSDK\$version" >> $env:GITHUB_ENV;
+          echo "PATH=C:\VulkanSDK\$version\Bin;$env:PATH" >> $env:GITHUB_ENV
+
+      - name: Build target
+        shell: bash
+        run: ./gradlew ":kanvas-vk-native:linkReleaseSharedMingwX64" --info
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanvas-native-mingwX64
+          path: kanvas-vk-native/build/bin/mingwX64/releaseShared/*
