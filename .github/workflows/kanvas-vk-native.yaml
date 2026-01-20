@@ -13,11 +13,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - name: Build macOS + iOS
         run: |
@@ -25,14 +38,14 @@ jobs:
             :kanvas-vk-native:linkReleaseSharedMacosArm64 \
             :kanvas-vk-native:linkReleaseSharedMacosX64 \
             :kanvas-vk-native:linkReleaseSharedIosArm64 \
-            :kanvas-vk-native:linkReleaseSharedIosSimulatorArm64
+            :kanvas-vk-native:linkReleaseSharedIosSimulatorArm64 \
+            --info
 
       - name: Upload macOS/iOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: kanvas-native-macos-ios
-          path: |
-            kanvas-vk-native/build/bin/**/releaseShared/*
+          path: kanvas-vk-native/build/bin/**/releaseShared/*
 
   linux:
     name: Linux
@@ -41,11 +54,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - name: Install Vulkan headers
         run: sudo apt-get update && sudo apt-get install -y libvulkan-dev
@@ -53,14 +79,14 @@ jobs:
       - name: Build Linux
         run: |
           ./gradlew \
-            :kanvas-vk-native:linkReleaseSharedLinuxX64
+            :kanvas-vk-native:linkReleaseSharedLinuxX64 \
+            --info
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
         with:
           name: kanvas-native-linux
-          path: |
-            kanvas-vk-native/build/bin/linuxX64/releaseShared/*
+          path: kanvas-vk-native/build/bin/linuxX64/releaseShared/*
 
   windows:
     name: Windows
@@ -72,8 +98,18 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - name: Install Vulkan SDK
         uses: humbletim/install-vulkan-sdk@v1
@@ -84,11 +120,11 @@ jobs:
         shell: bash
         run: |
           ./gradlew \
-            :kanvas-vk-native:linkReleaseSharedMingwX64
+            :kanvas-vk-native:linkReleaseSharedMingwX64 \
+            --info
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: kanvas-native-windows
-          path: |
-            kanvas-vk-native/build/bin/mingwX64/releaseShared/*
+          path: kanvas-vk-native/build/bin/mingwX64/releaseShared/*
