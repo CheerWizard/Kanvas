@@ -112,9 +112,17 @@ jobs:
             gradle-${{ runner.os }}-
 
       - name: Install Vulkan SDK
-        uses: humbletim/install-vulkan-sdk@v1
-        with:
-          version: 1.3.280.0
+        shell: powershell
+        run: |
+          $version = "1.3.280.0"
+          $url = "https://sdk.lunarg.com/sdk/download/$version/windows/VulkanSDK-$version-Installer.exe"
+          $installer = "$env:TEMP\VulkanSDK.exe"
+      
+          Invoke-WebRequest $url -OutFile $installer
+          Start-Process $installer -ArgumentList "/S" -Wait
+      
+          echo "VULKAN_SDK=C:\VulkanSDK\$version" >> $env:GITHUB_ENV
+          echo "PATH=C:\VulkanSDK\$version\Bin;$env:PATH" >> $env:GITHUB_ENV
 
       - name: Build Windows
         shell: bash
