@@ -1,10 +1,15 @@
-package com.cws.kanvaslab.project
+package com.cws.kanvas.editor.project
 
 import com.cws.kanvas.core.GameModule
+import com.cws.print.Print
 import java.io.File
 import java.net.URLClassLoader
 
 class GameModuleLoader {
+
+    companion object {
+        private const val TAG = "GameModuleLoader"
+    }
 
     fun load(projectConfig: ProjectConfig, moduleName: String): GameModule? {
         if (build(projectConfig.root, moduleName)) {
@@ -14,6 +19,7 @@ class GameModuleLoader {
     }
 
     private fun build(projectRoot: String, moduleName: String): Boolean {
+        Print.d(TAG, "building $projectRoot $moduleName")
         val status = ProcessBuilder("./gradlew", ":$moduleName:jar")
             .directory(File(projectRoot))
             .inheritIO()
@@ -23,7 +29,9 @@ class GameModuleLoader {
     }
 
     private fun loadClass(projectRoot: String, moduleName: String): GameModule? {
-        val jar = File("$projectRoot/$moduleName/build/libs/$moduleName.jar")
+        val jarPath = "$projectRoot/$moduleName/build/libs/$moduleName.jar"
+        Print.d(TAG, "loading class from $jarPath")
+        val jar = File(jarPath)
         if (jar.exists()) {
             val loader = URLClassLoader(
                 arrayOf(jar.toURI().toURL()),
@@ -32,6 +40,8 @@ class GameModuleLoader {
             val module = loader.loadClass(moduleName)
             val instance = module.getDeclaredConstructor().newInstance() as GameModule
             return instance
+        } else {
+            Print.e(TAG, "Failed to load class from $jarPath")
         }
         return null
     }

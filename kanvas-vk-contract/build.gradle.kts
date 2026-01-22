@@ -33,3 +33,20 @@ kotlin {
         }
     }
 }
+
+android {
+    compileSdk = 36
+    namespace = "com.cws.kanvas.vk"
+
+    defaultConfig {
+        minSdk = 26
+        targetSdk = 36
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    sourceSets["main"].assets.srcDir("$buildDir/generated/commonAssets")
+}

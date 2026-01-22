@@ -14,7 +14,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        target: [macosArm64, macosX64, iosArm64, iosSimulatorArm64]
+        target: [macosArm64, macosX64, iosArm64, iosX64, iosSimulatorArm64]
     steps:
       - uses: actions/checkout@v4
 

@@ -1,5 +1,5 @@
 headers = vulkan/vulkan.h
-compilerOpts = -I${projectDir}/vendor/vulkan/include -DVK_ENABLE_BETA_EXTENSIONS
+#compilerOpts = -I${projectDir}/vendor/vulkan/include -DVK_ENABLE_BETA_EXTENSIONS
 package = vulkan
 linkerOpts = -lvulkan
 linkerOpts.mingw = -lvulkan

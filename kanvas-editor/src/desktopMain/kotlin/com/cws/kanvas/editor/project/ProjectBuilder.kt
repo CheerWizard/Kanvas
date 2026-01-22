@@ -1,12 +1,15 @@
-package com.cws.kanvaslab.project
+package com.cws.kanvas.editor.project
 
-import org.gradle.tooling.GradleConnector
-
+import com.cws.print.Print
 import java.io.File
 
-actual class ProjectBuilder actual constructor() {
+class ProjectBuilder {
 
-    actual fun build(projectConfig: ProjectConfig) {
+    companion object {
+        private const val TAG = "ProjectBuilder"
+    }
+
+    fun build(projectConfig: ProjectConfig) {
         build(
             projectConfig.root,
             getGradleTasks(projectConfig.buildType, projectConfig.target)
@@ -30,17 +33,42 @@ actual class ProjectBuilder actual constructor() {
         }
     }
 
-    actual fun build(projectRoot: String, tasks: List<String>) {
+    fun build(projectRoot: String, tasks: List<String>) {
         val root = File(projectRoot)
         if (!root.exists()) {
+            Print.e(TAG, "Project root is absent $projectRoot")
             return
         }
 
-        val connector = GradleConnector.newConnector().forProjectDirectory(root)
-        connector.connect().use { connection ->
-            val build = connection.newBuild()
-            build.forTasks(*tasks.toTypedArray())
-            build.run()
+        val gradlew = if (System.getProperty("os.name").lowercase().contains("win")) {
+            File(root, "gradlew.bat")
+        } else {
+            File(root, "gradlew")
+        }
+
+        if (!gradlew.exists()) {
+            Print.e(TAG, "Failed to execute gradlew, not found in $projectRoot")
+            return
+        }
+
+        val command = mutableListOf(gradlew.absolutePath).apply {
+            addAll(tasks)
+            add("--no-daemon")
+        }
+
+        val process = ProcessBuilder(command)
+            .directory(root)
+            .redirectErrorStream(true)
+            .start()
+
+        process.inputStream.bufferedReader().useLines { lines ->
+            lines.forEach { println(it) }
+        }
+
+        val exitCode = process.waitFor()
+        if (exitCode != 0) {
+            Print.e(TAG, "Gradle build failed with exit code $exitCode")
+            return
         }
     }
 

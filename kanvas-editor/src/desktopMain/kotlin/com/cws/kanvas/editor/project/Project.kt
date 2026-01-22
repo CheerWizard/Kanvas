@@ -1,4 +1,4 @@
-package com.cws.kanvaslab.project
+package com.cws.kanvas.editor.project
 
 import com.cws.kanvas.core.GameModule
 import com.cws.kanvas.core.GameModuleManager
@@ -72,7 +72,6 @@ class Project(
         //  1. Erase entire module directory
         //  2. Erase module name from config.modules
         //  3. Reload that module so it will be also removed from runtime
-        gameModuleManager.removeModule()
     }
 
     fun build() {

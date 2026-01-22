@@ -37,8 +37,8 @@ class VkDeviceResource : VkResource {
     private var device: VkDevice? = null
     var physicalDevice: VkPhysicalDevice? = null
 
-    var queue: DeviceQueue? = null
-        private set
+//    var queue: DeviceQueue? = null
+//        private set
 
     var properties: VkPhysicalDeviceProperties? = null
     val queueFamilies = mutableListOf<VkQueueFamilyProperties>()
@@ -120,9 +120,9 @@ class VkDeviceResource : VkResource {
                 VK_KHR_SWAPCHAIN_EXTENSION_NAME
             )
 
-            check(checkExtensions(requiredExtensions)) {
-                "Missing required device extensions"
-            }
+//            check(checkExtensions(requiredExtensions)) {
+//                "Missing required device extensions"
+//            }
 
             val ppExtensions = allocArray<CPointerVar<ByteVar>>(requiredExtensions.size)
 
@@ -148,15 +148,15 @@ class VkDeviceResource : VkResource {
             device = pDevice.value
         }
 
-        resolveFeatures(
-            requested = config.enabledFeatures,
-            required = config.requiredFeatures,
-            supported = getSupportedFeatures(),
-        )
+//        resolveFeatures(
+//            requested = config.enabledFeatures,
+//            required = config.requiredFeatures,
+//            supported = getSupportedFeatures(),
+//        )
 
         VkPhysicalDeviceFeatures2KHR
 
-        queue = DeviceQueue(this, DeviceQueueConfig(queueFamilyIndices.graphics))
+//        queue = DeviceQueue(this, DeviceQueueConfig(queueFamilyIndices.graphics))
     }
 
 }

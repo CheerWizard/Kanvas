@@ -29,21 +29,36 @@ kotlin {
                     )
 
                     when (konanTarget.family) {
-                        Family.ANDROID -> compilerOpts(
-                            "-DVK_USE_PLATFORM_ANDROID_KHR"
-                        )
+                        Family.ANDROID -> {
+                            val ndk = System.getenv("NDK")
+                            compilerOpts("-DVK_USE_PLATFORM_ANDROID_KHR")
+//                            extraOpts(
+//                                "$ndk/sysroot/usr/include",
+//                                "$ndk/sysroot/usr/lib/aarch64-linux-android",
+//                                "-lvulkan"
+//                            )
+                        }
 
-                        Family.LINUX -> compilerOpts(
-                            "-DVK_USE_PLATFORM_XCB_KHR"
-                        )
+                        Family.LINUX -> compilerOpts("-DVK_USE_PLATFORM_XCB_KHR")
 
-                        Family.MINGW -> compilerOpts(
-                            "-DVK_USE_PLATFORM_WIN32_KHR"
-                        )
+                        Family.MINGW -> compilerOpts("-DVK_USE_PLATFORM_WIN32_KHR")
 
-                        Family.OSX, Family.IOS -> compilerOpts(
-                            "-DVK_USE_PLATFORM_METAL_EXT"
-                        )
+                        Family.OSX -> {
+                            val vulkanSdk = System.getenv("VULKAN_SDK")
+                            compilerOpts("-DVK_USE_PLATFORM_METAL_EXT")
+                            extraOpts(
+                                "${vulkanSdk}/include",
+                                "${vulkanSdk}/lib",
+                                "-lvulkan"
+                            )
+                        }
+
+                        Family.IOS -> {
+                            extraOpts("-I/path/to/MoltenVK/include", "-F/path/to/MoltenVK", "-framework", "MoltenVK")
+                            compilerOpts(
+                                "-DVK_USE_PLATFORM_METAL_EXT"
+                            )
+                        }
 
                         else -> {}
                     }

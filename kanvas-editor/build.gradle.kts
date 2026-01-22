@@ -13,7 +13,6 @@ kotlin {
         val desktopMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
-                implementation(libs.gradle.tooling.api)
                 implementation(project(":kanvas"))
             }
         }

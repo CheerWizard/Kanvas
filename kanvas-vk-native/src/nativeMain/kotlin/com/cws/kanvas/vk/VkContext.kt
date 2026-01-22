@@ -42,16 +42,16 @@ class VkContext(
 
     private var instance: VkInstance? = null
 
-    private val debugCallback =
-        staticCFunction<VkDebugUtilsMessengerCallbackDataEXT> { severity, type, data, _ ->
-            if (severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT ||
-                severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
-            ) {
-                val message = data?.pointed?.pMessage?.toKString()
-                println("Vulkan: type=$type message=$message")
-            }
-            VK_FALSE
-        }
+//    private val debugCallback =
+//        staticCFunction<VkDebugUtilsMessengerCallbackDataEXT> { severity, type, data, _ ->
+//            if (severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT ||
+//                severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+//            ) {
+//                val message = data?.pointed?.pMessage?.toKString()
+//                println("Vulkan: type=$type message=$message")
+//            }
+//            VK_FALSE
+//        }
 
     private var debugMessenger: VkDebugUtilsMessengerEXT? = null
 
@@ -127,7 +127,7 @@ class VkContext(
                         VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT or
                                 VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT or
                                 VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
-                    pfnUserCallback = debugCallback
+//                    pfnUserCallback = debugCallback
                 }
 
                 instanceCreateInfo.pNext = debugInfo.ptr
@@ -182,10 +182,10 @@ class VkContext(
 
             for (j in 0 until queueCount.value.toInt()) {
                 if (queues[j].queueFlags and VK_QUEUE_GRAPHICS_BIT != 0u) {
-                    device = Device(config.deviceConfig).apply {
-                        physicalDevice = physical
-                        create()
-                    }
+//                    device = Device(config.deviceConfig).apply {
+//                        physicalDevice = physical
+//                        create()
+//                    }
                     return
                 }
             }

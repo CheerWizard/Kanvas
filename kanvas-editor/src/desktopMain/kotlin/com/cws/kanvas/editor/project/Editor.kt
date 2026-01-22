@@ -1,4 +1,4 @@
-package com.cws.kanvaslab.project
+package com.cws.kanvas.editor.project
 
 import kotlinx.serialization.Serializable
 
