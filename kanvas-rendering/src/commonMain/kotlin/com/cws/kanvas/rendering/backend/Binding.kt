@@ -8,7 +8,9 @@ expect enum class BindingType {
 }
 
 data class Binding(
-    val type: BindingType,
-    val slot: UInt,
-    val shaderStages: UInt,
+    var type: BindingType,
+    var shaderStages: Int,
+    var set: Int,
+    var binding: Int,
+    var count: Int = 1,
 )

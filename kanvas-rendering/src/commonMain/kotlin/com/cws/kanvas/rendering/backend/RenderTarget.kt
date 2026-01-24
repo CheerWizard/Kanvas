@@ -7,8 +7,7 @@ data class ColorAttachment(
     val samples: Int = 1,
     val clearColor: Vec4 = Vec4(0f, 0f, 0f, 1f),
     val enableBlending: Boolean = false,
-    val blendColor: Blend = Blend(),
-    val blendAlpha: Blend = Blend()
+    val blend: Blend = Blend(),
 )
 
 data class DepthAttachment(

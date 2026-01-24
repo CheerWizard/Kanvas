@@ -13,9 +13,10 @@ kotlin {
     }
 
     sourceSets {
-        val jvmMain by creating {
+        val jniMain by creating {
             dependencies {
-                implementation(project(":kanvas-vk-contract"))
+                // Standard
+                implementation(project(":kotlin-std"))
                 implementation(kotlin("stdlib-common"))
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.core)
@@ -25,28 +26,37 @@ kotlin {
         }
 
         val androidMain by getting {
-            dependsOn(jvmMain)
+            dependsOn(jniMain)
         }
 
         val desktopMain by getting {
-            dependsOn(jvmMain)
+            dependsOn(jniMain)
         }
     }
 }
 
+project.extra["jniProject"] = "vk"
+apply(from = "$rootDir/scripts/jni.gradle.kts")
+
 android {
-    compileSdk = 36
     namespace = "com.cws.kanvas.vk"
+    compileSdk = 34
 
     defaultConfig {
-        minSdk = 26
-        targetSdk = 36
+        minSdk = 24
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags += "-std=c++17"
+            }
+        }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+    externalNativeBuild {
+        cmake {
+            path = file("src/cpp/vk/CMakeLists.txt")
+        }
     }
-
-    sourceSets["main"].assets.srcDir("$buildDir/generated/commonAssets")
 }

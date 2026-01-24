@@ -1,0 +1,121 @@
+cmake_minimum_required(VERSION 3.22.1)
+project(KVK LANGUAGES C CXX)
+
+# print project info
+message("CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
+message("CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}")
+message("CMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}")
+
+# configurations
+add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
+    if(NOT DEFINED ENV{JAVA_HOME})
+        message(FATAL_ERROR "Please set JAVA_HOME to your JDK")
+    endif()
+
+    set(JAVA_INCLUDE_DIR "$ENV{JAVA_HOME}/include")
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        set(PLATFORM_DIR "linux")
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        set(PLATFORM_DIR "darwin")
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set(PLATFORM_DIR "win32")
+    else()
+        message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
+    endif()
+    set(JAVA_INCLUDE_DIR_PLATFORM "$ENV{JAVA_HOME}/include/${PLATFORM_DIR}")
+
+    include_directories(${JAVA_INCLUDE_DIR} ${JAVA_INCLUDE_DIR_PLATFORM})
+endif()
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../desktopMain/resources/libs/windows-x86_64)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../desktopMain/resources/libs/linux-x86_64)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../../jniMain/desktopMain/resources/libs/macos-x86_64)
+endif()
+
+include_directories(.)
+
+# include all sources and exclude platform specific sources
+file(GLOB_RECURSE SRC RELATIVE . "*.cpp")
+foreach(file ${SRC})
+    if(file MATCHES "^jni")
+        list(REMOVE_ITEM SRC ${file})
+    endif()
+endforeach()
+
+macro(build_windows)
+    file(GLOB_RECURSE PLATFORM_SRC jni/*.cpp)
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            vulkan-1
+    )
+endmacro()
+
+macro(build_linux)
+    file(GLOB_RECURSE PLATFORM_SRC jni/*.cpp)
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            vulkan
+    )
+endmacro()
+
+macro(build_macos)
+    file(GLOB_RECURSE PLATFORM_SRC jni/*.cpp)
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            MoltenVK
+    )
+endmacro()
+
+macro(build_android)
+    add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR=1)
+    file(GLOB_RECURSE PLATFORM_SRC jni/*.cpp)
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
+    target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,common-page-size=16384")
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            vulkan
+            android
+    )
+endmacro()
+
+macro(build_ios)
+    add_library(${PROJECT_NAME} SHARED ${SRC} ${PLATFORM_SRC})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            MoltenVK
+    )
+endmacro()
+
+# defines for OS
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    find_package(Vulkan REQUIRED)
+    add_definitions(-DWINDOWS)
+    build_windows()
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    find_package(Vulkan REQUIRED)
+    add_definitions(-DLINUX)
+    build_linux()
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Android")
+    find_package(Vulkan REQUIRED)
+    add_definitions(-DANDROID)
+    build_android()
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    find_package(Vulkan REQUIRED)
+    add_definitions(-DMACOS)
+    build_macos()
+elseif (CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    find_package(Vulkan REQUIRED)
+    add_definitions(-DIOS)
+    build_ios()
+endif ()
+
+# optionally enable warnings
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror)

@@ -2,6 +2,7 @@
 #include <sys/mman.h>
 #include "../cmemory.hpp"
 #include <jni.h>
+#include <cstring>
 
 extern "C"
 JNIEXPORT jobject JNICALL
@@ -48,4 +49,10 @@ extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_cws_std_memory_CMemory_toByteBuffer(JNIEnv * env, jobject thiz, jlong ptr, jint capacity) {
     return env->NewDirectByteBuffer(ptr, capacity);
+}
+
+extern "C"
+JNIEXPORT jobject JNICALL
+Java_com_cws_std_memory_CMemory_toByteBuffer(JNIEnv * env, jobject thiz, jlong ptr) {
+    return env->NewDirectByteBuffer(ptr, strlen((const char*) ptr));
 }

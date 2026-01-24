@@ -25,8 +25,11 @@ expect enum class BlendFactor {
 }
 
 data class Blend(
-    val enabled: Boolean = false,
-    val srcFactor: BlendFactor = BlendFactor.ONE,
-    val dstFactor: BlendFactor = BlendFactor.ZERO,
-    val operation: BlendOp = BlendOp.ADD,
+    val enable: Boolean = false,
+    val srcFactorColor: BlendFactor = BlendFactor.ONE,
+    val dstFactorColor: BlendFactor = BlendFactor.ZERO,
+    val blendOpColor: BlendOp = BlendOp.ADD,
+    val srcFactorAlpha: BlendFactor = BlendFactor.ONE,
+    val dstFactorAlpha: BlendFactor = BlendFactor.ZERO,
+    val blendOpAlpha: BlendOp = BlendOp.ADD,
 )

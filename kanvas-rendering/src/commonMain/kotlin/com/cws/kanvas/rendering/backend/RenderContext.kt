@@ -2,22 +2,19 @@ package com.cws.kanvas.rendering.backend
 
 import com.cws.kanvas.rendering.Version
 
-data class RenderContextConfig(
+data class RenderContextInfo(
     val appName: String = "",
     val appVersion: Version = Version(1, 0, 0),
     val engineName: String = "",
     val engineVersion: Version = Version(1, 0, 0),
-    val enableSurface: Boolean = false,
+    val surface: Any? = null,
     val enableValidation: Boolean = false,
-    val deviceConfig: DeviceConfig = DeviceConfig(),
 )
 
 expect class RenderContextHandle
+expect class DeviceHandle
 
-expect class RenderContext(config: RenderContextConfig) : Resource<RenderContextHandle, RenderContextConfig> {
-    var device: Device?
-        private set
-
+expect class RenderContext(config: RenderContextInfo) : Resource<RenderContextHandle, RenderContextInfo> {
     override fun onCreate()
     override fun onRelease()
 }

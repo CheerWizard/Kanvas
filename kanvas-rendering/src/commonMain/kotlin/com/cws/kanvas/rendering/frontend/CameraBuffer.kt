@@ -2,7 +2,7 @@ package com.cws.kanvas.rendering.frontend
 
 import com.cws.kanvas.math.Mat4
 import com.cws.kanvas.math.Vec4
-import com.cws.kanvas.rendering.backend.BufferConfig
+import com.cws.kanvas.rendering.backend.BufferInfo
 import com.cws.kanvas.rendering.backend.BufferUsage
 import com.cws.kanvas.rendering.backend.Device
 import com.cws.kanvas.rendering.backend.MemoryType
@@ -17,7 +17,7 @@ data class _CameraData(
 
 class CameraBuffer(device: Device, size: Int) : TypedBuffer<CameraData>(
     device = device,
-    config = BufferConfig(
+    config = BufferInfo(
         usages = BufferUsage.UNIFORM_BUFFER.value,
         size = (size * CameraData().sizeBytes).toLong(),
         memoryType = MemoryType.HOST,

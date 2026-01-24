@@ -17,7 +17,7 @@ data class ShaderConfig(
 
 expect class ShaderHandle
 
-expect class Shader(device: Device, config: ShaderConfig) : Resource<ShaderHandle, ShaderConfig> {
+expect class Shader(context: RenderContext, config: ShaderConfig) : Resource<ShaderHandle, ShaderConfig> {
     override fun onCreate()
     override fun onRelease()
 

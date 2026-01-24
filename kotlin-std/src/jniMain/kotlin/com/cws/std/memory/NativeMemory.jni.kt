@@ -2,14 +2,10 @@ package com.cws.std.memory
 
 import java.nio.ByteBuffer
 
-expect open class NativeMemory() {
-    protected fun init()
-}
-
-object CMemory : NativeMemory() {
+object CMemory {
 
     init {
-        init()
+        NativeLibrary.load<CMemory>("cmemory")
     }
 
     external fun malloc(size: Int): ByteBuffer?
@@ -17,5 +13,6 @@ object CMemory : NativeMemory() {
     external fun realloc(buffer: ByteBuffer, size: Int): ByteBuffer?
     external fun addressOf(buffer: ByteBuffer): Long
     external fun toByteBuffer(ptr: Long, capacity: Int): ByteBuffer?
+    external fun toByteBuffer(ptr: Long): ByteBuffer?
 
 }

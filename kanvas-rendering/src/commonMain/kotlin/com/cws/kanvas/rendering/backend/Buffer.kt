@@ -1,7 +1,6 @@
 package com.cws.kanvas.rendering.backend
 
 import com.cws.std.memory.NativeBuffer
-import com.cws.kanvas.rendering.backend.MemoryType
 
 expect enum class BufferUsage {
     TRANSFER_SRC,
@@ -17,7 +16,7 @@ expect enum class BufferUsage {
     val value: Int
 };
 
-data class BufferConfig(
+data class BufferInfo(
     val usages: Int,
     val size: Long,
     val memoryType: MemoryType,
@@ -25,7 +24,7 @@ data class BufferConfig(
 
 expect class BufferHandle
 
-expect open class Buffer(device: Device, config: BufferConfig) : Resource<BufferHandle, BufferConfig> {
+expect open class Buffer(device: Device, info: BufferInfo) : Resource<BufferHandle, BufferInfo> {
     override fun onCreate()
     override fun onRelease()
 

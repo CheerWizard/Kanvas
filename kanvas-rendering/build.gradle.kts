@@ -64,15 +64,13 @@ kotlin {
 
         val vkJvmMain by creating {
             dependencies {
-                implementation(project(":kanvas-vk-jvm"))
+                implementation(project(":kanvas-vk"))
             }
             dependsOn(glslMain)
         }
 
         val vkNativeMain by creating {
-            dependencies {
-                implementation(project(":kanvas-vk-native"))
-            }
+            // TODO: compile with cinterop VK wrapper library
             dependsOn(glslMain)
         }
 
@@ -155,9 +153,6 @@ afterEvaluate {
         enabled = false
     }
     tasks.named("kspKotlinDesktop") {
-        enabled = false
-    }
-    tasks.named("kspKotlinJs") {
         enabled = false
     }
 }

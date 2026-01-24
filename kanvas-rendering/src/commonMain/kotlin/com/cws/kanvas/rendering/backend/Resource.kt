@@ -1,6 +1,6 @@
 package com.cws.kanvas.rendering.backend
 
-abstract class Resource<Handle, Config>(val config: Config) {
+abstract class Resource<Handle, Info>(val info: Info) {
 
     var handle: Handle? = null
         protected set
@@ -21,5 +21,12 @@ abstract class Resource<Handle, Config>(val config: Config) {
     }
 
     protected abstract fun onRelease()
+
+    inline fun <T : Resource<Handle, Info>, R> T.useOnce(block: T.() -> R): R {
+        create()
+        val result = block()
+        release()
+        return result
+    }
 
 }
