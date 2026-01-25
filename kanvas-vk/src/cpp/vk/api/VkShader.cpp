@@ -27,6 +27,7 @@ VkShader::VkShader(VkDevice device, const VkShaderInfo &info)
             .pCode = info.spirvCode,
     };
     VK_CHECK(vkCreateShaderModule(device, &create_info, VK_CALLBACKS, &shader));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_SHADER_MODULE, shader, info.name);
 
     binding_layout = new VkBindingLayout(device, VkBindingInfo {
         .bindings = info.bindings,

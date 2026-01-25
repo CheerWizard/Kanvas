@@ -8,6 +8,13 @@ typealias VkHandles = LongArray
 object VK {
 
     // --------------------------------------------------
+    // Callbacks
+    // --------------------------------------------------
+
+    external fun LogBridge_callback(callback: (String) -> Unit)
+    external fun ResultBridge_callback(callback: (Int) -> Unit)
+
+    // --------------------------------------------------
     // VkContext
     // --------------------------------------------------
 
@@ -285,7 +292,7 @@ object VK {
 
     external fun VkCommandBufferResource_addSecondaryBuffers(
         cmd: VkHandle,
-        secondaryBuffers: LongArray
+        secondaryBuffers: VkHandles
     )
 
     external fun VkCommandBufferResource_draw(

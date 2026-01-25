@@ -1,0 +1,19 @@
+package com.cws.kanvas.wgpu.gpu
+
+/**
+ * Available only in secure contexts.
+ *
+ * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPUDeviceLostInfo)
+ */
+open external class GPUDeviceLostInfo
+private constructor() {
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPUDeviceLostInfo/message)
+     */
+    val message: String
+
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPUDeviceLostInfo/reason)
+     */
+    val reason: GPUDeviceLostReason
+}

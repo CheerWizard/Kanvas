@@ -1,7 +1,24 @@
 package com.cws.kanvas.vk
 
-/* ===================== MEMORY ===================== */
+/* ===================== RESULTS ===================== */
+enum class VkResult(val value: Int) {
+    SUCCESS(0),
+    NOT_READY(1),
+    TIMEOUT(2),
+    EVENT_SET(3),
+    EVENT_RESET(4),
+    INCOMPLETE(5),
+    ERROR_OUT_OF_HOST_MEMORY(-1),
+    ERROR_OUT_OF_DEVICE_MEMORY(-2),
+    ERROR_INITIALIZATION_FAILED(-3),
+    UNKNOWN(Int.MIN_VALUE); // fallback for unrecognized codes
 
+    companion object {
+        fun from(value: Int): VkResult = entries.find { it.value == value } ?: UNKNOWN
+    }
+}
+
+/* ===================== MEMORY ===================== */
 enum class VkMemoryPropertyFlagBits(val value: Int) {
     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT(0x00000001),
     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT(0x00000002),

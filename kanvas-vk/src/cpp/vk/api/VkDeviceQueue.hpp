@@ -20,7 +20,7 @@ struct VkDeviceQueue {
     VkCommandPool pool = nullptr;
     u32 family_index = 0;
 
-    VkDeviceQueue(VkDevice device, u32 family_index);
+    VkDeviceQueue(VkDevice device, const char* name, u32 family_index);
     ~VkDeviceQueue();
 
     void reset();

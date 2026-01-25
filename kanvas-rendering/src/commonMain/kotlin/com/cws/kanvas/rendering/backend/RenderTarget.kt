@@ -22,7 +22,8 @@ data class DepthAttachment(
     val stencilReadOnly: Boolean = false
 )
 
-data class RenderTargetConfig(
+data class RenderTargetInfo(
+    val name: String,
     val x: Int = 0,
     val y: Int = 0,
     val width: Int,
@@ -34,7 +35,7 @@ data class RenderTargetConfig(
 
 expect class RenderTargetHandle
 
-expect class RenderTarget(device: Device, config: RenderTargetConfig) : Resource<RenderTargetHandle, RenderTargetConfig> {
+expect class RenderTarget(renderContext: RenderContext, config: RenderTargetInfo) : Resource<RenderTargetHandle, RenderTargetInfo> {
     override fun onCreate()
     override fun onRelease()
 }

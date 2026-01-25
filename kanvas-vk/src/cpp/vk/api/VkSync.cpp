@@ -29,13 +29,17 @@ void VkSemaphoreResource_destroy(VkSemaphoreResource* semaphore) {
     delete semaphore;
 }
 
-VkFenceResource::VkFenceResource(VkDevice device, bool signaled) {
+VkFenceResource::VkFenceResource(VkDevice device, const char* name, bool signaled) {
     VkFenceCreateInfo createInfo = { VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
     if (signaled) {
         createInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
     }
     VK_CHECK(vkCreateFence(device, &createInfo, VK_CALLBACKS, &fence));
     this->device = device;
+
+    char debugName[64];
+    sprintf(debugName, "VkFence-%s", name);
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_COMMAND_BUFFER, fence, debugName);
 }
 
 VkFenceResource::~VkFenceResource() {
@@ -53,9 +57,13 @@ void VkFenceResource::reset() {
     VK_CHECK(vkResetFences(device, 1, &fence));
 }
 
-VkSemaphoreResource::VkSemaphoreResource(VkDevice device) {
+VkSemaphoreResource::VkSemaphoreResource(VkDevice device, const char* name) {
     VkSemaphoreCreateInfo createInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
     VK_CHECK(vkCreateSemaphore(device, &createInfo, VK_CALLBACKS, &semaphore));
+
+    char debugName[64];
+    sprintf(debugName, "VkSemaphore-%s", name);
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_COMMAND_BUFFER, semaphore, debugName);
 }
 
 VkSemaphoreResource::~VkSemaphoreResource() {

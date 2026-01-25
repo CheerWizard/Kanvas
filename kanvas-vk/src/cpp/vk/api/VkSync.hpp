@@ -13,7 +13,7 @@ struct VkFenceResource {
     VkDevice device = nullptr;
     VkFence fence = nullptr;
 
-    VkFenceResource(VkDevice device, bool signaled);
+    VkFenceResource(VkDevice device, const char* name, bool signaled);
     ~VkFenceResource();
 
     void wait(u64 timeout = UINT64_MAX);
@@ -24,7 +24,7 @@ struct VkSemaphoreResource {
     VkDevice device = nullptr;
     VkSemaphore semaphore = nullptr;
 
-    VkSemaphoreResource(VkDevice device);
+    VkSemaphoreResource(VkDevice device, const char* name);
     ~VkSemaphoreResource();
 };
 

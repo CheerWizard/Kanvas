@@ -12,7 +12,7 @@ struct VkCommandBufferResource {
     VkCommandBuffer command_buffer = nullptr;
     VkDeviceQueue& device_queue;
 
-    VkCommandBufferResource(VkDeviceQueue& device_queue, bool isPrimary);
+    VkCommandBufferResource(VkDeviceQueue& device_queue, const char* name, bool isPrimary);
     ~VkCommandBufferResource();
 
     void reset() const;

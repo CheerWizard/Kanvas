@@ -1,0 +1,69 @@
+@file:OptIn(ExperimentalJsCollectionsApi::class)
+
+package com.cws.kanvas.wgpu.gpu
+
+import kotlin.js.collections.JsReadonlyArray
+
+/**
+ * Available only in secure contexts.
+ *
+ * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPURenderPassEncoder)
+ */
+open external class GPURenderPassEncoder
+private constructor() :
+    GPUBindingCommandsMixin,
+    GPUDebugCommandsMixin,
+    GPUObjectBase,
+    GPURenderCommandsMixin {
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPURenderPassEncoder/beginOcclusionQuery)
+     */
+    fun beginOcclusionQuery(queryIndex: GPUSize32)
+
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPURenderPassEncoder/end)
+     */
+    fun end()
+
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPURenderPassEncoder/endOcclusionQuery)
+     */
+    fun endOcclusionQuery()
+
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPURenderPassEncoder/executeBundles)
+     */
+    fun executeBundles(bundles: JsReadonlyArray<GPURenderBundle>)
+
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPURenderPassEncoder/setBlendConstant)
+     */
+    fun setBlendConstant(color: GPUColor)
+
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPURenderPassEncoder/setScissorRect)
+     */
+    fun setScissorRect(
+        x: GPUIntegerCoordinate,
+        y: GPUIntegerCoordinate,
+        width: GPUIntegerCoordinate,
+        height: GPUIntegerCoordinate,
+    )
+
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPURenderPassEncoder/setStencilReference)
+     */
+    fun setStencilReference(reference: GPUStencilValue)
+
+    /**
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/GPURenderPassEncoder/setViewport)
+     */
+    fun setViewport(
+        x: GPUIntegerCoordinate,
+        y: GPUIntegerCoordinate,
+        width: GPUIntegerCoordinate,
+        height: GPUIntegerCoordinate,
+        minDepth: Float,
+        maxDepth: Float,
+    )
+}

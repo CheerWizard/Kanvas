@@ -54,7 +54,7 @@ expect enum class CompareOp {
     NOT_EQUAL,
 }
 
-data class SamplerConfig(
+data class SamplerInfo(
     val magFilter: SamplerFilter = SamplerFilter.LINEAR,
     val minFilter: SamplerFilter = SamplerFilter.LINEAR,
 
@@ -78,12 +78,12 @@ data class SamplerConfig(
 
 expect class SamplerHandle
 
-expect class Sampler(device: Device, config: SamplerConfig) : Resource<SamplerHandle, SamplerConfig> {
+expect class Sampler(context: RenderContext, info: SamplerInfo) : Resource<SamplerHandle, SamplerInfo> {
     override fun onCreate()
     override fun onRelease()
 }
 
-data class TextureConfig(
+data class TextureInfo(
     val type: TextureType = TextureType.TEXTURE2D,
 
     val width: Int = 0,
@@ -98,14 +98,14 @@ data class TextureConfig(
 
 expect class TextureHandle
 
-expect class Texture(device: Device, config: TextureConfig) : Resource<TextureHandle, TextureConfig> {
+expect class Texture(context: RenderContext, info: TextureInfo) : Resource<TextureHandle, TextureInfo> {
     override fun onCreate()
     override fun onRelease()
 }
 
 expect class TextureViewHandle
 
-expect class TextureView(device: Device) : Resource<TextureViewHandle, Unit> {
+expect class TextureView(context: RenderContext) : Resource<TextureViewHandle, Unit> {
     override fun onCreate()
     override fun onRelease()
 }

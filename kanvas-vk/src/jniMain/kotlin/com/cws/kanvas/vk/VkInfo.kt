@@ -35,6 +35,7 @@ data class VkContextInfo(
 /* ===================== BUFFER ===================== */
 
 data class VkBufferInfo(
+    var name: CString,
     var memoryType: VkMemoryPropertyFlagBits = VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
     var usages: Int = 0,
     var size: Long = 0,
@@ -44,16 +45,18 @@ data class VkBufferInfo(
     companion object { const val SIZEOF = 24 }
 
     fun pack(): ByteBuffer = buffer.apply {
-        putInt(0, memoryType.value)
-        putInt(4, usages)
-        putLong(8, size)
-        putInt(16, if (mapOnCreate) 1 else 0)
+        putLong(0, name.address)
+        putInt(8, memoryType.value)
+        putInt(12, usages)
+        putLong(16, size)
+        putInt(24, if (mapOnCreate) 1 else 0)
     }
 }
 
 /* ===================== SAMPLER ===================== */
 
 data class VkSamplerInfo(
+    var name: CString,
     var magFilter: VkFilter = VkFilter.VK_FILTER_LINEAR,
     var minFilter: VkFilter = VkFilter.VK_FILTER_LINEAR,
     var addressModeU: VkSamplerAddressMode = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
@@ -74,27 +77,29 @@ data class VkSamplerInfo(
     companion object { const val SIZEOF = 64 }
 
     fun pack(): ByteBuffer = buffer.apply {
-        putInt(0, magFilter.value)
-        putInt(4, minFilter.value)
-        putInt(8, addressModeU.value)
-        putInt(12, addressModeV.value)
-        putInt(16, addressModeW.value)
-        putInt(20, if (enableAnisotropy) 1 else 0)
-        putFloat(24, maxAnisotropy)
-        putInt(28, if (unnormalizedCoordinates) 1 else 0)
-        putInt(32, if (enableCompare) 1 else 0)
-        putInt(36, compareOp.value)
-        putInt(40, mipmapMode.value)
-        putInt(44, borderColor.value)
-        putFloat(48, mipLodBias)
-        putFloat(52, minLod)
-        putFloat(56, maxLod)
+        putLong(0, name.address)
+        putInt(8, magFilter.value)
+        putInt(12, minFilter.value)
+        putInt(16, addressModeU.value)
+        putInt(20, addressModeV.value)
+        putInt(24, addressModeW.value)
+        putInt(28, if (enableAnisotropy) 1 else 0)
+        putFloat(32, maxAnisotropy)
+        putInt(36, if (unnormalizedCoordinates) 1 else 0)
+        putInt(40, if (enableCompare) 1 else 0)
+        putInt(44, compareOp.value)
+        putInt(48, mipmapMode.value)
+        putInt(52, borderColor.value)
+        putFloat(56, mipLodBias)
+        putFloat(60, minLod)
+        putFloat(64, maxLod)
     }
 }
 
 /* ===================== TEXTURE ===================== */
 
 data class VkTextureInfo(
+    var name: CString,
     var type: VkImageViewType = VkImageViewType.VK_IMAGE_VIEW_TYPE_2D,
     var memoryType: VkMemoryPropertyFlagBits = VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
     var width: Int = 0,
@@ -108,14 +113,15 @@ data class VkTextureInfo(
     companion object { const val SIZEOF = 32 }
 
     fun pack(): ByteBuffer = buffer.apply {
-        putInt(0, type.value)
-        putInt(4, memoryType.value)
-        putInt(8, width)
-        putInt(12, height)
-        putInt(16, depth)
-        putInt(20, format.value)
-        putInt(24, mips)
-        putInt(28, baseMip)
+        putLong(0, name.address)
+        putInt(8, type.value)
+        putInt(12, memoryType.value)
+        putInt(16, width)
+        putInt(20, height)
+        putInt(24, depth)
+        putInt(28, format.value)
+        putInt(32, mips)
+        putInt(36, baseMip)
     }
 }
 
@@ -352,6 +358,7 @@ data class VkViewport(
 // ==================== VkPipelineInfo ====================
 
 data class VkPipelineInfo(
+    var name: CString = CString(null),
 
     var vertexAttributes: Long = 0L,
     var vertexAttributesCount: Long = 0,
@@ -449,6 +456,8 @@ data class VkPipelineInfo(
 
     fun pack(): ByteBuffer {
         buffer.clear()
+
+        buffer.putLong(name.address)
 
         buffer.putLong(vertexAttributes)
         buffer.putLong(vertexAttributesCount)

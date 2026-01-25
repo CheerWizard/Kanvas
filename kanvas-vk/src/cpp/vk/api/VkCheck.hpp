@@ -8,6 +8,7 @@
 #include "../bridges/ResultBridge.hpp"
 #include "../core/logger.hpp"
 
+#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan.h>
 
 #define VK_CHECK(fn)                                        \
@@ -17,6 +18,17 @@ do {                                                        \
         LOG_ERROR("VK call failed: %s (%d) at %s:%d", #fn, _r, __FILE__, __LINE__);                  \
         ResultBridge_send(_r);                             \
     }                                                       \
+} while (0)
+
+#define VK_DEBUG_NAME(device, type, handle, name)                     \
+do {                                                                        \
+    VkDebugUtilsObjectNameInfoEXT nameInfo {                                \
+        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,        \
+        .objectType = type,                                           \
+        .objectHandle = reinterpret_cast<uint64_t>(handle),                 \
+        .pObjectName = name,                                                \
+    };                                                                      \
+    vkSetDebugUtilsObjectNameEXT(device, &nameInfo);                        \
 } while (0)
 
 #endif //VK_CHECK_HPP

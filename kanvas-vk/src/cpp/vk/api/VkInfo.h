@@ -23,6 +23,7 @@ typedef struct VkContextInfo {
 } VkContextInfo;
 
 typedef struct VkBufferInfo {
+    const char* name;
     VkBindingLayout* binding_layout;
     VkBinding* binding;
     VkMemoryPropertyFlagBits memoryType;
@@ -32,6 +33,7 @@ typedef struct VkBufferInfo {
 } VkBufferInfo;
 
 typedef struct VkSamplerInfo {
+    const char* name;
     VkBindingLayout* binding_layout;
     VkBinding* binding;
     VkFilter magFilter;
@@ -52,6 +54,7 @@ typedef struct VkSamplerInfo {
 } VkSamplerInfo;
 
 typedef struct VkTextureInfo {
+    const char* name;
     VkBindingLayout* binding_layout;
     VkBinding* binding;
     VkImageViewType type;
@@ -109,6 +112,7 @@ typedef struct VkStencilAttachment {
 } VkStencilAttachment;
 
 typedef struct VkRenderTargetInfo {
+    const char* name;
     int x;
     int y;
     uint32_t width;
@@ -175,6 +179,7 @@ typedef struct VkBindingInfo {
 } VkBindingInfo;
 
 typedef struct VkPipelineInfo {
+    const char* name;
     VkAttribute* vertexAttributes;
     size_t vertexAttributesCount;
     uint32_t vertexBufferSlot;
@@ -199,6 +204,7 @@ extern "C" {
 
     inline VkBufferInfo VkBufferInfo_default() {
         VkBufferInfo info = {};
+        info.name = VK_NULL_HANDLE;
         info.binding_layout = VK_NULL_HANDLE;
         info.binding = VK_NULL_HANDLE;
         info.mapOnCreate = VK_FALSE;
@@ -207,6 +213,7 @@ extern "C" {
 
     inline VkSamplerInfo VkSamplerInfo_default() {
         VkSamplerInfo info = {};
+        info.name = VK_NULL_HANDLE;
         info.binding_layout = VK_NULL_HANDLE;
         info.binding = VK_NULL_HANDLE;
         info.magFilter = VK_FILTER_LINEAR;
@@ -229,6 +236,7 @@ extern "C" {
 
     inline VkTextureInfo VkTextureInfo_default() {
         VkTextureInfo info = {};
+        info.name = VK_NULL_HANDLE;
         info.binding_layout = VK_NULL_HANDLE;
         info.binding = VK_NULL_HANDLE;
         info.type = VK_IMAGE_VIEW_TYPE_2D;
@@ -256,6 +264,7 @@ extern "C" {
 
     inline VkColorAttachment VkColorAttachment_default() {
         VkColorAttachment attachment = {};
+        attachment.name = VK_NULL_HANDLE;
         attachment.view = VK_NULL_HANDLE;
         attachment.format;
         attachment.samples = 1;
@@ -269,6 +278,7 @@ extern "C" {
 
     inline VkDepthAttachment VkDepthAttachment_default() {
         VkDepthAttachment attachment = {};
+        attachment.name = VK_NULL_HANDLE;
         attachment.view = VK_NULL_HANDLE;
         attachment.enabled = VK_FALSE;
         attachment.format;
@@ -284,6 +294,7 @@ extern "C" {
 
     inline VkStencilAttachment VkStencilAttachment_default() {
         VkStencilAttachment attachment = {};
+        attachment.name = VK_NULL_HANDLE;
         attachment.view = VK_NULL_HANDLE;
         attachment.enabled = VK_FALSE;
         attachment.format;
@@ -299,6 +310,7 @@ extern "C" {
 
     inline VkRenderTargetInfo VkRenderTargetInfo_default() {
         VkRenderTargetInfo info = {};
+        info.name = VK_NULL_HANDLE;
         info.x = 0;
         info.y = 0;
         info.width;
@@ -348,6 +360,7 @@ extern "C" {
 
     inline VkPipeInfo VkPipelineInfo_default() {
         VkPipeInfo info = {};
+        info.name = VK_NULL_HANDLE;
         info.vertexAttributes = VK_NULL_HANDLE;
         info.vertexAttributesCount = 0;
         info.vertexBufferSlot = 0;

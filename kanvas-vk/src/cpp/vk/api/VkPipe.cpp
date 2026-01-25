@@ -181,6 +181,7 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
     };
 
     VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, VK_CALLBACKS, &pipelineLayout));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_PIPELINE_LAYOUT, pipelineLayout, info.name);
 
     VkGraphicsPipelineCreateInfo pipelineInfo = {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -202,6 +203,7 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
     };
 
     VK_CHECK(vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, VK_CALLBACKS, &pipeline));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_PIPELINE, pipeline, info.name);
 }
 
 VkPipe::~VkPipe() {

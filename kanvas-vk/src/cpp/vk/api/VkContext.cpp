@@ -188,18 +188,22 @@ VkContext::VkContext(const VkContextInfo& info) : info(info) {
 
     queue = getQueue();
 
+    char debugName[16];
+
     for (int i = 0 ; i < info.frameCount ; i++) {
+        sprintf(debugName, "%d", i);
+
         delete imageSemaphores[i];
-        imageSemaphores[i] = new VkSemaphoreResource(device);
+        imageSemaphores[i] = new VkSemaphoreResource(device, debugName);
 
         delete renderFinishedSemaphores[i];
-        renderFinishedSemaphores[i] = new VkSemaphoreResource(device);
+        renderFinishedSemaphores[i] = new VkSemaphoreResource(device, debugName);
 
         delete fences[i];
-        fences[i] = new VkFenceResource(device, false);
+        fences[i] = new VkFenceResource(device, debugName, false);
 
         delete primaryCommandBuffers[i];
-        primaryCommandBuffers[i] = new VkCommandBufferResource(*queue, true);
+        primaryCommandBuffers[i] = new VkCommandBufferResource(*queue, debugName, true);
     }
 
     VkDescriptors::New(this);
@@ -420,7 +424,10 @@ VkDeviceQueue* VkContext::getQueue() {
         return queues[thread_id];
     }
 
-    VkDeviceQueue* queue = new VkDeviceQueue(device, family_index);
+    std::ostringstream oss;
+    oss << thread_id;
+    auto debugName = oss.str();
+    VkDeviceQueue* queue = new VkDeviceQueue(device, debugName.c_str(), family_index);
     queues[thread_id] = queue;
     return queue;
 }
@@ -438,7 +445,10 @@ VkCommandBufferResource* VkContext::getSecondaryCommandBuffer() {
         return secondaryCommandBuffers[thread_id];
     }
 
-    VkCommandBufferResource* commandBuffer = new VkCommandBufferResource(*getQueue(), false);
+    std::ostringstream oss;
+    oss << thread_id;
+    auto debugName = oss.str();
+    VkCommandBufferResource* commandBuffer = new VkCommandBufferResource(*getQueue(), debugName.c_str(), false);
     secondaryCommandBuffers[thread_id] = commandBuffer;
     return commandBuffer;
 }
@@ -492,6 +502,7 @@ VkSurfaceKHR VkContext::findSurface(void* native_window) {
     };
     VkSurfaceKHR surface;
     VK_CHECK(vkCreateAndroidSurfaceKHR(instance, &createInfo, VK_CALLBACKS, &surface));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_SURFACE_KHR, surface, "VkSurface-Android");
     return surface;
 }
 
@@ -505,6 +516,7 @@ VkSurfaceKHR VkContext::findSurface(void* native_window) {
     VkSurfaceKHR surface;
     auto vkCreateMetalSurfaceEXT = (PFN_vkCreateMetalSurfaceEXT)(vkGetInstanceProcAddr(instance, "vkCreateMetalSurfaceEXT"));
     VK_CHECK(vkCreateMetalSurfaceEXT(instance, &createInfo, VK_CALLBACKS, &surface));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_SURFACE_KHR, surface, "VkSurface-iOS");
     return surface;
 }
 

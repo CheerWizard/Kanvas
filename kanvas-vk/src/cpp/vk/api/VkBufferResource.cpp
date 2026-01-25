@@ -58,6 +58,7 @@ VkBufferResource::VkBufferResource(
     };
 
     VK_CHECK(vmaCreateBuffer(VK_ALLOCATOR, &createInfo, &allocInfo, &buffer, &allocation, nullptr));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_BUFFER, buffer, info.name);
 
     if (info.mapOnCreate) {
         map();

@@ -13,12 +13,29 @@
 #endif
 
 static JavaVM* vm = nullptr;
-static jclass g_clazz = nullptr;
-static jmethodID log_bridge_method = nullptr;
-static jmethodID result_bridge_method = nullptr;
+static jobject log_bridge_callback = nullptr;
+static jobject result_bridge_callback = nullptr;
 
 void LogBridge_callback(int level, const char* tag, const char* message, const char* exceptionMessage);
 void ResultBridge_callback(VkResult result);
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_LogBridge_callback(
+    JNIEnv* env, jobject /*thiz*/,
+    jobject callback
+) {
+    log_bridge_callback = env->NewGlobalRef(callback);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_ResultBridge_callback(
+    JNIEnv* env, jobject /*thiz*/,
+    jobject callback
+) {
+    result_bridge_callback = env->NewGlobalRef(callback);
+}
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -34,22 +51,6 @@ Java_com_cws_kanvas_vk_VK_load(
     env->GetJavaVM(&vm);
     jclass clazz = env->FindClass(env->GetStringUTFChars(className, nullptr));
     g_clazz = reinterpret_cast<jclass>(env->NewGlobalRef(clazz));
-
-    // init log bridge
-    log_bridge_method = env->GetStaticMethodID(
-            g_clazz,
-            env->GetStringUTFChars(logBridgeMethodName, nullptr),
-            env->GetStringUTFChars(logBridgeMethodSignature, nullptr)
-    );
-    LogBridge_init(LogBridge_callback);
-
-    // init result bridge
-    result_bridge_method = env->GetStaticMethodID(
-            g_clazz,
-            env->GetStringUTFChars(resultBridgeMethodName, nullptr),
-            env->GetStringUTFChars(resultBridgeMethodSignature, nullptr)
-    );
-    ResultBridge_init(ResultBridge_callback);
 }
 
 extern "C"
@@ -60,12 +61,12 @@ Java_com_cws_kanvas_vk_VK_unload(
     env->DeleteGlobalRef(g_clazz);
     vm = nullptr;
     g_clazz = nullptr;
-    log_bridge_method = nullptr;
-    result_bridge_method = nullptr;
+    log_bridge_callback = nullptr;
+    result_bridge_callback = nullptr;
 }
 
 void LogBridge_callback(int level, const char* tag, const char* message, const char* exceptionMessage) {
-    if (!vm || !g_clazz || !log_bridge_method) return;
+    if (!vm || !log_bridge_callback) return;
 
     JNIEnv* env = nullptr;
     bool detach = false;
@@ -82,8 +83,15 @@ void LogBridge_callback(int level, const char* tag, const char* message, const c
         jexception = env->NewStringUTF(exceptionMessage);
     }
 
-    env->CallStaticVoidMethod(g_clazz, log_bridge_method, level, jtag, jmessage, jexception);
+    jclass clazz = env->GetObjectClass(log_bridge_callback);
+    jmethodID invoke = env->GetMethodID(clazz, "invoke", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    env->CallObjectMethod(log_bridge_callback, invoke, level, jtag, jmessage, jexception);
+
+    env->DeleteLocalRef(jtag);
     env->DeleteLocalRef(jmessage);
+    if (jexception) {
+        env->DeleteLocalRef(jexception);
+    }
 
     if (detach) {
         vm->DetachCurrentThread();
@@ -91,7 +99,7 @@ void LogBridge_callback(int level, const char* tag, const char* message, const c
 }
 
 void ResultBridge_callback(VkResult result) {
-    if (!vm || !g_clazz || !result_bridge_method) return;
+    if (!vm || !result_bridge_callback) return;
 
     JNIEnv* env = nullptr;
     bool detach = false;
@@ -101,7 +109,9 @@ void ResultBridge_callback(VkResult result) {
         detach = true;
     }
 
-    env->CallStaticVoidMethod(g_clazz, result_bridge_method, result);
+    jclass clazz = env->GetObjectClass(result_bridge_callback);
+    jmethodID invoke = env->GetMethodID(clazz, "invoke", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    env->CallObjectMethod(result_bridge_callback, invoke, result);
 
     if (detach) {
         vm->DetachCurrentThread();

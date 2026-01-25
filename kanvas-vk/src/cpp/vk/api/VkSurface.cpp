@@ -101,8 +101,9 @@ void VkSurface::initImages(u32 width, u32 height) {
                         .layerCount = 1,
                 }
         };
-
-        VK_CHECK(vkCreateImageView(context->device, &color_attachment_info, VK_CALLBACKS, &color_attachments[i].view));
+        auto colorAttachmentView = color_attachments[i].view;
+        VK_CHECK(vkCreateImageView(context->device, &color_attachment_info, VK_CALLBACKS, &colorAttachmentView));
+        VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_IMAGE_VIEW, colorAttachmentView, "VkSwapChain-ColorAttachmentView");
     }
 
     if (render_target) {
@@ -160,6 +161,7 @@ VkSwapchainKHR VkSurface::initSwapChain(u32 width, u32 height) const {
 
     VkSwapchainKHR newSwapchain;
     VK_CHECK(vkCreateSwapchainKHR(context->device, &createInfo, VK_CALLBACKS, &newSwapchain));
+    VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_SWAPCHAIN_KHR, swapchain, "VkSwapChain");
     return newSwapchain;
 }
 

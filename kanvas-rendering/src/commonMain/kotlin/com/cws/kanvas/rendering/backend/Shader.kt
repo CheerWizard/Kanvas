@@ -8,7 +8,7 @@ expect enum class ShaderStage {
     RAY_TRACING,
 }
 
-data class ShaderConfig(
+data class ShaderInfo(
     val name: String,
     val stage: ShaderStage,
     var entryPoint: String = "main",
@@ -17,7 +17,7 @@ data class ShaderConfig(
 
 expect class ShaderHandle
 
-expect class Shader(context: RenderContext, config: ShaderConfig) : Resource<ShaderHandle, ShaderConfig> {
+expect class Shader(context: RenderContext, config: ShaderInfo) : Resource<ShaderHandle, ShaderInfo> {
     override fun onCreate()
     override fun onRelease()
 

@@ -24,7 +24,7 @@ data class BufferInfo(
 
 expect class BufferHandle
 
-expect open class Buffer(device: Device, info: BufferInfo) : Resource<BufferHandle, BufferInfo> {
+expect open class Buffer(context: RenderContext, info: BufferInfo) : Resource<BufferHandle, BufferInfo> {
     override fun onCreate()
     override fun onRelease()
 

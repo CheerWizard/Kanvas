@@ -41,6 +41,7 @@ VkSamplerResource::VkSamplerResource(VkDevice device, const VkSamplerInfo &info)
             .unnormalizedCoordinates = info.unnormalizedCoordinates,
     };
     VK_CHECK(vkCreateSampler(device, &createInfo, VK_CALLBACKS, &sampler));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_SAMPLER, sampler, info.name);
 }
 
 VkSamplerResource::~VkSamplerResource() {
@@ -149,6 +150,7 @@ VkTextureResource::VkTextureResource(VkDevice device, const VkTextureInfo &info)
     };
 
     VK_CHECK(vmaCreateImage(VK_ALLOCATOR, &imageInfo, &allocInfo, &image, &allocation, nullptr));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_IMAGE, image, info.name);
 
     VkImageViewCreateInfo viewInfo = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -165,6 +167,7 @@ VkTextureResource::VkTextureResource(VkDevice device, const VkTextureInfo &info)
     };
 
     VK_CHECK(vkCreateImageView(device, &viewInfo, VK_CALLBACKS, &view));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_IMAGE_VIEW, view, info.name);
 }
 
 VkTextureResource::~VkTextureResource() {

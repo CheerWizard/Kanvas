@@ -8,7 +8,7 @@ void VkDeviceQueue_reset(VkDeviceQueue* device_queue) {
     device_queue->reset();
 }
 
-VkDeviceQueue::VkDeviceQueue(VkDevice device, u32 familyIndex) {
+VkDeviceQueue::VkDeviceQueue(VkDevice device, const char* name, u32 familyIndex) {
     vkGetDeviceQueue(device, familyIndex, 0, &queue);
     VkCommandPoolCreateInfo poolInfo = {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -16,6 +16,10 @@ VkDeviceQueue::VkDeviceQueue(VkDevice device, u32 familyIndex) {
             .queueFamilyIndex = familyIndex,
     };
     VK_CHECK(vkCreateCommandPool(device, &poolInfo, VK_CALLBACKS, &pool));
+
+    char debugName[64];
+    sprintf(debugName, "VkCommandPool-%s", name);
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_COMMAND_POOL, pool, debugName);
 }
 
 VkDeviceQueue::~VkDeviceQueue() {

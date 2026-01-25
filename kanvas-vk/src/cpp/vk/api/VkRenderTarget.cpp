@@ -62,6 +62,7 @@ VkRenderTarget::VkRenderTarget(VkDevice device, const VkRenderTargetInfo &info)
     };
 
     VK_CHECK(vkCreateRenderPass(device, &renderPassCreateInfo, VK_CALLBACKS, &render_pass));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_RENDER_PASS, render_pass, info.name);
 
     VkFramebufferCreateInfo framebufferCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
@@ -74,6 +75,7 @@ VkRenderTarget::VkRenderTarget(VkDevice device, const VkRenderTargetInfo &info)
     };
 
     VK_CHECK(vkCreateFramebuffer(device, &framebufferCreateInfo, VK_CALLBACKS, &framebuffer));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_FRAMEBUFFER, framebuffer, info.name);
 }
 
 VkRenderTarget::~VkRenderTarget() {

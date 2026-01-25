@@ -114,7 +114,7 @@ void VkCommandBufferResource_copyImageToImage(
     command_buffer_resource->copyImageToImage(srcImage, dstImage, srcX, srcY, srcZ, dstX, dstY, dstZ, width, height, depth);
 }
 
-VkCommandBufferResource::VkCommandBufferResource(VkDeviceQueue& device_queue, bool isPrimary)
+VkCommandBufferResource::VkCommandBufferResource(VkDeviceQueue& device_queue, const char* name, bool isPrimary)
 : device_queue(device_queue) {
     VkCommandBufferLevel level;
     if (isPrimary) {
@@ -131,6 +131,10 @@ VkCommandBufferResource::VkCommandBufferResource(VkDeviceQueue& device_queue, bo
     };
 
     VK_CHECK(vkAllocateCommandBuffers(device_queue.device, &allocInfo, &command_buffer));
+
+    char debugName[64];
+    sprintf(debugName, "VkCommandBuffer-%s", name);
+    VK_DEBUG_NAME(device_queue.device, VK_OBJECT_TYPE_COMMAND_BUFFER, command_buffer, debugName);
 }
 
 VkCommandBufferResource::~VkCommandBufferResource() {

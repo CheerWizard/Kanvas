@@ -20,6 +20,10 @@ kotlin {
     }
 
     sourceSets {
-        val jsMain by getting {}
+        val jsMain by getting {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.core)
+            }
+        }
     }
 }
