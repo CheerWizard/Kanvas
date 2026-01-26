@@ -13,12 +13,13 @@ object VK {
 
     external fun LogBridge_callback(callback: (String) -> Unit)
     external fun ResultBridge_callback(callback: (Int) -> Unit)
+    external fun removeCallbacks()
 
     // --------------------------------------------------
     // VkContext
     // --------------------------------------------------
 
-    external fun VkContext_create(info: ByteBuffer): VkHandle
+    external fun VkContext_create(surface: Any?, info: ByteBuffer): VkHandle
     external fun VkContext_destroy(context: VkHandle)
     external fun VkContext_wait(context: VkHandle)
 
@@ -49,48 +50,6 @@ object VK {
     external fun VkContext_endFrame(
         context: VkHandle,
         frame: Int
-    )
-
-    // --------------------------------------------------
-    // VkDeviceQueue
-    // --------------------------------------------------
-
-    external fun VkDeviceQueue_reset(
-        queue: VkHandle
-    )
-
-    // --------------------------------------------------
-    // VkFenceResource
-    // --------------------------------------------------
-
-    external fun VkFenceResource_create(
-        context: VkHandle,
-        signaled: Int
-    ): VkHandle
-
-    external fun VkFenceResource_destroy(
-        fence: VkHandle
-    )
-
-    external fun VkFenceResource_wait(
-        fence: VkHandle,
-        timeout: Long
-    )
-
-    external fun VkFenceResource_reset(
-        fence: VkHandle
-    )
-
-    // --------------------------------------------------
-    // VkSemaphoreResource
-    // --------------------------------------------------
-
-    external fun VkSemaphoreResource_create(
-        context: VkHandle
-    ): VkHandle
-
-    external fun VkSemaphoreResource_destroy(
-        semaphore: VkHandle
     )
 
     // --------------------------------------------------

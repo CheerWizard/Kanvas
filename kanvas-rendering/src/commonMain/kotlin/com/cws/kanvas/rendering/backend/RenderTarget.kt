@@ -37,5 +37,5 @@ expect class RenderTargetHandle
 
 expect class RenderTarget(renderContext: RenderContext, config: RenderTargetInfo) : Resource<RenderTargetHandle, RenderTargetInfo> {
     override fun onCreate()
-    override fun onRelease()
+    override fun onDestroy()
 }

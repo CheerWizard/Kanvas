@@ -26,7 +26,7 @@ expect class BufferHandle
 
 expect open class Buffer(context: RenderContext, info: BufferInfo) : Resource<BufferHandle, BufferInfo> {
     override fun onCreate()
-    override fun onRelease()
+    override fun onDestroy()
 
     fun write(data: NativeBuffer, srcOffset: Int, destOffset: Int, size: Int)
     fun read(data: NativeBuffer, srcOffset: Int, destOffset: Int, size: Int)

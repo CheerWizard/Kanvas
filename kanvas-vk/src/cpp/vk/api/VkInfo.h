@@ -5,7 +5,7 @@
 #ifndef KVK_VKINFO_H
 #define KVK_VKINFO_H
 
-#include "VkCommon.hpp"
+#include "../src/VkCommon.hpp"
 
 typedef struct VkBufferResource VkBufferResource;
 typedef struct VkRenderTarget VkRenderTarget;
@@ -16,7 +16,6 @@ typedef struct VkBindingLayout VkBindingLayout;
 typedef struct VkContextInfo {
     const char* application_name;
     const char* engine_name;
-    void* native_window;
     uint32_t width;
     uint32_t height;
     uint32_t frameCount;
@@ -174,6 +173,7 @@ typedef struct VkBinding {
 } VkBinding;
 
 typedef struct VkBindingInfo {
+    const char* name;
     VkBinding* bindings;
     size_t bindingsCount;
 } VkBindingInfo;
@@ -264,7 +264,6 @@ extern "C" {
 
     inline VkColorAttachment VkColorAttachment_default() {
         VkColorAttachment attachment = {};
-        attachment.name = VK_NULL_HANDLE;
         attachment.view = VK_NULL_HANDLE;
         attachment.format;
         attachment.samples = 1;
@@ -278,7 +277,6 @@ extern "C" {
 
     inline VkDepthAttachment VkDepthAttachment_default() {
         VkDepthAttachment attachment = {};
-        attachment.name = VK_NULL_HANDLE;
         attachment.view = VK_NULL_HANDLE;
         attachment.enabled = VK_FALSE;
         attachment.format;
@@ -294,7 +292,6 @@ extern "C" {
 
     inline VkStencilAttachment VkStencilAttachment_default() {
         VkStencilAttachment attachment = {};
-        attachment.name = VK_NULL_HANDLE;
         attachment.view = VK_NULL_HANDLE;
         attachment.enabled = VK_FALSE;
         attachment.format;
@@ -353,6 +350,7 @@ extern "C" {
 
     inline VkBindingInfo VkBindingInfo_default() {
         VkBindingInfo info = {};
+        info.name = VK_NULL_HANDLE;
         info.bindings = VK_NULL_HANDLE;
         info.bindingsCount = 0;
         return info;

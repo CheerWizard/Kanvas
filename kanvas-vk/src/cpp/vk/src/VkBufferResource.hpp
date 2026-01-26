@@ -5,7 +5,7 @@
 #ifndef VK_BUFFER_HPP
 #define VK_BUFFER_HPP
 
-#include "Vk.h"
+#include "../api/Vk.h"
 #include "VkCommon.hpp"
 
 #define PTR_OFFSET(type_size) (void*)((char*)mapped + frame * type_size + offset * type_size)

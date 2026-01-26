@@ -7,20 +7,20 @@
 
 #include <sys/mman.h>
 
-void stc::FreeIndices::push(u32 index) {
+void FreeIndices::push(u32 index) {
     if (top < indices.size()) {
         indices[top++] = index;
     }
 }
 
-u32 stc::FreeIndices::pop() {
+u32 FreeIndices::pop() {
     if (top > 0) {
         return indices[--top];
     }
     return BLOCK_INDEX_NULL;
 }
 
-void stc::LockFreeIndices::push(u32 index) {
+void LockFreeIndices::push(u32 index) {
     u32 oldTop = top.load(std::memory_order_relaxed);
 
     do {
@@ -37,7 +37,7 @@ void stc::LockFreeIndices::push(u32 index) {
     indices[oldTop] = index;
 }
 
-u32 stc::LockFreeIndices::pop() {
+u32 LockFreeIndices::pop() {
     u32 oldTop = top.load(std::memory_order_relaxed);
 
     do {
@@ -54,30 +54,30 @@ u32 stc::LockFreeIndices::pop() {
     return indices[oldTop - 1];
 }
 
-void* stc::MemoryProvider::allocate(size_t size) {
+void* MemoryProvider::allocate(size_t size) {
     void* ptr = mmap(
                 nullptr,
                 size,
                 PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS,
                 -1, 0);
-    ASSERT(ptr, TAG, "Failed to map memory size %d", size);
+    ASSERT(ptr != nullptr && ptr != MAP_FAILED, TAG, "Failed to map memory size %d", size);
     return ptr;
 }
 
-void stc::MemoryProvider::free(void* address, size_t size) {
+void MemoryProvider::free(void* address, size_t size) {
     const int res = munmap(address, size);
     ASSERT(res == 0, TAG, "Failed to unmap memory %p", address);
 }
 
-void* stc::MemoryProvider::reallocate(void *oldAddress, size_t oldSize, size_t newSize) {
+void* MemoryProvider::reallocate(void *oldAddress, size_t oldSize, size_t newSize) {
     void* newAddress = allocate(newSize);
     memcpy(newAddress, oldAddress, oldSize);
     free(oldAddress, oldSize);
     return newAddress;
 }
 
-void stc::MemoryPool::create(size_t block_count, size_t block_size) {
+void MemoryPool::create(size_t block_count, size_t block_size) {
     ASSERT(block_size != 0 && block_count != 0, TAG, "block size and count must be greater than zero")
     memory = memory_provider.allocate(block_count * block_size);
     memory_size = block_count * block_size;
@@ -85,7 +85,7 @@ void stc::MemoryPool::create(size_t block_count, size_t block_size) {
     realloc_count = 0;
 }
 
-void stc::MemoryPool::destroy() {
+void MemoryPool::destroy() {
     memory_provider.free(memory, memory_size);
     memory = nullptr;
     memory_size = 0;
@@ -93,7 +93,7 @@ void stc::MemoryPool::destroy() {
     realloc_count = 0;
 }
 
-u32 stc::MemoryPool::allocate() {
+u32 MemoryPool::allocate() {
     u32 free_index = free_indices.pop();
     if (free_index != BLOCK_INDEX_NULL) {
         return free_index;
@@ -106,16 +106,16 @@ u32 stc::MemoryPool::allocate() {
     return current_block_index++;
 }
 
-void stc::MemoryPool::free(u32 index) {
+void MemoryPool::free(u32 index) {
     free_indices.push(index);
 }
 
-void* stc::MemoryPool::getAddress(u32 index) const {
+void* MemoryPool::getAddress(u32 index) const {
     if (index >= current_block_index || index == BLOCK_INDEX_NULL || memory == nullptr) return nullptr;
     return static_cast<char*>(memory) + index * block_size;
 }
 
-stc::MemoryPoolStats stc::MemoryPool::getStats() const {
+MemoryPoolStats MemoryPool::getStats() const {
     return {
         .blocks = memory_size / block_size,
         .used_blocks = current_block_index,
@@ -123,24 +123,24 @@ stc::MemoryPoolStats stc::MemoryPool::getStats() const {
     };
 }
 
-void stc::MemoryPool::resize(size_t new_memory_size) {
+void MemoryPool::resize(size_t new_memory_size) {
     memory = memory_provider.reallocate(memory, memory_size, new_memory_size);
     memory_size = new_memory_size;
     realloc_count++;
 }
 
-void stc::MemoryPoolTable::reserve(size_t capacity) {
+void MemoryPoolTable::reserve(size_t capacity) {
     pools.reserve(capacity);
 }
 
-void stc::MemoryPoolTable::destroy() {
+void MemoryPoolTable::destroy() {
     for (auto& pool : pools) {
         pool.second.destroy();
     }
     pools.clear();
 }
 
-stc::MemoryPool& stc::MemoryPoolTable::getOrAdd(size_t block_count, size_t block_size) {
+MemoryPool& MemoryPoolTable::getOrAdd(size_t block_count, size_t block_size) {
     std::lock_guard lock(mutex);
 
     auto entry = pools.find(block_size);
@@ -154,7 +154,7 @@ stc::MemoryPool& stc::MemoryPoolTable::getOrAdd(size_t block_count, size_t block
     return pool;
 }
 
-void stc::MemoryPoolTable::log() {
+void MemoryPoolTable::log() {
     u32 i = 0;
     for (const auto& pool : pools) {
         size_t block_size = pool.first;
@@ -172,20 +172,20 @@ void stc::MemoryPoolTable::log() {
     }
 }
 
-void stc::MemoryArena::create(size_t size) {
+void MemoryArena::create(size_t size) {
     memory = memory_provider.allocate(size);
     this->size = size;
     offset = 0;
 }
 
-void stc::MemoryArena::destroy() {
+void MemoryArena::destroy() {
     memory_provider.free(memory, size);
     memory = nullptr;
     size = 0;
     offset = 0;
 }
 
-void* stc::MemoryArena::allocate(size_t size, size_t alignment) {
+void* MemoryArena::allocate(size_t size, size_t alignment) {
     size_t current = reinterpret_cast<size_t>(memory) + offset;
     size_t aligned = (current + alignment - 1) & ~(alignment - 1);
     size_t next_offset = aligned - reinterpret_cast<size_t>(memory) + size;
@@ -203,38 +203,38 @@ void* stc::MemoryArena::allocate(size_t size, size_t alignment) {
     return reinterpret_cast<void*>(aligned);
 }
 
-void stc::MemoryArena::reset() {
+void MemoryArena::reset() {
     offset = 0;
 }
 
-void stc::LockMemoryArena::create(size_t size) {
+void LockMemoryArena::create(size_t size) {
     std::lock_guard lock(mutex);
     arena.create(size);
 }
 
-void stc::LockMemoryArena::destroy() {
+void LockMemoryArena::destroy() {
     std::lock_guard lock(mutex);
     arena.destroy();
 }
 
-void* stc::LockMemoryArena::allocate(size_t size, size_t alignment) {
+void* LockMemoryArena::allocate(size_t size, size_t alignment) {
     std::lock_guard lock(mutex);
     void* ptr = arena.allocate(size, alignment);
     return ptr;
 }
 
-void stc::MemoryArenaTable::reserve(size_t capacity) {
+void MemoryArenaTable::reserve(size_t capacity) {
     arenas.reserve(capacity);
 }
 
-void stc::MemoryArenaTable::destroy() {
+void MemoryArenaTable::destroy() {
     for (auto& arena : arenas) {
         arena.second.destroy();
     }
     arenas.clear();
 }
 
-stc::MemoryArena& stc::MemoryArenaTable::getOrAdd(size_t typeId, size_t size) {
+MemoryArena& MemoryArenaTable::getOrAdd(size_t typeId, size_t size) {
     std::lock_guard lock(mutex);
 
     size_t key = typeId ^ (size + 0x9e3779b9 + (typeId << 6) + (typeId >> 2));
@@ -250,18 +250,18 @@ stc::MemoryArena& stc::MemoryArenaTable::getOrAdd(size_t typeId, size_t size) {
     return arena;
 }
 
-void stc::MemoryArenaTable::log() {
+void MemoryArenaTable::log() {
 }
 
-void stc::MemoryHeap::create(size_t size) {
+void MemoryHeap::create(size_t size) {
     head.New(0, size);
     this->size = size;
 }
 
-void stc::MemoryHeap::destroy() {
+void MemoryHeap::destroy() {
 }
 
-size_t stc::MemoryHeap::allocate(size_t size) {
+size_t MemoryHeap::allocate(size_t size) {
     Ptr<MemoryHeapBlock> prev;
     Ptr<MemoryHeapBlock> current = head;
     while (current) {
@@ -283,7 +283,7 @@ size_t stc::MemoryHeap::allocate(size_t size) {
     return -1;
 }
 
-void stc::MemoryHeap::free(size_t offset, size_t size) {
+void MemoryHeap::free(size_t offset, size_t size) {
     Ptr<MemoryHeapBlock> prev;
     Ptr<MemoryHeapBlock> current = head;
 
@@ -301,7 +301,7 @@ void stc::MemoryHeap::free(size_t offset, size_t size) {
     mergeFreeBlocks();
 }
 
-void stc::MemoryHeap::mergeFreeBlocks() const {
+void MemoryHeap::mergeFreeBlocks() const {
     Ptr<MemoryHeapBlock> current = head;
 
     while (current && current->next) {
@@ -316,33 +316,33 @@ void stc::MemoryHeap::mergeFreeBlocks() const {
     }
 }
 
-void stc::MemoryHeap::log() {
+void MemoryHeap::log() {
 }
 
-stc::MemoryManager::MemoryManager() {
+MemoryManager::MemoryManager() {
     poolTable.reserve(10);
     arenaTable.reserve(10);
 }
 
-stc::MemoryManager::~MemoryManager() {
+MemoryManager::~MemoryManager() {
     poolTable.destroy();
     arenaTable.destroy();
 }
 
-stc::MemoryManager& stc::MemoryManager::getInstance() {
+MemoryManager& MemoryManager::getInstance() {
     static MemoryManager instance;
     return instance;
 }
 
-stc::MemoryPool& stc::MemoryManager::getMemoryPool(size_t block_size) {
+MemoryPool& MemoryManager::getMemoryPool(size_t block_size) {
     return poolTable.getOrAdd(100, block_size);
 }
 
-stc::MemoryArena& stc::MemoryManager::getMemoryArena(size_t typeId, size_t size) {
+MemoryArena& MemoryManager::getMemoryArena(size_t typeId, size_t size) {
     return arenaTable.getOrAdd(typeId, size);
 }
 
-void stc::MemoryManager::log() {
+void MemoryManager::log() {
     poolTable.log();
     arenaTable.log();
 }

@@ -5,11 +5,14 @@
 #ifndef VK_CHECK_HPP
 #define VK_CHECK_HPP
 
-#include "../bridges/ResultBridge.hpp"
+#include "../core/ResultBridge.hpp"
 #include "../core/logger.hpp"
 
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan.h>
+
+#include <sstream>
+#include <ostream>
 
 #define VK_CHECK(fn)                                        \
 do {                                                        \
@@ -29,6 +32,14 @@ do {                                                                        \
         .pObjectName = name,                                                \
     };                                                                      \
     vkSetDebugUtilsObjectNameEXT(device, &nameInfo);                        \
+} while (0)
+
+#define VK_DEBUG_NAME_FORMAT(device, type, handle, ...)                     \
+do {                                                                        \
+    std::ostringstream ss;                                                  \
+    ss << __VA_ARGS__;                                                      \
+    auto debugName = ss.str();                                              \
+    VK_DEBUG_NAME(device, type, handle, debugName.c_str());                 \
 } while (0)
 
 #endif //VK_CHECK_HPP

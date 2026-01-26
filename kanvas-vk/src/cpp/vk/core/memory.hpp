@@ -19,9 +19,7 @@
 
 #define BLOCK_INDEX_NULL UINT32_MAX
 
-namespace vk {
-
-    struct FreeIndices {
+struct FreeIndices {
 
         void push(u32 index);
         u32 pop();
@@ -313,7 +311,5 @@ namespace vk {
     using BaseString = std::basic_string<char, std::char_traits<char>, STLArenaAllocator<char, type_id, arena_size>>;
 
     using String = BaseString<>;
-
-}
 
 #endif //ALLOCATORS_HPP

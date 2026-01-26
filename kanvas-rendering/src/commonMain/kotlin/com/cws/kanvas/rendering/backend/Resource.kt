@@ -1,6 +1,6 @@
 package com.cws.kanvas.rendering.backend
 
-abstract class Resource<Handle, Info>(val info: Info) {
+abstract class Resource<Handle>() {
 
     var handle: Handle? = null
         protected set
@@ -13,19 +13,19 @@ abstract class Resource<Handle, Info>(val info: Info) {
 
     protected abstract fun onCreate()
 
-    fun release() {
+    fun destroy() {
         if (handle != null) {
-            onRelease()
+            onDestroy()
             handle = null
         }
     }
 
-    protected abstract fun onRelease()
+    protected abstract fun onDestroy()
 
-    inline fun <T : Resource<Handle, Info>, R> T.useOnce(block: T.() -> R): R {
+    inline fun <T : Resource<Handle>, R> T.useOnce(block: T.() -> R): R {
         create()
         val result = block()
-        release()
+        destroy()
         return result
     }
 

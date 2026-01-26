@@ -43,8 +43,8 @@
 
 #endif
 
-VkContext* VkContext_create(VkContextInfo* info) {
-    return new VkContext(*info);
+VkContext* VkContext_create(void* native_window, VkContextInfo* info) {
+    return new VkContext(native_window, *info);
 }
 
 void VkContext_destroy(VkContext* context) {
@@ -113,7 +113,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL onDebugCallback(
     return VK_FALSE;
 }
 
-VkContext::VkContext(const VkContextInfo& info) : info(info) {
+VkContext::VkContext(void* native_window, const VkContextInfo& info) : info(info) {
     VkApplicationInfo appInfo { VK_STRUCTURE_TYPE_APPLICATION_INFO };
     appInfo.pApplicationName = info.application_name;
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -126,7 +126,7 @@ VkContext::VkContext(const VkContextInfo& info) : info(info) {
 
     std::vector<const char*> extension_names;
 
-    if (info.native_window) {
+    if (native_window) {
         extension_names.emplace_back(VK_KHR_SURFACE_EXTENSION_NAME);
         extension_names.emplace_back(SURFACE_EXTENSION_NAME);
     }
@@ -179,7 +179,7 @@ VkContext::VkContext(const VkContextInfo& info) : info(info) {
 
     findDevice();
 
-    surface = new VkSurface(this, findSurface(info.native_window), info.width, info.height);
+    surface = new VkSurface(this, findSurface(native_window), info.width, info.height);
 
     imageSemaphores.resize(info.frameCount);
     renderFinishedSemaphores.resize(info.frameCount);

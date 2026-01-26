@@ -37,7 +37,7 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
 
     actual val capacity: Int get() = _capacity
     var buffer: CPointer<ByteVar> = malloc(capacity.toULong()) as CPointer<ByteVar>
-    val address: Long = buffer.rawValue.toLong()
+    actual val address: Long = buffer.rawValue.toLong()
 
     private var _position = 0
     private var _capacity = capacity
@@ -58,6 +58,14 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
         _capacity = newCapacity
         intView = buffer.reinterpret()
         floatView = buffer.reinterpret()
+    }
+
+    actual fun clear() {
+        position = 0
+    }
+
+    actual fun flip() {
+        position = 0
     }
 
     actual fun copyTo(
@@ -111,6 +119,47 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
 
     actual fun getFloat(index: Int): Float {
         return floatView[index]
+    }
+
+    actual fun push(value: Byte) {
+        setByte(position++, value)
+    }
+
+    actual fun pushInt(value: Int) {
+        setInt(position++, value)
+    }
+
+    actual fun pushFloat(value: Float) {
+        setFloat(position++, value)
+    }
+
+    actual fun pushLong(value: Long) {
+        packLong(position++, value)
+    }
+
+    actual fun pop(): Byte = getByte(position--)
+
+    actual fun popInt(): Int = getInt(position--)
+
+    actual fun popFloat(): Float = getFloat(position--)
+
+    actual fun popLong(): Long {
+        val long = unpackLong(position)
+        position -= 2
+        return long
+    }
+
+    private fun packLong(index: Int, value: Long) {
+        val high = (value shr 32).toInt()
+        val low = value.toInt()
+        intView[index] = high
+        intView[index + 1] = low
+    }
+
+    private fun unpackLong(index: Int): Long {
+        val high = intView[index]
+        val low = intView[index + 1]
+        return (high.toLong() shl 32) or (low.toLong() and 0xFFFFFFFF)
     }
 
 }

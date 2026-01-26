@@ -41,6 +41,7 @@ VkBindingLayout::VkBindingLayout(VkDevice device, const VkBindingInfo &info) : d
     };
 
     VK_CHECK(vkCreateDescriptorSetLayout(device, &create_info, VK_CALLBACKS, &layout));
+    VK_DEBUG_NAME_FORMAT(device, VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, layout, "VkDescriptorLayout-" << info.name);
 
     VkDescriptors::newPool(this);
     VkDescriptors::newSet(this);

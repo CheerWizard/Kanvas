@@ -80,7 +80,7 @@ expect class SamplerHandle
 
 expect class Sampler(context: RenderContext, info: SamplerInfo) : Resource<SamplerHandle, SamplerInfo> {
     override fun onCreate()
-    override fun onRelease()
+    override fun onDestroy()
 }
 
 data class TextureInfo(
@@ -100,12 +100,12 @@ expect class TextureHandle
 
 expect class Texture(context: RenderContext, info: TextureInfo) : Resource<TextureHandle, TextureInfo> {
     override fun onCreate()
-    override fun onRelease()
+    override fun onDestroy()
 }
 
 expect class TextureViewHandle
 
 expect class TextureView(context: RenderContext) : Resource<TextureViewHandle, Unit> {
     override fun onCreate()
-    override fun onRelease()
+    override fun onDestroy()
 }

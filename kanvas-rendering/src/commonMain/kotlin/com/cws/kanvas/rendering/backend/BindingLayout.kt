@@ -17,3 +17,11 @@ data class Binding(
     var count: Int = 1,
     var resource: BindingResource? = null
 )
+
+data class BindingLayoutInfo(
+    val bindings: List<Binding>,
+)
+
+expect class BindingLayoutHandle
+
+class BindingLayout : Resource<>

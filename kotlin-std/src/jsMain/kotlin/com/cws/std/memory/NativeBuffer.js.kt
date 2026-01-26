@@ -17,6 +17,8 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
 
     actual val capacity: Int get() = Module.HEAPU8.byteLength
 
+    actual val address: Long get() = 0L
+
     var buffer = Module.HEAPU8.buffer
     protected var _position: Int = 0
 
@@ -31,6 +33,14 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
         byteView = Uint8Array(buffer)
         intView = Int32Array(buffer)
         floatView = Float32Array(buffer)
+    }
+
+    actual fun clear() {
+        position = 0
+    }
+
+    actual fun flip() {
+        position = 0
     }
 
     actual fun setBytes(index: Int, bytes: ByteArray) {
@@ -79,6 +89,47 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
 
     actual fun getFloat(index: Int): Float {
         return floatView[index]
+    }
+
+    actual fun push(value: Byte) {
+        setByte(position++, value)
+    }
+
+    actual fun pushInt(value: Int) {
+        setInt(position++, value)
+    }
+
+    actual fun pushFloat(value: Float) {
+        setFloat(position++, value)
+    }
+
+    actual fun pushLong(value: Long) {
+        packLong(position++, value)
+    }
+
+    actual fun pop(): Byte = byteView[position--]
+
+    actual fun popInt(): Int = intView[position--]
+
+    actual fun popFloat(): Float = floatView[position--]
+
+    actual fun popLong(): Long {
+        val long = unpackLong(position)
+        position -= 2
+        return long
+    }
+
+    private fun packLong(index: Int, value: Long) {
+        val high = (value shr 32).toInt()
+        val low = value.toInt()
+        intView[index] = high
+        intView[index + 1] = low
+    }
+
+    private fun unpackLong(index: Int): Long {
+        val high = intView[index]
+        val low = intView[index + 1]
+        return (high.toLong() shl 32) or (low.toLong() and 0xFFFFFFFF)
     }
 
 }

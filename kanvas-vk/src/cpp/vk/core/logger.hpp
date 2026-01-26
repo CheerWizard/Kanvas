@@ -6,7 +6,7 @@
 #define LOGGER_HPP
 
 #include "thread_pool.hpp"
-#include "../bridges/LogBridge.hpp"
+#include "LogBridge.hpp"
 
 #define ASSERT(condition, tag, msg, ...) \
 if (!(condition)) { \
@@ -85,7 +85,7 @@ void Logger::log(
     const char* msg,
     Args &&... args
 ) {
-    std::unique_lock lock(mutex);
+    std::lock_guard lock(mutex);
     Log log;
 #ifdef ANDROID
     std::snprintf(log.message.data(), log.message.size(), "%s", msg, args...);

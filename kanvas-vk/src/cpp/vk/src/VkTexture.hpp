@@ -6,7 +6,7 @@
 #define TEXTURE_HPP
 
 #include "VkCommon.hpp"
-#include "Vk.h"
+#include "../api/Vk.h"
 
 struct VkSamplerResource {
     VkDevice device = nullptr;

@@ -22,7 +22,7 @@ typedef struct VkCommandBufferResource VkCommandBufferResource;
 
 extern "C" {
 
-    VkContext* VkContext_create(VkContextInfo* info);
+    VkContext* VkContext_create(void* native_window, VkContextInfo* info);
     void VkContext_destroy(VkContext* context);
     void VkContext_wait(VkContext* context);
     void VkContext_resize(VkContext* context, u32 width, u32 height);
@@ -31,16 +31,6 @@ extern "C" {
     VkCommandBufferResource* VkContext_getSecondaryCommandBuffer(VkContext* context);
     void VkContext_beginFrame(VkContext* context, u32 frame);
     void VkContext_endFrame(VkContext* context, u32 frame);
-
-    void VkDeviceQueue_reset(VkDeviceQueue* device_queue);
-
-    VkFenceResource* VkFenceResource_create(VkContext* context, int signaled);
-    void VkFenceResource_destroy(VkFenceResource* fence);
-    void VkFenceResource_wait(VkFenceResource* fence, u64 timeout = UINT64_MAX);
-    void VkFenceResource_reset(VkFenceResource* fence);
-
-    VkSemaphoreResource* VkSemaphoreResource_create(VkContext* context);
-    void VkSemaphoreResource_destroy(VkSemaphoreResource* semaphore);
 
     VkShader* VkShader_create(VkContext* context, VkShaderInfo* info);
     void VkShader_destroy(VkShader* shader);

@@ -6,7 +6,7 @@
 #define STC_SHADER_HPP
 
 #include "VkCommon.hpp"
-#include "Vk.h"
+#include "../api/Vk.h"
 
 struct VkShader {
     VkDevice device = nullptr;

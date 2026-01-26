@@ -2,13 +2,12 @@
 // Created by cheerwizard on 17.10.25.
 //
 
-#include "api/Vk.h"
-#include "../bridges/LogBridge.hpp"
-#include "../bridges/ResultBridge.hpp"
+#include "../api/Vk.h"
 
 #include <jni.h>
 
 #ifdef ANDROID
+#include <android/native_window_jni.h>
 #include <vulkan/vulkan_android.h>
 #endif
 
@@ -25,6 +24,7 @@ Java_com_cws_kanvas_vk_VK_LogBridge_callback(
     JNIEnv* env, jobject /*thiz*/,
     jobject callback
 ) {
+    env->GetJavaVM(&vm);
     log_bridge_callback = env->NewGlobalRef(callback);
 }
 
@@ -34,33 +34,16 @@ Java_com_cws_kanvas_vk_VK_ResultBridge_callback(
     JNIEnv* env, jobject /*thiz*/,
     jobject callback
 ) {
+    env->GetJavaVM(&vm);
     result_bridge_callback = env->NewGlobalRef(callback);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_load(
-        JNIEnv* env, jobject /*thiz*/,
-        jstring className,
-        jstring logBridgeMethodName,
-        jstring logBridgeMethodSignature,
-        jstring resultBridgeMethodName,
-        jstring resultBridgeMethodSignature
-) {
-    // init globally class
-    env->GetJavaVM(&vm);
-    jclass clazz = env->FindClass(env->GetStringUTFChars(className, nullptr));
-    g_clazz = reinterpret_cast<jclass>(env->NewGlobalRef(clazz));
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_unload(
+Java_com_cws_kanvas_vk_VK_removeCallbacks(
         JNIEnv* env, jobject /*thiz*/
 ) {
-    env->DeleteGlobalRef(g_clazz);
     vm = nullptr;
-    g_clazz = nullptr;
     log_bridge_callback = nullptr;
     result_bridge_callback = nullptr;
 }
@@ -122,12 +105,17 @@ JNIEXPORT jlong JNICALL
 Java_com_cws_kanvas_vk_VK_VkContext_create(
         JNIEnv* env,
         jclass,
+        jobject surface,
         jobject infoBuffer) {
 
     void* nativeWindow = nullptr;
 
 #ifdef ANDROID
-    nativeWindow = ANativeWindow_fromSurface(env, surface);
+    if (surface) {
+        nativeWindow = ANativeWindow_fromSurface(env, surface);
+    } else {
+        LOG_ERROR("VK.jni", "Failed to obtain ANativeWindow, surface = null");
+    }
 #endif
 
     void* ptr = env->GetDirectBufferAddress(infoBuffer);
@@ -136,8 +124,7 @@ Java_com_cws_kanvas_vk_VK_VkContext_create(
     }
 
     auto* info = reinterpret_cast<VkContextInfo*>(ptr);
-    info->native_window = nativeWindow;
-    VkContext* ctx = VkContext_create(info);
+    VkContext* ctx = VkContext_create(nativeWindow, info);
     return reinterpret_cast<jlong>(ctx);
 }
 
@@ -226,91 +213,6 @@ Java_com_cws_kanvas_vk_VK_VkContext_endFrame(
 
     auto* ctx = reinterpret_cast<VkContext*>(context);
     VkContext_endFrame(ctx, frame);
-}
-
-// --------------------------------------------------
-// VkDeviceQueue
-// --------------------------------------------------
-
-JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkDeviceQueue_reset(
-        JNIEnv*,
-        jclass,
-        jlong deviceQueue) {
-
-    auto* q = reinterpret_cast<VkDeviceQueue*>(deviceQueue);
-    VkDeviceQueue_reset(q);
-}
-
-// --------------------------------------------------
-// VkFenceResource
-// --------------------------------------------------
-
-JNIEXPORT jlong JNICALL
-Java_com_cws_kanvas_vk_VK_VkFenceResource_create(
-        JNIEnv*,
-        jclass,
-        jlong context,
-        jint signaled) {
-
-    auto* ctx = reinterpret_cast<VkContext*>(context);
-    VkFenceResource* fence = VkFenceResource_create(ctx, signaled);
-    return reinterpret_cast<jlong>(fence);
-}
-
-JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkFenceResource_destroy(
-        JNIEnv*,
-        jclass,
-        jlong fence) {
-
-    auto* f = reinterpret_cast<VkFenceResource*>(fence);
-    VkFenceResource_destroy(f);
-}
-
-JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkFenceResource_wait(
-        JNIEnv*,
-        jclass,
-        jlong fence,
-        jlong timeout) {
-
-    auto* f = reinterpret_cast<VkFenceResource*>(fence);
-    VkFenceResource_wait(f, static_cast<uint64_t>(timeout));
-}
-
-JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkFenceResource_reset(
-        JNIEnv*,
-        jclass,
-        jlong fence) {
-
-    auto* f = reinterpret_cast<VkFenceResource*>(fence);
-    VkFenceResource_reset(f);
-}
-
-// --------------------------------------------------
-// VkSemaphoreResource
-// --------------------------------------------------
-
-JNIEXPORT jlong JNICALL
-Java_com_cws_kanvas_vk_VK_VkSemaphoreResource_create(
-        JNIEnv*,
-        jclass,
-        jlong context) {
-
-    auto* ctx = reinterpret_cast<VkContext*>(context);
-    return reinterpret_cast<jlong>(VkSemaphoreResource_create(ctx));
-}
-
-JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkSemaphoreResource_destroy(
-        JNIEnv*,
-        jclass,
-        jlong semaphore) {
-
-    auto* s = reinterpret_cast<VkSemaphoreResource*>(semaphore);
-    VkSemaphoreResource_destroy(s);
 }
 
 // --------------------------------------------------

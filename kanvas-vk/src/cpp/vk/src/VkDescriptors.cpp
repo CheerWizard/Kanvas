@@ -115,6 +115,7 @@ VkDescriptorPool VkDescriptors::createPool(VkBindingLayout* layout, int frame) {
 
     VkDescriptorPool pool;
     VK_CHECK(vkCreateDescriptorPool(context->device, &poolInfo, VK_CALLBACKS, &pool));
+    VK_DEBUG_NAME_FORMAT(context->device, VK_OBJECT_TYPE_DESCRIPTOR_POOL, layout, "VkDescriptorPool-" << layout->info.name);
     return pool;
 }
 
@@ -128,5 +129,6 @@ VkDescriptorSet VkDescriptors::createSet(VkBindingLayout* layout, int frame) {
 
     VkDescriptorSet set;
     VK_CHECK(vkAllocateDescriptorSets(context->device, &allocInfo, &set));
+    VK_DEBUG_NAME_FORMAT(context->device, VK_OBJECT_TYPE_DESCRIPTOR_SET, layout, "VkDescriptorSet-" << layout->info.name);
     return set;
 }

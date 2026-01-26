@@ -5,7 +5,7 @@
 #ifndef STC_FRAMEBUFFER_HPP
 #define STC_FRAMEBUFFER_HPP
 
-#include "Vk.h"
+#include "../api/Vk.h"
 #include "VkCommon.hpp"
 
 struct VkRenderTarget {

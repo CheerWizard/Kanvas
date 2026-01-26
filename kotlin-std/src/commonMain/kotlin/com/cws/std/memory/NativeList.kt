@@ -1,7 +1,6 @@
 package com.cws.std.memory
 
-import com.cws.std.memory.NativeCollection
-
+// TODO move to NativeBuffer class to extensions and internals
 open class NativeList(
     capacity: Int,
     val typeSize: Int = Byte.SIZE_BYTES

@@ -5,7 +5,7 @@
 #ifndef STC_BINDING_HPP
 #define STC_BINDING_HPP
 
-#include "Vk.h"
+#include "../api/Vk.h"
 
 struct VkBindingLayout {
     VkDevice device = nullptr;

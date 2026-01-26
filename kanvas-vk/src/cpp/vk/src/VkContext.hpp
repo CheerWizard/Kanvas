@@ -30,7 +30,7 @@ struct VkContext {
 
     VkSurface* surface = nullptr;
 
-    VkContext(const VkContextInfo& info);
+    VkContext(void* native_window, const VkContextInfo& info);
     ~VkContext();
 
     void beginFrame(u32 frame);

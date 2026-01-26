@@ -5,7 +5,7 @@
 #ifndef PIPELINE_HPP
 #define PIPELINE_HPP
 
-#include "Vk.h"
+#include "../api/Vk.h"
 
 struct VkPipe {
     VkDevice device = nullptr;
