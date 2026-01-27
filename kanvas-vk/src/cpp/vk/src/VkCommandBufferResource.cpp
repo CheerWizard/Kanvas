@@ -131,10 +131,7 @@ VkCommandBufferResource::VkCommandBufferResource(VkDeviceQueue& device_queue, co
     };
 
     VK_CHECK(vkAllocateCommandBuffers(device_queue.device, &allocInfo, &command_buffer));
-
-    char debugName[64];
-    sprintf(debugName, "VkCommandBuffer-%s", name);
-    VK_DEBUG_NAME(device_queue.device, VK_OBJECT_TYPE_COMMAND_BUFFER, command_buffer, debugName);
+    VK_DEBUG_NAME_FORMAT(device_queue.device, VK_OBJECT_TYPE_COMMAND_BUFFER, command_buffer, "VkCommandBuffer-" << name);
 }
 
 VkCommandBufferResource::~VkCommandBufferResource() {
@@ -211,10 +208,16 @@ void VkCommandBufferResource::setViewport(float x, float y, float width, float h
     vkCmdSetViewport(command_buffer, 0, 1, &viewport);
 }
 
-void VkCommandBufferResource::setPipe(VkPipe* pipe) const {
+void VkCommandBufferResource::setPipe(VkPipe* pipe, u32 frame) const {
     setPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, pipe->pipeline);
-    setVertexBuffer(pipe->info.vertexBuffer);
-    setIndexBuffer(pipe->info.indexBuffer);
+    setVertexBuffer(pipe->info.vertexBuffer, frame);
+    setIndexBuffer(pipe->info.indexBuffer, frame);
+    setViewport(
+        pipe->info.viewportX, pipe->info.viewportY,
+        pipe->info.viewportWidth, pipe->info.viewportHeight,
+        pipe->info.viewportMinDepth, pipe->info.viewportMaxDepth
+    );
+    set
     // TODO set descriptor sets
 }
 
@@ -222,21 +225,22 @@ void VkCommandBufferResource::setPipeline(VkPipelineBindPoint pipeline_bind_poin
     vkCmdBindPipeline(command_buffer, pipeline_bind_point, pipeline);
 }
 
-void VkCommandBufferResource::setVertexBuffer(VkBufferResource *buffer) const {
+void VkCommandBufferResource::setVertexBuffer(VkBufferResource *buffer, u32 frame) const {
     VkBuffer buffers[] = { buffer->buffer };
-    VkDeviceSize offsets[] = { 0 };
+    VkDeviceSize offsets[] = { buffer->info.size * frame };
     vkCmdBindVertexBuffers(command_buffer, 0, 1, buffers, offsets);
 }
 
-void VkCommandBufferResource::setIndexBuffer(VkBufferResource *buffer) const {
-    vkCmdBindIndexBuffer(command_buffer, buffer->buffer, 0, VK_INDEX_TYPE_UINT32);
+void VkCommandBufferResource::setIndexBuffer(VkBufferResource *buffer, u32 frame) const {
+    vkCmdBindIndexBuffer(command_buffer, buffer->buffer, buffer->info.size * frame, VK_INDEX_TYPE_UINT32);
 }
 
 void VkCommandBufferResource::setDescriptorSet(
     VkPipelineBindPoint pipeline_bind_point,
     VkPipelineLayout pipeline_layout,
     VkDescriptorSet descriptorSet,
-    uint32_t set
+    uint32_t set,
+    u32 frame
 ) const {
     vkCmdBindDescriptorSets(
       command_buffer,
@@ -245,7 +249,7 @@ void VkCommandBufferResource::setDescriptorSet(
       set,
       1, &descriptorSet,
       0, nullptr
-  );
+    );
 }
 
 void VkCommandBufferResource::setScissor(int x, int y, u32 w, u32 h) const {

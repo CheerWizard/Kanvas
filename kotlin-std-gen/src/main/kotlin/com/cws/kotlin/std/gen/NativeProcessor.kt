@@ -262,7 +262,7 @@ class NativeProcessor(
                         FunSpec.builder("set()")
                             .addParameter("value", field.generatedTypeName)
                             .addStatement("handle.checkNotNull()")
-                            .addStatement("Heap.copy(value.handle, ${field.offset}, ${field.generatedType}.SIZE_BYTES)")
+                            .addStatement("Heap.copyTo(Heap, value.handle, ${field.offset}, ${field.generatedType}.SIZE_BYTES)")
                             .build()
                     )
                     property.getter(

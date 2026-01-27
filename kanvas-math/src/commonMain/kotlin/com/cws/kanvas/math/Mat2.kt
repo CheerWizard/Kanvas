@@ -2,10 +2,11 @@ package com.cws.kanvas.math
 
 import com.cws.std.memory.INativeData
 import com.cws.std.memory.MemoryLayout
+import com.cws.std.memory.NativeBuffer
 import com.cws.std.memory.NativeDataList
-import com.cws.std.memory.STD140_SIZE_BYTES
-import com.cws.std.memory.STD430_SIZE_BYTES
 import com.cws.std.memory.Stack
+import com.cws.std.memory.next
+import com.cws.std.memory.push
 import com.cws.std.memory.stackPush
 
 // Used to generate fresh version
@@ -31,14 +32,14 @@ interface Mat2 : INativeData {
         }
     }
 
-    override fun serialize(list: NativeDataList) {
-        list.set(v1)
-        list.set(v2)
+    override fun serialize(buffer: NativeBuffer) {
+        buffer.push(v1)
+        buffer.push(v2)
     }
 
-    override fun deserialize(list: NativeDataList) = Mat2(
-        list.get(v1),
-        list.get(v2),
+    override fun deserialize(buffer: NativeBuffer) = Mat2(
+        buffer.next(v1),
+        buffer.next(v2),
     )
 
 }

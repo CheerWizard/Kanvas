@@ -9,15 +9,15 @@
 #include "VkCommon.hpp"
 
 struct VkRenderTarget {
-    VkDevice device = nullptr;
-    VkRenderPass render_pass = nullptr;
-    VkFramebuffer framebuffer = nullptr;
+    VkContext* context = nullptr;
+    std::vector<VkRenderPass> render_passes;
+    std::vector<VkFramebuffer> framebuffers;
     VkRenderTargetInfo info;
 
-    VkRenderTarget(VkDevice device, const VkRenderTargetInfo& info);
+    VkRenderTarget(VkContext* context, const VkRenderTargetInfo& info);
     ~VkRenderTarget();
 
-    void resize(int width, int height);
+    void resize(u32 width, u32 height);
 };
 
 #endif //STC_FRAMEBUFFER_HPP

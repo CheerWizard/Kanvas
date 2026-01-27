@@ -22,7 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Catch"
+rootProject.name = "Kanvas"
 include(":app")
 include(":kotlin-std")
 include(":kotlin-std-gen")

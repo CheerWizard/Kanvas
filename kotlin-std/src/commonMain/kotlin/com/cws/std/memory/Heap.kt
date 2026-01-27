@@ -34,7 +34,7 @@ class FreeBlocks(size: Int) {
 }
 
 // TODO: right now single heap memory model is limited to Int.MAX_VALUE = ~2GB size, so 2GB is memory limit
-object Heap : NativeList(
+object Heap : NativeBuffer(
 //    capacity = (getMemoryInfo().totalPhysicalSize * 0.10f).toInt(),
     capacity = 2 * 1024 * 1024
 ) {

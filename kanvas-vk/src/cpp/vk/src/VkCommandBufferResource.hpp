@@ -22,15 +22,16 @@ struct VkCommandBufferResource {
     void beginRenderPass(VkRenderTarget* render_target, u32 colorAttachmentIndex);
     void endRenderPass() const;
 
-    void setPipe(VkPipe* pipe) const;
+    void setPipe(VkPipe* pipe, u32 frame) const;
     void setPipeline(VkPipelineBindPoint pipeline_bind_point, VkPipeline pipeline) const;
-    void setVertexBuffer(VkBufferResource* buffer) const;
-    void setIndexBuffer(VkBufferResource* buffer) const;
+    void setVertexBuffer(VkBufferResource* buffer, u32 frame) const;
+    void setIndexBuffer(VkBufferResource* buffer, u32 frame) const;
     void setDescriptorSet(
         VkPipelineBindPoint pipeline_bind_point,
         VkPipelineLayout pipeline_layout,
         VkDescriptorSet descriptorSet,
-        uint32_t set
+        uint32_t set,
+        u32 frame
     ) const;
 
     void setViewport(float x, float y, float width, float height, float minDepth, float maxDepth) const;

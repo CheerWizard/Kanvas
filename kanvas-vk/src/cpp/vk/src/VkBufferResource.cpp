@@ -28,13 +28,13 @@ void VkBufferResource_updateBinding(VkBufferResource* buffer_resource, u32 frame
 }
 
 VkBufferResource::VkBufferResource(
-    VkDevice device,
+    VkContext* context,
     const VkBufferInfo& info
-) : device(device), info(info) {
+) : context(context), info(info) {
 
     VkBufferCreateInfo createInfo = {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = info.size,
+        .size = info.size * context->info.frameCount,
         .usage = info.usages,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
@@ -58,7 +58,7 @@ VkBufferResource::VkBufferResource(
     };
 
     VK_CHECK(vmaCreateBuffer(VK_ALLOCATOR, &createInfo, &allocInfo, &buffer, &allocation, nullptr));
-    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_BUFFER, buffer, info.name);
+    VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_BUFFER, buffer, info.name);
 
     if (info.mapOnCreate) {
         map();
@@ -75,7 +75,7 @@ VkBufferResource::~VkBufferResource() {
 
 void* VkBufferResource::map() {
     VK_CHECK(vmaMapMemory(VK_ALLOCATOR, allocation, &mapped));
-    ASSERT(!mapped, TAG, "Failed to map buffer memory");
+    ASSERT(!mapped, TAG, "Failed to map VkBufferResource memory");
     return mapped;
 }
 
@@ -86,17 +86,21 @@ void VkBufferResource::unmap() {
     }
 }
 
+void VkBufferResource::resize(size_t size) {
+    info.size = size;
+    this->~VkBufferResource();
+    new (this) VkBufferResource(context, info);
+}
+
 void VkBufferResource::updateBinding(u32 frame) {
     VkBinding* binding = info.binding;
     VkBindingLayout* binding_layout = info.binding_layout;
     VkDescriptorSet set = VkDescriptors::getSet(binding_layout, frame);
 
     if (binding && binding_layout && set) {
-        // TODO need to make it multiframe buffer
-
         VkDescriptorBufferInfo bufferInfo = {
             .buffer = buffer,
-            .offset = 0,
+            .offset = info.size * frame,
             .range = info.size,
         };
 
@@ -110,6 +114,6 @@ void VkBufferResource::updateBinding(u32 frame) {
             .pBufferInfo = &bufferInfo,
         };
 
-        vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
+        vkUpdateDescriptorSets(context->device, 1, &descriptorWrite, 0, nullptr);
     }
 }

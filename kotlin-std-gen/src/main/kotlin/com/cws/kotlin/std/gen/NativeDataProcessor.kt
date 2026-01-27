@@ -85,7 +85,7 @@ class NativeDataProcessor(
         val generatedName = declaration.simpleName.asString().removePrefix("_")
         val generatedClassName = ClassName(pkg, generatedName)
         val nativeDataInterface = ClassName("com.cws.std.memory", "INativeData")
-        val nativeDataList = ClassName("com.cws.std.memory", "NativeDataList")
+        val nativeBuffer = ClassName("com.cws.std.memory", "NativeBuffer")
         val memoryLayout = ClassName("com.cws.std.memory", "MemoryLayout")
         val fields = mutableListOf<Field>()
         var offset = "0"
@@ -236,7 +236,7 @@ class NativeDataProcessor(
                     .addModifiers(KModifier.OVERRIDE)
                     .addParameter(
                         ParameterSpec
-                            .builder("list", nativeDataList)
+                            .builder("buffer", nativeBuffer)
                             .build()
                     )
                     .addCode(fields.joinForSerialize())
@@ -247,7 +247,7 @@ class NativeDataProcessor(
                     .addModifiers(KModifier.OVERRIDE)
                     .addParameter(
                         ParameterSpec
-                            .builder("list", nativeDataList)
+                            .builder("buffer", nativeBuffer)
                             .build()
                     )
                     .addCode("return $generatedName(${fields.joinForDeserialize()}\n)")
@@ -256,7 +256,7 @@ class NativeDataProcessor(
             )
 
         fileSpec.addImport("com.cws.std.memory", "INativeData")
-        fileSpec.addImport("com.cws.std.memory", "NativeDataList")
+        fileSpec.addImport("com.cws.std.memory", "NativeBuffer")
         fileSpec.addType(generatedClass.build())
 
         val dep = declaration.containingFile?.let {
@@ -273,9 +273,9 @@ class NativeDataProcessor(
     private fun List<Field>.joinForSerialize(): String {
         return joinToString("") {
             if (it.type in primitiveTypes) {
-                "\nlist.set${it.type}(${it.name})"
+                "\nbuffer.push${it.type}(${it.name})"
             } else {
-                "\nlist.set(${it.name})"
+                "\nbuffer.push(${it.name})"
             }
         }
     }
@@ -283,9 +283,9 @@ class NativeDataProcessor(
     private fun List<Field>.joinForDeserialize(): String {
         return joinToString("") {
             if (it.type in primitiveTypes) {
-                "\nlist.get${it.type}(),"
+                "\nbuffer.next${it.type}(),"
             } else {
-                "\nlist.get(${it.name}),"
+                "\nbuffer.next(${it.name}),"
             }
         }
     }

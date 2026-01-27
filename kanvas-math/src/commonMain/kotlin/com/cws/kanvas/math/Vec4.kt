@@ -2,10 +2,13 @@ package com.cws.kanvas.math
 
 import com.cws.std.memory.INativeData
 import com.cws.std.memory.MemoryLayout
+import com.cws.std.memory.NativeBuffer
 import com.cws.std.memory.NativeDataList
 import com.cws.std.memory.STD140_SIZE_BYTES
 import com.cws.std.memory.STD430_SIZE_BYTES
 import com.cws.std.memory.Stack
+import com.cws.std.memory.nextFloat
+import com.cws.std.memory.pushFloat
 import com.cws.std.memory.stackPush
 import kotlin.math.sqrt
 
@@ -34,18 +37,18 @@ interface Vec4 : INativeData {
         }
     }
 
-    override fun serialize(list: NativeDataList) {
-        list.setFloat(x)
-        list.setFloat(y)
-        list.setFloat(z)
-        list.setFloat(w)
+    override fun serialize(buffer: NativeBuffer) {
+        buffer.pushFloat(x)
+        buffer.pushFloat(y)
+        buffer.pushFloat(z)
+        buffer.pushFloat(w)
     }
 
-    override fun deserialize(list: NativeDataList) = Vec4(
-        list.getFloat(),
-        list.getFloat(),
-        list.getFloat(),
-        list.getFloat(),
+    override fun deserialize(buffer: NativeBuffer) = Vec4(
+        buffer.nextFloat(),
+        buffer.nextFloat(),
+        buffer.nextFloat(),
+        buffer.nextFloat(),
     )
 
 }

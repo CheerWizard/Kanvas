@@ -12,17 +12,19 @@
 #define PTR_OFFSET_T(T) PTR_OFFSET(sizeof(T))
 
 struct VkBufferResource {
-    VkDevice device = nullptr;
+    VkContext* context = nullptr;
     VkBuffer buffer = nullptr;
     VmaAllocation allocation = {};
     VkBufferInfo info;
     void* mapped = nullptr;
 
-    VkBufferResource(VkDevice device, const VkBufferInfo& info);
+    VkBufferResource(VkContext* context, const VkBufferInfo& info);
     ~VkBufferResource();
 
     void* map();
     void unmap();
+
+    void resize(size_t size);
 
     void updateBinding(u32 frame);
 

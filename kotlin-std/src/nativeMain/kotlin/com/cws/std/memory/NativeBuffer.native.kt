@@ -5,6 +5,7 @@ import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.IntVar
+import kotlinx.cinterop.ShortVar
 import kotlinx.cinterop.get
 import kotlinx.cinterop.plus
 import kotlinx.cinterop.reinterpret
@@ -18,7 +19,12 @@ import platform.posix.memset
 import platform.posix.realloc
 
 @OptIn(ExperimentalForeignApi::class)
-actual open class NativeBuffer actual constructor(capacity: Int) {
+actual open class NativeBuffer actual constructor(
+    capacity: Int,
+    memoryLayout: MemoryLayout,
+) {
+
+    actual val memoryLayout: MemoryLayout = memoryLayout
 
     constructor(ptr: Long, capacity: Int) : this(capacity) {
         this.buffer = ptr.toCPointer<ByteVar>()
@@ -42,6 +48,7 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
     private var _position = 0
     private var _capacity = capacity
 
+    private var shortView: CPointer<ShortVar> = buffer.reinterpret()
     private var intView: CPointer<IntVar> = buffer.reinterpret()
     private var floatView: CPointer<FloatVar> = buffer.reinterpret()
 
@@ -56,6 +63,7 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
     actual fun resize(newCapacity: Int) {
         buffer = realloc(buffer, newCapacity.toULong()) as CPointer<ByteVar>
         _capacity = newCapacity
+        shortView = buffer.reinterpret()
         intView = buffer.reinterpret()
         floatView = buffer.reinterpret()
     }
@@ -105,6 +113,14 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
         return buffer[index]
     }
 
+    actual fun setShort(index: Int, value: Short) {
+        shortView[index] = value
+    }
+
+    actual fun getShort(index: Int): Short {
+        return shortView[index]
+    }
+
     actual fun setInt(index: Int, value: Int) {
         intView[index] = value
     }
@@ -119,47 +135,6 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
 
     actual fun getFloat(index: Int): Float {
         return floatView[index]
-    }
-
-    actual fun push(value: Byte) {
-        setByte(position++, value)
-    }
-
-    actual fun pushInt(value: Int) {
-        setInt(position++, value)
-    }
-
-    actual fun pushFloat(value: Float) {
-        setFloat(position++, value)
-    }
-
-    actual fun pushLong(value: Long) {
-        packLong(position++, value)
-    }
-
-    actual fun pop(): Byte = getByte(position--)
-
-    actual fun popInt(): Int = getInt(position--)
-
-    actual fun popFloat(): Float = getFloat(position--)
-
-    actual fun popLong(): Long {
-        val long = unpackLong(position)
-        position -= 2
-        return long
-    }
-
-    private fun packLong(index: Int, value: Long) {
-        val high = (value shr 32).toInt()
-        val low = value.toInt()
-        intView[index] = high
-        intView[index + 1] = low
-    }
-
-    private fun unpackLong(index: Int): Long {
-        val high = intView[index]
-        val low = intView[index + 1]
-        return (high.toLong() shl 32) or (low.toLong() and 0xFFFFFFFF)
     }
 
 }

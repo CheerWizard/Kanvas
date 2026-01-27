@@ -19,7 +19,7 @@ value class JsMat3(
         set(`value`) {
             handle.checkNotNull()
             value as JsVec3
-            Heap.copy(value.handle, handle, JsVec3.SIZE_BYTES)
+            Heap.copyTo(Heap, value.handle, handle, JsVec3.SIZE_BYTES)
         }
 
     var _v2: Vec3
@@ -30,7 +30,7 @@ value class JsMat3(
         set(`value`) {
             handle.checkNotNull()
             value as JsVec3
-            Heap.copy(value.handle, handle + JsVec3.SIZE_BYTES, JsVec3.SIZE_BYTES)
+            Heap.copyTo(Heap, value.handle, handle + JsVec3.SIZE_BYTES, JsVec3.SIZE_BYTES)
         }
 
     var _v3: Vec3
@@ -41,7 +41,7 @@ value class JsMat3(
         set(`value`) {
             handle.checkNotNull()
             value as JsVec3
-            Heap.copy(value.handle, handle + JsVec3.SIZE_BYTES + JsVec3.SIZE_BYTES, JsVec3.SIZE_BYTES)
+            Heap.copyTo(Heap, value.handle, handle + JsVec3.SIZE_BYTES + JsVec3.SIZE_BYTES, JsVec3.SIZE_BYTES)
         }
 
     constructor(
@@ -85,7 +85,7 @@ value class JsMat3(
 
     infix fun `=`(other: Mat3) {
         other as JsMat3
-        Heap.copy(other.handle, handle, SIZE_BYTES)
+        Heap.copyTo(Heap, other.handle, handle, SIZE_BYTES)
     }
 
     companion object {
@@ -137,7 +137,7 @@ actual fun Mat3.clone(stackScope: Boolean): Mat3 {
     val clone = if (stackScope) stackPush { Mat3() } else Mat3()
     this as JsMat3
     clone as JsMat3
-    Heap.copy(handle, clone.handle, SIZE_BYTES)
+    Heap.copyTo(Heap, handle, clone.handle, SIZE_BYTES)
     return clone
 }
 

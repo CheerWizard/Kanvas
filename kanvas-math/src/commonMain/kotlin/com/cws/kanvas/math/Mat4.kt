@@ -2,8 +2,11 @@ package com.cws.kanvas.math
 
 import com.cws.std.memory.INativeData
 import com.cws.std.memory.MemoryLayout
+import com.cws.std.memory.NativeBuffer
 import com.cws.std.memory.NativeDataList
 import com.cws.std.memory.Stack
+import com.cws.std.memory.next
+import com.cws.std.memory.push
 import com.cws.std.memory.stackPush
 import kotlin.math.cos
 import kotlin.math.sin
@@ -25,18 +28,18 @@ interface Mat4 : INativeData {
         }
     }
 
-    override fun serialize(list: NativeDataList) {
-        list.set(v1)
-        list.set(v2)
-        list.set(v3)
-        list.set(v4)
+    override fun serialize(buffer: NativeBuffer) {
+        buffer.push(v1)
+        buffer.push(v2)
+        buffer.push(v3)
+        buffer.push(v4)
     }
 
-    override fun deserialize(list: NativeDataList) = Mat4(
-        list.get(v1),
-        list.get(v2),
-        list.get(v3),
-        list.get(v4),
+    override fun deserialize(buffer: NativeBuffer) = Mat4(
+        buffer.next(v1),
+        buffer.next(v2),
+        buffer.next(v3),
+        buffer.next(v4),
     )
 
 }

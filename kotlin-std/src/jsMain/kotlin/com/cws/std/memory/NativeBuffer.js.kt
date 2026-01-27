@@ -3,11 +3,17 @@ package com.cws.std.memory
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Float32Array
 import org.khronos.webgl.Int32Array
+import org.khronos.webgl.Uint16Array
 import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get
 import org.khronos.webgl.set
 
-actual open class NativeBuffer actual constructor(capacity: Int) {
+actual open class NativeBuffer actual constructor(
+    capacity: Int,
+    memoryLayout: MemoryLayout,
+) {
+
+    actual val memoryLayout: MemoryLayout = memoryLayout
 
     actual var position: Int
         set(value) {
@@ -23,6 +29,7 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
     protected var _position: Int = 0
 
     private var byteView = Uint8Array(buffer)
+    private var shortView = Uint16Array(buffer)
     private var intView = Int32Array(buffer)
     private var floatView = Float32Array(buffer)
 
@@ -31,6 +38,7 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
     actual fun resize(newCapacity: Int) {
         buffer = ArrayBuffer(newCapacity)
         byteView = Uint8Array(buffer)
+        shortView = Uint16Array(buffer)
         intView = Int32Array(buffer)
         floatView = Float32Array(buffer)
     }
@@ -75,6 +83,14 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
         return byteView[index]
     }
 
+    actual fun setShort(index: Int, value: Short) {
+        shortView[index] = value
+    }
+
+    actual fun getShort(index: Int): Short {
+        return shortView[index]
+    }
+
     actual fun setInt(index: Int, value: Int) {
         intView[index] = value
     }
@@ -89,47 +105,6 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
 
     actual fun getFloat(index: Int): Float {
         return floatView[index]
-    }
-
-    actual fun push(value: Byte) {
-        setByte(position++, value)
-    }
-
-    actual fun pushInt(value: Int) {
-        setInt(position++, value)
-    }
-
-    actual fun pushFloat(value: Float) {
-        setFloat(position++, value)
-    }
-
-    actual fun pushLong(value: Long) {
-        packLong(position++, value)
-    }
-
-    actual fun pop(): Byte = byteView[position--]
-
-    actual fun popInt(): Int = intView[position--]
-
-    actual fun popFloat(): Float = floatView[position--]
-
-    actual fun popLong(): Long {
-        val long = unpackLong(position)
-        position -= 2
-        return long
-    }
-
-    private fun packLong(index: Int, value: Long) {
-        val high = (value shr 32).toInt()
-        val low = value.toInt()
-        intView[index] = high
-        intView[index + 1] = low
-    }
-
-    private fun unpackLong(index: Int): Long {
-        val high = intView[index]
-        val low = intView[index + 1]
-        return (high.toLong() shl 32) or (low.toLong() and 0xFFFFFFFF)
     }
 
 }

@@ -46,7 +46,7 @@ value class JsVec2(
 
     infix fun `=`(other: Vec2) {
         other as JsVec2
-        Heap.copy(other.handle, handle, SIZE_BYTES)
+        Heap.copyTo(Heap, other.handle, handle, SIZE_BYTES)
     }
 
     override fun toString(): String {
@@ -72,7 +72,7 @@ actual fun Stack.Vec2(x: Float, y: Float): Vec2 = JsVec2(x,y, push(SIZE_BYTES))
 actual fun Vec2.clone(): Vec2 {
     this as JsVec2
     val clone = JsVec2()
-    Heap.copy(handle, clone.handle, SIZE_BYTES)
+    Heap.copyTo(Heap, handle, clone.handle, SIZE_BYTES)
     return clone
 }
 

@@ -106,15 +106,24 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
         .pDynamicStates = dynamicStates.data(),
     };
 
+    VkViewport viewport = {
+        .x = info.viewportX,
+        .y = info.viewportY,
+        .width = info.viewportWidth,
+        .height = info.viewportHeight,
+        .minDepth = info.viewportMinDepth,
+        .maxDepth = info.viewportMaxDepth,
+    };
+
     VkRect2D scissor = {
-        .offset = { static_cast<int32_t>(info.viewport.x), static_cast<int32_t>(info.viewport.y) },
-        .extent = { (uint32_t) info.viewport.width, (uint32_t) info.viewport.height },
+        .offset = { info.scissorX, info.scissorY },
+        .extent = { info.scissorWidth, info.scissorHeight },
     };
 
     VkPipelineViewportStateCreateInfo viewportState = {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
         .viewportCount = 1,
-        .pViewports = &info.viewport,
+        .pViewports = &viewport,
         .scissorCount = 1,
         .pScissors = &scissor,
     };

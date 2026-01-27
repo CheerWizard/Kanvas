@@ -11,17 +11,14 @@ expect enum class BlendOp {
 expect enum class BlendFactor {
     ZERO,
     ONE,
-    SRC,
-    ONE_MINUS_SRC,
+    SRC_COLOR,
+    ONE_MINUS_SRC_COLOR,
+    DST_COLOR,
+    ONE_MINUS_DST_COLOR,
     SRC_ALPHA,
     ONE_MINUS_SRC_ALPHA,
-    DST,
-    ONE_MINUS_DST,
     DST_ALPHA,
-    ONE_MINUS_DST_ALPHA,
-    SRC_ALPHA_SATURATED,
-    CONSTANT,
-    ONE_MINUS_CONSTANT,
+    ONE_MINUS_DST_ALPHA;
 }
 
 data class Blend(

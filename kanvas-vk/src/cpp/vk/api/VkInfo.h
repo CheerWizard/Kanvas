@@ -5,9 +5,14 @@
 #ifndef KVK_VKINFO_H
 #define KVK_VKINFO_H
 
-#include "../src/VkCommon.hpp"
+#include <stdint.h>
+#include <vulkan/vulkan_core.h>
+
+using u32 = uint32_t;
 
 typedef struct VkBufferResource VkBufferResource;
+typedef struct VkTextureResource VkTextureResource;
+typedef struct VkSamplerResource VkSamplerResource;
 typedef struct VkRenderTarget VkRenderTarget;
 typedef struct VkShader VkShader;
 typedef struct VkBinding VkBinding;
@@ -16,9 +21,9 @@ typedef struct VkBindingLayout VkBindingLayout;
 typedef struct VkContextInfo {
     const char* application_name;
     const char* engine_name;
-    uint32_t width;
-    uint32_t height;
-    uint32_t frameCount;
+    u32 width;
+    u32 height;
+    u32 frameCount;
 } VkContextInfo;
 
 typedef struct VkBufferInfo {
@@ -26,7 +31,7 @@ typedef struct VkBufferInfo {
     VkBindingLayout* binding_layout;
     VkBinding* binding;
     VkMemoryPropertyFlagBits memoryType;
-    uint32_t usages;
+    u32 usages;
     size_t size;
     VkBool32 mapOnCreate;
 } VkBufferInfo;
@@ -58,12 +63,13 @@ typedef struct VkTextureInfo {
     VkBinding* binding;
     VkImageViewType type;
     VkMemoryPropertyFlagBits memoryType;
-    uint32_t width;
-    uint32_t height;
-    uint32_t depth;
+    u32 width;
+    u32 height;
+    u32 depth;
     VkFormat format;
-    uint32_t mips;
-    uint32_t baseMip;
+    u32 mips;
+    u32 baseMip;
+    u32 samples;
 } VkTextureInfo;
 
 typedef struct VkBlend {
@@ -77,36 +83,24 @@ typedef struct VkBlend {
 } VkBlend;
 
 typedef struct VkColorAttachment {
-    VkImageView view;
-    VkFormat format;
-    uint32_t samples;
+    VkTextureResource* texture;
     float clearColor[4];
     VkBlend blend;
 } VkColorAttachment;
 
 typedef struct VkDepthAttachment {
-    VkImageView view;
+    VkTextureResource* texture;
     VkBool32 enabled;
-    VkFormat format;
-    uint32_t samples;
     float depthClearValue;
     VkCompareOp depthCompareOp;
-    uint32_t stencilClearValue;
     VkBool32 depthReadOnly;
     VkBool32 depthWriteEnabled;
-    VkBool32 stencilReadOnly;
 } VkDepthAttachment;
 
 typedef struct VkStencilAttachment {
-    VkImageView view;
+    VkTextureResource* texture;
     VkBool32 enabled;
-    VkFormat format;
-    uint32_t samples;
-    float depthClearValue;
-    VkCompareOp depthCompareOp;
-    uint32_t stencilClearValue;
-    VkBool32 depthReadOnly;
-    VkBool32 depthWriteEnabled;
+    u32 stencilClearValue;
     VkBool32 stencilReadOnly;
 } VkStencilAttachment;
 
@@ -114,9 +108,9 @@ typedef struct VkRenderTargetInfo {
     const char* name;
     int x;
     int y;
-    uint32_t width;
-    uint32_t height;
-    uint32_t depth;
+    u32 width;
+    u32 height;
+    u32 depth;
     VkColorAttachment* colorAttachments;
     size_t colorAttachmentsCount;
     VkDepthAttachment* depthAttachment;
@@ -126,7 +120,7 @@ typedef struct VkRenderTargetInfo {
 typedef struct VkShaderInfo {
     const char* name;
     const char* entryPoint;
-    uint32_t* spirvCode;
+    u32* spirvCode;
     size_t spirvCodeSize;
     VkBindingLayout** binding_layouts;
     size_t binding_layouts_count;
@@ -150,7 +144,7 @@ typedef enum VkAttributeType {
 } VkAttributeType;
 
 typedef struct VkAttribute {
-    uint32_t location;
+    u32 location;
     VkAttributeType type;
     VkAttributeFormat format;
 } VkAttribute;
@@ -165,10 +159,10 @@ enum VkBindingType {
 
 typedef struct VkBinding {
     VkBindingType type;
-    uint32_t shader_stages;
-    uint32_t set;
-    uint32_t binding;
-    uint32_t count;
+    u32 shader_stages;
+    u32 set;
+    u32 binding;
+    u32 count;
     void* resource;
 } VkBinding;
 
@@ -182,7 +176,7 @@ typedef struct VkPipelineInfo {
     const char* name;
     VkAttribute* vertexAttributes;
     size_t vertexAttributesCount;
-    uint32_t vertexBufferSlot;
+    u32 vertexBufferSlot;
     VkBool32 instanced;
     VkPrimitiveTopology primitiveTopology;
     VkShader* vertexShader;
@@ -190,17 +184,35 @@ typedef struct VkPipelineInfo {
     VkShader* geometryShader;
     VkBufferResource* vertexBuffer;
     VkBufferResource* indexBuffer;
-    VkViewport viewport;
-    VkRect2D scissor;
+    float viewportX;
+    float viewportY;
+    float viewportWidth;
+    float viewportHeight;
+    float viewportMinDepth;
+    float viewportMaxDepth;
+    int scissorX;
+    int scissorY;
+    u32 scissorWidth;
+    u32 scissorHeight;
     VkPolygonMode polygonMode;
     float lineWidth;
     VkCullModeFlagBits cullMode;
     VkFrontFace frontFace;
-    uint32_t sampleCount;
+    u32 sampleCount;
     VkRenderTarget* renderTarget;
 } VkPipeInfo;
 
 extern "C" {
+
+    inline VkContextInfo VkContextInfo_default() {
+        VkContextInfo info = {};
+        info.application_name = "VkApplication";
+        info.engine_name = "VkEngine";
+        info.width = 800;
+        info.height = 600;
+        info.frameCount = 1;
+        return info;
+    }
 
     inline VkBufferInfo VkBufferInfo_default() {
         VkBufferInfo info = {};
@@ -247,6 +259,7 @@ extern "C" {
         info.format = VK_FORMAT_R8G8B8A8_SRGB;
         info.mips = 1;
         info.baseMip = 1;
+        info.samples = 1;
         return info;
     }
 
@@ -368,11 +381,16 @@ extern "C" {
         info.geometryShader = VK_NULL_HANDLE;
         info.vertexBuffer = VK_NULL_HANDLE;
         info.indexBuffer = VK_NULL_HANDLE;
-        info.viewport;
-        info.scissor.offset.x = (int) info.viewport.x;
-        info.scissor.offset.y = (int) info.viewport.y;
-        info.scissor.extent.width = (uint32_t) info.viewport.width;
-        info.scissor.extent.height = (uint32_t) info.viewport.height;
+        info.viewportX = 0;
+        info.viewportY = 0;
+        info.viewportWidth = 0;
+        info.viewportHeight = 0;
+        info.viewportMinDepth = 0;
+        info.viewportMaxDepth = 0;
+        info.scissorX = 0;
+        info.scissorY = 0;
+        info.scissorWidth = 0;
+        info.scissorHeight = 0;
         info.polygonMode = VK_POLYGON_MODE_FILL;
         info.lineWidth = 1.0f;
         info.cullMode = VK_CULL_MODE_BACK_BIT;

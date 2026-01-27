@@ -2,7 +2,12 @@ package com.cws.std.memory
 
 import java.nio.ByteBuffer
 
-actual open class NativeBuffer actual constructor(capacity: Int) {
+actual open class NativeBuffer actual constructor(
+    capacity: Int,
+    memoryLayout: MemoryLayout,
+) {
+
+    actual val memoryLayout: MemoryLayout = memoryLayout
 
     constructor(buffer: ByteBuffer) : this(buffer.capacity()) {
         this.buffer = buffer
@@ -45,12 +50,6 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
         buffer.flip()
     }
 
-    actual fun setByte(index: Int, value: Byte) {
-        buffer.put(index, value)
-    }
-
-    actual fun getByte(index: Int): Byte = buffer.get(index)
-
     actual fun copyTo(
         dest: NativeBuffer,
         srcIndex: Int,
@@ -78,6 +77,18 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
         repeat(size) { i -> buffer.put(destIndex + i, value) }
     }
 
+    actual fun setByte(index: Int, value: Byte) {
+        buffer.put(index, value)
+    }
+
+    actual fun getByte(index: Int): Byte = buffer.get(index)
+
+    actual fun setShort(index: Int, value: Short) {
+        buffer.putShort(index, value)
+    }
+
+    actual fun getShort(index: Int): Short = buffer.getShort(index)
+
     actual fun setInt(index: Int, value: Int) {
         buffer.putInt(index, value)
     }
@@ -93,29 +104,5 @@ actual open class NativeBuffer actual constructor(capacity: Int) {
     actual fun getFloat(index: Int): Float {
         return buffer.getFloat(index)
     }
-
-    actual fun push(value: Byte) {
-        buffer.put(value)
-    }
-
-    actual fun pushInt(value: Int) {
-        buffer.putInt(value)
-    }
-
-    actual fun pushFloat(value: Float) {
-        buffer.putFloat(value)
-    }
-
-    actual fun pushLong(value: Long) {
-        buffer.putLong(value)
-    }
-
-    actual fun pop(): Byte = buffer.get()
-
-    actual fun popInt(): Int = buffer.int
-
-    actual fun popFloat(): Float = buffer.float
-
-    actual fun popLong(): Long = buffer.long
 
 }
