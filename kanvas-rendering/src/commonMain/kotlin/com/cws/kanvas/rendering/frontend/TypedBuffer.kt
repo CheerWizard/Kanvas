@@ -3,7 +3,6 @@ package com.cws.kanvas.rendering.frontend
 import com.cws.kanvas.rendering.backend.Buffer
 import com.cws.kanvas.rendering.backend.BufferInfo
 import com.cws.std.memory.INativeData
-import com.cws.std.memory.NativeDataList
 
 open class TypedBuffer<T : INativeData>(
     device: Device,

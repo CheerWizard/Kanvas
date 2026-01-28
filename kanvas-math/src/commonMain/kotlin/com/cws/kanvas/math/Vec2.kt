@@ -3,7 +3,6 @@ package com.cws.kanvas.math
 import com.cws.std.memory.INativeData
 import com.cws.std.memory.MemoryLayout
 import com.cws.std.memory.NativeBuffer
-import com.cws.std.memory.NativeDataList
 import com.cws.std.memory.STD140_SIZE_BYTES
 import com.cws.std.memory.STD430_SIZE_BYTES
 import com.cws.std.memory.Stack
@@ -35,12 +34,12 @@ interface Vec2 : INativeData {
         }
     }
 
-    override fun serialize(buffer: NativeBuffer) {
+    override fun pack(buffer: NativeBuffer) {
         buffer.pushFloat(x)
         buffer.pushFloat(y)
     }
 
-    override fun deserialize(buffer: NativeBuffer) = Vec2(
+    override fun unpack(buffer: NativeBuffer) = Vec2(
         buffer.nextFloat(),
         buffer.nextFloat(),
     )

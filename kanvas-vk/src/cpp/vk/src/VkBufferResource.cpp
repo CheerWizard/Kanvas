@@ -32,9 +32,14 @@ VkBufferResource::VkBufferResource(
     const VkBufferInfo& info
 ) : context(context), info(info) {
 
+    u32 frameCount = context->info.frameCount;
+    if (info.isStatic) {
+        frameCount = 1;
+    }
+
     VkBufferCreateInfo createInfo = {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = info.size * context->info.frameCount,
+        .size = info.size * frameCount,
         .usage = info.usages,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
@@ -97,10 +102,15 @@ void VkBufferResource::updateBinding(u32 frame) {
     VkBindingLayout* binding_layout = info.binding_layout;
     VkDescriptorSet set = VkDescriptors::getSet(binding_layout, frame);
 
+    u32 actualFrame = frame;
+    if (info.isStatic) {
+        actualFrame = 0;
+    }
+
     if (binding && binding_layout && set) {
         VkDescriptorBufferInfo bufferInfo = {
             .buffer = buffer,
-            .offset = info.size * frame,
+            .offset = info.size * actualFrame,
             .range = info.size,
         };
 

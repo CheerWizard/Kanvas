@@ -34,6 +34,7 @@ typedef struct VkBufferInfo {
     u32 usages;
     size_t size;
     VkBool32 mapOnCreate;
+    VkBool32 isStatic;
 } VkBufferInfo;
 
 typedef struct VkSamplerInfo {
@@ -70,6 +71,7 @@ typedef struct VkTextureInfo {
     u32 mips;
     u32 baseMip;
     u32 samples;
+    VkBool32 isStatic;
 } VkTextureInfo;
 
 typedef struct VkBlend {
@@ -220,6 +222,7 @@ extern "C" {
         info.binding_layout = VK_NULL_HANDLE;
         info.binding = VK_NULL_HANDLE;
         info.mapOnCreate = VK_FALSE;
+        info.isStatic = VK_FALSE;
         return info;
     }
 
@@ -260,6 +263,7 @@ extern "C" {
         info.mips = 1;
         info.baseMip = 1;
         info.samples = 1;
+        info.isStatic = VK_TRUE;
         return info;
     }
 
@@ -277,9 +281,7 @@ extern "C" {
 
     inline VkColorAttachment VkColorAttachment_default() {
         VkColorAttachment attachment = {};
-        attachment.view = VK_NULL_HANDLE;
-        attachment.format;
-        attachment.samples = 1;
+        attachment.texture = VK_NULL_HANDLE;
         attachment.clearColor[0] = 0;
         attachment.clearColor[1] = 0;
         attachment.clearColor[2] = 0;
@@ -290,30 +292,20 @@ extern "C" {
 
     inline VkDepthAttachment VkDepthAttachment_default() {
         VkDepthAttachment attachment = {};
-        attachment.view = VK_NULL_HANDLE;
+        attachment.texture = VK_NULL_HANDLE;
         attachment.enabled = VK_FALSE;
-        attachment.format;
-        attachment.samples = 1;
         attachment.depthClearValue = 1.0f;
         attachment.depthCompareOp = VK_COMPARE_OP_LESS;
-        attachment.stencilClearValue = 1.0;
         attachment.depthReadOnly = VK_FALSE;
         attachment.depthWriteEnabled = VK_FALSE;
-        attachment.stencilReadOnly = VK_FALSE;
         return attachment;
     }
 
     inline VkStencilAttachment VkStencilAttachment_default() {
         VkStencilAttachment attachment = {};
-        attachment.view = VK_NULL_HANDLE;
+        attachment.texture = VK_NULL_HANDLE;
         attachment.enabled = VK_FALSE;
-        attachment.format;
-        attachment.samples = 1;
-        attachment.depthClearValue = 1.0f;
-        attachment.depthCompareOp = VK_COMPARE_OP_LESS;
         attachment.stencilClearValue = 1.0;
-        attachment.depthReadOnly = VK_FALSE;
-        attachment.depthWriteEnabled = VK_FALSE;
         attachment.stencilReadOnly = VK_FALSE;
         return attachment;
     }

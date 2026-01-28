@@ -17,11 +17,14 @@ data class ShaderInfo(
     var sourceText: String = "",
     var sourceSpirv: NativeBuffer? = null,
     var sourceSpirvSize: Long = 0,
+    val bindingLayouts: List<BindingLayout> = emptyList(),
 )
 
 expect class ShaderHandle
 
 expect class Shader(context: RenderContext, info: ShaderInfo) : Resource<ShaderHandle> {
+    val info: ShaderInfo
     override fun onCreate()
     override fun onDestroy()
+    fun update()
 }

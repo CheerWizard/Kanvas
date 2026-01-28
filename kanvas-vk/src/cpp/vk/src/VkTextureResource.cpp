@@ -31,6 +31,11 @@ VkTextureResource::VkTextureResource(VkContext* context, const VkTextureInfo &in
     VkImageType imageType;
     VkImageViewType imageViewType;
 
+    u32 frameCount = context->info.frameCount;
+    if (info.isStatic) {
+        frameCount = 1;
+    }
+
     switch (info.type) {
         case VK_IMAGE_VIEW_TYPE_2D:
             imageType = VK_IMAGE_TYPE_2D;
@@ -53,7 +58,7 @@ VkTextureResource::VkTextureResource(VkContext* context, const VkTextureInfo &in
                     .depth = info.depth,
             },
             .mipLevels = info.mips,
-            .arrayLayers = context->info.frameCount,
+            .arrayLayers = frameCount,
             .samples = static_cast<VkSampleCountFlagBits>(info.samples),
             .tiling = VK_IMAGE_TILING_OPTIMAL,
             .usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
@@ -81,7 +86,8 @@ VkTextureResource::VkTextureResource(VkContext* context, const VkTextureInfo &in
     VK_CHECK(vmaCreateImage(VK_ALLOCATOR, &imageInfo, &allocInfo, &image, &allocation, nullptr));
     VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_IMAGE, image, info.name);
 
-    for (u32 i = 0 ; i < views.size() ; i++) {
+    views.resize(frameCount);
+    for (u32 i = 0 ; i < frameCount ; i++) {
         auto view = views[i];
         VkImageViewCreateInfo viewInfo = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -141,10 +147,15 @@ void VkTextureResource::updateBinding(u32 frame) {
     VkBindingLayout* binding_layout = info.binding_layout;
     VkDescriptorSet set = VkDescriptors::getSet(binding_layout, frame);
 
+    u32 actualFrame = frame;
+    if (info.isStatic) {
+        actualFrame = 0;
+    }
+
     if (binding && binding_layout && set) {
         VkDescriptorImageInfo imageInfo = {
             .sampler = VK_NULL_HANDLE,
-            .imageView = views[frame],
+            .imageView = views[actualFrame],
             .imageLayout = VK_IMAGE_LAYOUT_GENERAL,
         };
 

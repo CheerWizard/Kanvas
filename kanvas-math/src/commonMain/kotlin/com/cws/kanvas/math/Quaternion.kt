@@ -3,7 +3,6 @@ package com.cws.kanvas.math
 import com.cws.std.memory.INativeData
 import com.cws.std.memory.MemoryLayout
 import com.cws.std.memory.NativeBuffer
-import com.cws.std.memory.NativeDataList
 import com.cws.std.memory.STD140_SIZE_BYTES
 import com.cws.std.memory.STD430_SIZE_BYTES
 import com.cws.std.memory.Stack
@@ -40,14 +39,14 @@ interface Quaternion : INativeData {
         }
     }
 
-    override fun serialize(buffer: NativeBuffer) {
+    override fun pack(buffer: NativeBuffer) {
         buffer.pushFloat(x)
         buffer.pushFloat(y)
         buffer.pushFloat(z)
         buffer.pushFloat(w)
     }
 
-    override fun deserialize(buffer: NativeBuffer) = Vec4(
+    override fun unpack(buffer: NativeBuffer) = Vec4(
         buffer.nextFloat(),
         buffer.nextFloat(),
         buffer.nextFloat(),

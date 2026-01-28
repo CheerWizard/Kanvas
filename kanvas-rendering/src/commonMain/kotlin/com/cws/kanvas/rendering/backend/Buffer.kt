@@ -24,10 +24,11 @@ data class BufferInfo(
 
 expect class BufferHandle
 
-expect open class Buffer(context: RenderContext, info: BufferInfo) : Resource<BufferHandle, BufferInfo> {
+expect open class Buffer(context: RenderContext, info: BufferInfo) : Resource<BufferHandle> {
     override fun onCreate()
     override fun onDestroy()
 
     fun write(data: NativeBuffer, srcOffset: Int, destOffset: Int, size: Int)
     fun read(data: NativeBuffer, srcOffset: Int, destOffset: Int, size: Int)
+    fun update()
 }

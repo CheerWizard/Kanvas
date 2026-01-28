@@ -3,6 +3,8 @@ package com.cws.kanvas.core
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import com.cws.kanvas.event.EventListener
+import com.cws.kanvas.rendering.backend.RenderContextInfo
+import com.cws.kanvas.rendering.backend.RenderThread
 import com.cws.kanvas.utils.fps
 import com.cws.print.Print
 

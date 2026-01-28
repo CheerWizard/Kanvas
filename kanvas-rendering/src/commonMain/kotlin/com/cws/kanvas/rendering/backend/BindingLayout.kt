@@ -19,9 +19,15 @@ data class Binding(
 )
 
 data class BindingLayoutInfo(
+    val name: String,
     val bindings: List<Binding>,
 )
 
 expect class BindingLayoutHandle
 
-class BindingLayout : Resource<>
+expect class BindingLayout(renderContext: RenderContext, info: BindingLayoutInfo) : Resource<BindingLayoutHandle> {
+    val info: BindingLayoutInfo
+    override fun onCreate()
+    override fun onDestroy()
+    fun update()
+}

@@ -4,6 +4,8 @@ import com.cws.kanvas.audio.AudioPlayer
 import com.cws.kanvas.audio.AudioRecorder
 import com.cws.std.async.JobsManager
 import com.cws.kanvas.event.SensorManager
+import com.cws.kanvas.rendering.backend.RenderContextInfo
+import com.cws.kanvas.rendering.backend.RenderThread
 
 class Engine(context: Context) {
 
@@ -15,16 +17,18 @@ class Engine(context: Context) {
 
     val sensorManager: SensorManager = SensorManager(context)
 
+    private val renderThread = RenderThread(RenderContextInfo())
+
     fun init() {
         sensorManager.init()
         audioPlayer.init()
         audioRecorder.init()
-//        RenderBridge.init(gameConfig.renderConfig)
+        renderThread.start()
     }
 
     fun release() {
         sensorManager.release()
-//        RenderBridge.free()
+        renderThread.stop()
     }
 
 }

@@ -3,7 +3,6 @@ package com.cws.kanvas.math
 import com.cws.std.memory.INativeData
 import com.cws.std.memory.MemoryLayout
 import com.cws.std.memory.NativeBuffer
-import com.cws.std.memory.NativeDataList
 import com.cws.std.memory.Stack
 import com.cws.std.memory.next
 import com.cws.std.memory.push
@@ -32,12 +31,12 @@ interface Mat2 : INativeData {
         }
     }
 
-    override fun serialize(buffer: NativeBuffer) {
+    override fun pack(buffer: NativeBuffer) {
         buffer.push(v1)
         buffer.push(v2)
     }
 
-    override fun deserialize(buffer: NativeBuffer) = Mat2(
+    override fun unpack(buffer: NativeBuffer) = Mat2(
         buffer.next(v1),
         buffer.next(v2),
     )

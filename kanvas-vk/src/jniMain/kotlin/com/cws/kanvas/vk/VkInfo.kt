@@ -1,12 +1,18 @@
 package com.cws.kanvas.vk
 
 import com.cws.std.memory.CString
-import com.cws.std.memory.IPackedData
+import com.cws.std.memory.INativeData
+import com.cws.std.memory.MemoryLayout
 import com.cws.std.memory.NativeBuffer
-import com.cws.std.memory.PackedDataList
+import com.cws.std.memory.NativeDataList
 import com.cws.std.memory.float
 import com.cws.std.memory.int
 import com.cws.std.memory.long
+import com.cws.std.memory.popInt
+import com.cws.std.memory.pushBoolean
+import com.cws.std.memory.pushFloat
+import com.cws.std.memory.pushInt
+import com.cws.std.memory.pushLong
 
 /* ===================== CONTEXT ===================== */
 
@@ -17,15 +23,25 @@ data class VkContextInfo(
     var height: Int,
     var frameCount: Int,
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-): IPackedData {
+): INativeData {
     companion object { const val SIZEOF = 32 }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
-        pushLong(applicationName.address)
-        pushLong(engineName.address)
-        pushInt(width)
-        pushInt(height)
-        pushInt(frameCount)
+    override fun sizeBytes(layout: MemoryLayout): Int {
+        return 32
+    }
+
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
+            pushLong(applicationName.address)
+            pushLong(engineName.address)
+            pushInt(width)
+            pushInt(height)
+            pushInt(frameCount)
+        }
+    }
+
+    override fun unpack(buffer: NativeBuffer): INativeData {
+        TODO("Not yet implemented")
     }
 }
 
@@ -38,16 +54,20 @@ data class VkBufferInfo(
     var usages: Int = 0,
     var size: Long = 0,
     var mapOnCreate: Boolean = false,
+    var isStatic: Boolean = false,
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-): IPackedData {
+): INativeData {
     companion object { const val SIZEOF = 28 }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
-        pushLong(name.address)
-        pushInt(memoryType.value)
-        pushInt(usages)
-        pushLong(this@VkBufferInfo.size)
-        pushInt(if (mapOnCreate) 1 else 0)
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
+            pushLong(name.address)
+            pushInt(memoryType.value)
+            pushInt(usages)
+            pushLong(this@VkBufferInfo.size)
+            pushInt(if (mapOnCreate) 1 else 0)
+            pushBoolean(isStatic)
+        }
     }
 }
 
@@ -76,32 +96,34 @@ data class VkSamplerInfo(
     var minLod: Float = 0f,
     var maxLod: Float = 0f,
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-): IPackedData {
+): INativeData {
     companion object { const val SIZEOF = 68 }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
-        pushLong(name.address)
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
+            pushLong(name.address)
 
-        pushInt(magFilter.value)
-        pushInt(minFilter.value)
+            pushInt(magFilter.value)
+            pushInt(minFilter.value)
 
-        pushInt(addressModeU.value)
-        pushInt(addressModeV.value)
-        pushInt(addressModeW.value)
+            pushInt(addressModeU.value)
+            pushInt(addressModeV.value)
+            pushInt(addressModeW.value)
 
-        pushInt(if (enableAnisotropy) 1 else 0)
-        pushFloat(maxAnisotropy)
+            pushInt(if (enableAnisotropy) 1 else 0)
+            pushFloat(maxAnisotropy)
 
-        pushInt(if (unnormalizedCoordinates) 1 else 0)
-        pushInt(if (enableCompare) 1 else 0)
+            pushInt(if (unnormalizedCoordinates) 1 else 0)
+            pushInt(if (enableCompare) 1 else 0)
 
-        pushInt(compareOp.value)
-        pushInt(mipmapMode.value)
-        pushInt(borderColor.value)
+            pushInt(compareOp.value)
+            pushInt(mipmapMode.value)
+            pushInt(borderColor.value)
 
-        pushFloat(mipLodBias)
-        pushFloat(minLod)
-        pushFloat(maxLod)
+            pushFloat(mipLodBias)
+            pushFloat(minLod)
+            pushFloat(maxLod)
+        }
     }
 }
 
@@ -120,23 +142,28 @@ data class VkTextureInfo(
         VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
     var mips: Int = 1,
     var baseMip: Int = 1,
+    var isStatic: Boolean = true,
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-): IPackedData {
+): INativeData {
     companion object { const val SIZEOF = 40 }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
-        pushLong(name.address)
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
+            pushLong(name.address)
 
-        pushInt(type.value)
-        pushInt(memoryType.value)
+            pushInt(type.value)
+            pushInt(memoryType.value)
 
-        pushInt(width)
-        pushInt(height)
-        pushInt(depth)
+            pushInt(width)
+            pushInt(height)
+            pushInt(depth)
 
-        pushInt(format.value)
-        pushInt(mips)
-        pushInt(baseMip)
+            pushInt(format.value)
+            pushInt(mips)
+            pushInt(baseMip)
+
+            pushBoolean(isStatic)
+        }
     }
 }
 
@@ -157,19 +184,21 @@ data class VkBlend(
     var blendOpAlpha: VkBlendOp =
         VkBlendOp.VK_BLEND_OP_ADD,
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-): IPackedData {
+): INativeData {
     companion object { const val SIZEOF = 28 }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
-        pushInt(if (enable) 1 else 0)
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
+            pushInt(if (enable) 1 else 0)
 
-        pushInt(srcFactorColor.value)
-        pushInt(dstFactorColor.value)
-        pushInt(blendOpColor.value)
+            pushInt(srcFactorColor.value)
+            pushInt(dstFactorColor.value)
+            pushInt(blendOpColor.value)
 
-        pushInt(srcFactorAlpha.value)
-        pushInt(dstFactorAlpha.value)
-        pushInt(blendOpAlpha.value)
+            pushInt(srcFactorAlpha.value)
+            pushInt(dstFactorAlpha.value)
+            pushInt(blendOpAlpha.value)
+        }
     }
 }
 
@@ -184,7 +213,7 @@ data class VkShaderInfo(
     var bindingLayoutsCount: Long = 0,
 
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-) : IPackedData {
+) : INativeData {
 
     companion object {
         const val SIZEOF =
@@ -196,17 +225,19 @@ data class VkShaderInfo(
                     8   // bindingLayoutsCount
     }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
-        pushLong(name.address)
-        pushLong(entryPoint.address)
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
+            pushLong(name.address)
+            pushLong(entryPoint.address)
 
-        pushLong(spirvCode.address)
-        pushLong(spirvCodeSize)
+            pushLong(spirvCode?.address ?: 0)
+            pushLong(spirvCodeSize)
 
-        repeat(bindingLayoutsCount.toInt()) { i ->
-            pushLong(bindingLayouts[i])
+            repeat(bindingLayoutsCount.toInt()) { i ->
+                pushLong(bindingLayouts[i])
+            }
+            pushLong(bindingLayoutsCount)
         }
-        pushLong(bindingLayoutsCount)
     }
 }
 
@@ -220,13 +251,15 @@ data class VkAttribute(
     var format: VkAttributeFormat =
         VkAttributeFormat.VK_ATTRIBUTE_FORMAT_FLOAT,
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-): IPackedData {
+): INativeData {
     companion object { const val SIZEOF = 12 }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
-        pushInt(location)
-        pushInt(type.value)
-        pushInt(format.value)
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
+            pushInt(location)
+            pushInt(type.value)
+            pushInt(format.value)
+        }
     }
 }
 
@@ -240,15 +273,30 @@ data class VkBinding(
     var binding: Int = 0,
     var count: Int = 1,
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-): IPackedData {
+): INativeData {
     companion object { const val SIZEOF = 20 }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
-        pushInt(type.value)
-        pushInt(shaderStages)
-        pushInt(set)
-        pushInt(binding)
-        pushInt(count)
+    override fun sizeBytes(layout: MemoryLayout): Int {
+        return SIZEOF
+    }
+
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
+            pushInt(type.value)
+            pushInt(shaderStages)
+            pushInt(set)
+            pushInt(binding)
+            pushInt(count)
+        }
+    }
+
+    override fun unpack(buffer: NativeBuffer): INativeData {
+        type = VkBindingType.from(buffer.popInt())
+        shaderStages = buffer.popInt()
+        set = buffer.popInt()
+        binding = buffer.popInt()
+        count = buffer.popInt()
+        return this
     }
 }
 
@@ -256,16 +304,25 @@ data class VkBinding(
 
 data class VkBindingInfo(
     var name: CString,
-    val bindings: PackedDataList<VkBinding>,
-    var bindingsCount: Long = 0,
+    val bindings: NativeDataList<VkBinding>,
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-): IPackedData {
+): INativeData {
     companion object { const val SIZEOF = 24 }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
-        pushLong(name.address)
-        pushLong(bindings.address)
-        pushLong(bindingsCount)
+    override fun sizeBytes(layout: MemoryLayout): Int {
+        return SIZEOF
+    }
+
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
+            pushLong(name.address)
+            pushLong(bindings.address)
+            pushLong(bindings.count)
+        }
+    }
+
+    override fun unpack(buffer: NativeBuffer): INativeData {
+        TODO("Not yet implemented")
     }
 }
 
@@ -316,7 +373,7 @@ data class VkPipelineInfo(
     var renderTarget: Long = 0L,
 
     override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
-): IPackedData {
+): INativeData {
     companion object {
         const val SIZEOF =
             8 +
@@ -378,45 +435,47 @@ data class VkPipelineInfo(
         renderTarget = buffer.long
     }
 
-    override fun pack(buffer: NativeBuffer?) = buffer?.apply {
+    override fun pack(buffer: NativeBuffer) {
+        buffer.apply {
 
-        pushLong(name.address)
+            pushLong(name.address)
 
-        pushLong(vertexAttributes)
-        pushLong(vertexAttributesCount)
+            pushLong(vertexAttributes)
+            pushLong(vertexAttributesCount)
 
-        pushInt(vertexBufferSlot)
-        pushInt(if (instanced) 1 else 0)
+            pushInt(vertexBufferSlot)
+            pushInt(if (instanced) 1 else 0)
 
-        pushInt(primitiveTopology.value)
+            pushInt(primitiveTopology.value)
 
-        pushLong(vertexShader)
-        pushLong(fragmentShader)
-        pushLong(geometryShader)
+            pushLong(vertexShader)
+            pushLong(fragmentShader)
+            pushLong(geometryShader)
 
-        pushLong(vertexBuffer)
-        pushLong(indexBuffer)
+            pushLong(vertexBuffer)
+            pushLong(indexBuffer)
 
-        pushFloat(viewportX)
-        pushFloat(viewportY)
-        pushFloat(viewportWidth)
-        pushFloat(viewportHeight)
-        pushFloat(viewportMinDepth)
-        pushFloat(viewportMaxDepth)
+            pushFloat(viewportX)
+            pushFloat(viewportY)
+            pushFloat(viewportWidth)
+            pushFloat(viewportHeight)
+            pushFloat(viewportMinDepth)
+            pushFloat(viewportMaxDepth)
 
-        pushInt(scissorX)
-        pushInt(scissorY)
-        pushInt(scissorWidth)
-        pushInt(scissorHeight)
+            pushInt(scissorX)
+            pushInt(scissorY)
+            pushInt(scissorWidth)
+            pushInt(scissorHeight)
 
-        pushInt(polygonMode.value)
-        pushFloat(lineWidth)
+            pushInt(polygonMode.value)
+            pushFloat(lineWidth)
 
-        pushInt(cullMode.value)
-        pushInt(frontFace.value)
+            pushInt(cullMode.value)
+            pushInt(frontFace.value)
 
-        pushInt(sampleCount)
+            pushInt(sampleCount)
 
-        pushLong(renderTarget)
+            pushLong(renderTarget)
+        }
     }
 }

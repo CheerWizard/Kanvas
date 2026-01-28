@@ -35,7 +35,8 @@ data class RenderTargetInfo(
 
 expect class RenderTargetHandle
 
-expect class RenderTarget(renderContext: RenderContext, config: RenderTargetInfo) : Resource<RenderTargetHandle, RenderTargetInfo> {
+expect class RenderTarget(renderContext: RenderContext, config: RenderTargetInfo) : Resource<RenderTargetHandle> {
+    constructor(renderContext: RenderContext, handle: RenderTargetHandle)
     override fun onCreate()
     override fun onDestroy()
 }

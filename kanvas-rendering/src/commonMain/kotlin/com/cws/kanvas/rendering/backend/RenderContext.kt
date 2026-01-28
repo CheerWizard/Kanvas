@@ -15,4 +15,10 @@ expect class RenderContextHandle
 expect class RenderContext(info: RenderContextInfo) : Resource<RenderContextHandle> {
     override fun onCreate()
     override fun onDestroy()
+
+    fun wait()
+    fun resize(width: Int, height: Int)
+    fun getRenderTarget(): RenderTarget
+    fun beginFrame(frame: Int)
+    fun endFrame(frame: Int)
 }

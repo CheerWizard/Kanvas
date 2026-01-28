@@ -48,22 +48,17 @@ expect open class NativeBuffer(
 }
 
 val NativeBuffer.byte: Byte get() = pop()
+val NativeBuffer.boolean: Boolean get() = popBoolean()
+val NativeBuffer.short: Short get() = popShort()
 val NativeBuffer.int: Int get() = popInt()
 val NativeBuffer.float: Float get() = popFloat()
 val NativeBuffer.long: Long get() = popLong()
-
-inline val Byte.bytes: Int get() = Int.SIZE_BYTES
-inline val Boolean.bytes: Int get() = Int.SIZE_BYTES
-inline val Short.bytes: Int get() = Int.SIZE_BYTES
-inline val Int.bytes: Int get() = Int.SIZE_BYTES
-inline val Long.bytes: Int get() = Long.SIZE_BYTES
-inline val Float.bytes: Int get() = Float.SIZE_BYTES
-inline val Double.bytes: Int get() = Double.SIZE_BYTES
+val NativeBuffer.double: Double get() = popDouble()
 
 fun NativeBuffer.push(value: Byte) {
     ensureSize()
     setByte(position, value)
-    position += value.bytes
+    position += value.sizeBytes(memoryLayout)
 }
 
 fun NativeBuffer.pop(): Byte {
@@ -78,7 +73,7 @@ fun NativeBuffer.popBoolean() = pop() == 1.toByte()
 fun NativeBuffer.pushShort(value: Short) {
     ensureSize()
     setShort(position, value)
-    position += value.bytes
+    position += value.sizeBytes(memoryLayout)
 }
 fun NativeBuffer.popShort(): Short {
     position -= Short.SIZE_BYTES
@@ -89,7 +84,7 @@ fun NativeBuffer.popShort(): Short {
 fun NativeBuffer.pushInt(value: Int) {
     ensureSize()
     setInt(position, value)
-    position += value.bytes
+    position += value.sizeBytes(memoryLayout)
 }
 fun NativeBuffer.popInt(): Int {
     position -= Int.SIZE_BYTES
@@ -100,7 +95,7 @@ fun NativeBuffer.popInt(): Int {
 fun NativeBuffer.pushLong(value: Long) {
     ensureSize()
     packLong(position, value)
-    position += value.bytes
+    position += value.sizeBytes(memoryLayout)
 }
 fun NativeBuffer.popLong(): Long {
     position -= Long.SIZE_BYTES
@@ -111,7 +106,7 @@ fun NativeBuffer.popLong(): Long {
 fun NativeBuffer.pushFloat(value: Float) {
     ensureSize()
     setFloat(position, value)
-    position += value.bytes
+    position += value.sizeBytes(memoryLayout)
 }
 fun NativeBuffer.popFloat(): Float {
     position -= Float.SIZE_BYTES
@@ -122,7 +117,7 @@ fun NativeBuffer.popFloat(): Float {
 fun NativeBuffer.pushDouble(value: Double) {
     ensureSize()
     packDouble(position, value)
-    position += value.bytes
+    position += value.sizeBytes(memoryLayout)
 }
 fun NativeBuffer.popDouble(): Double {
     position -= Double.SIZE_BYTES
@@ -237,7 +232,7 @@ fun NativeBuffer.assertPop() {
 }
 
 fun NativeBuffer.push(data: INativeData) {
-    data.serialize(this)
+    data.pack(this)
     position += data.sizeBytes(memoryLayout)
 }
 
@@ -278,7 +273,7 @@ fun NativeBuffer.nextDouble(): Double {
 }
 
 fun <T : INativeData> NativeBuffer.next(data: INativeData): T {
-    val newData = data.deserialize(this)
+    val newData = data.unpack(this)
     position += data.sizeBytes(memoryLayout)
     return newData as T
 }

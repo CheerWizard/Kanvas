@@ -210,6 +210,9 @@ VkContext::VkContext(void* native_window, const VkContextInfo& info) : info(info
 }
 
 VkContext::~VkContext() {
+    // let GPU finish using resources
+    wait();
+
     for (int i = 0 ; i < info.frameCount ; i++) {
         delete imageSemaphores[i];
         delete renderFinishedSemaphores[i];

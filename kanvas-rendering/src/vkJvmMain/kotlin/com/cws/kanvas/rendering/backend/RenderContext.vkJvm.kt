@@ -23,7 +23,37 @@ actual class RenderContext actual constructor(info: RenderContextInfo) : Resourc
     }
 
     actual override fun onDestroy() {
-        VK.VkContext_destroy(handle!!)
+        handle?.let {
+            VK.VkContext_destroy(it)
+        }
+    }
+
+    actual fun wait() {
+        handle?.let {
+            VK.VkContext_wait(it)
+        }
+    }
+
+    actual fun resize(width: Int, height: Int) {
+        handle?.let {
+            VK.VkContext_resize(it, width, height)
+        }
+    }
+
+    actual fun getRenderTarget(): RenderTarget {
+        return RenderTarget(this, VK.VkContext_getRenderTarget(handle!!))
+    }
+
+    actual fun beginFrame(frame: Int) {
+        handle?.let {
+            VK.VkContext_beginFrame(it, frame)
+        }
+    }
+
+    actual fun endFrame(frame: Int) {
+        handle?.let {
+            VK.VkContext_endFrame(it, frame)
+        }
     }
 
 }
