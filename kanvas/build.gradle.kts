@@ -85,7 +85,9 @@ kotlin {
         }
 
         val desktopMain by getting {
-            dependencies {}
+            dependencies {
+                implementation(libs.jinput)
+            }
             dependsOn(commonMain)
         }
 

@@ -19,7 +19,7 @@ struct VkTextureResource {
     VkTextureResource(VkContext* context, const VkTextureInfo& info);
     ~VkTextureResource();
 
-    void* map();
+    void* map(u32 frame);
     void unmap();
 
     void resize(u32 width, u32 height);

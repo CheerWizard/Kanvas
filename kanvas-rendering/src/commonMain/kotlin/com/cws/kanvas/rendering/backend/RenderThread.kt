@@ -8,10 +8,11 @@ data class Frame(
 )
 
 class RenderThread(
-    renderContextInfo: RenderContextInfo,
+    contextInfo: ContextInfo,
+    surface: Any?,
 ) {
 
-    private val context = RenderContext(renderContextInfo)
+    private val context = RenderContext(contextInfo, surface)
     private val thread = Thread(
         start = false,
         name = "RenderThread",
@@ -19,7 +20,7 @@ class RenderThread(
         task = ::run,
     )
     private var isRunning = false
-    private val frameQueue = ConcurrentQueue<Frame>(renderContextInfo.frameCount)
+    private val frameQueue = ConcurrentQueue<Frame>(contextInfo.frameCount)
     private var currentFrameIndex = 0
 
     fun pushFrame(frame: Frame) {
@@ -28,6 +29,10 @@ class RenderThread(
 
     fun resize(width: Int, height: Int) {
         context.resize(width, height)
+    }
+
+    fun setSurface(surface: Any?) {
+        context.setSurface(surface)
     }
 
     fun start() {

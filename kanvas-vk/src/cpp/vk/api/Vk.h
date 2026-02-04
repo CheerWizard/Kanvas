@@ -24,8 +24,10 @@ extern "C" {
 
     VkContext* VkContext_create(void* native_window, VkContextInfo* info);
     void VkContext_destroy(VkContext* context);
+    void VkContext_setInfo(VkContext* context, VkContextInfo* info);
     void VkContext_wait(VkContext* context);
     void VkContext_resize(VkContext* context, u32 width, u32 height);
+    void VkContext_setSurface(VkContext* context, void* surface);
     VkRenderTarget* VkContext_getRenderTarget(VkContext* context);
     VkCommandBufferResource* VkContext_getPrimaryCommandBuffer(VkContext* context, u32 frame);
     VkCommandBufferResource* VkContext_getSecondaryCommandBuffer(VkContext* context);
@@ -34,35 +36,36 @@ extern "C" {
 
     VkShader* VkShader_create(VkContext* context, VkShaderInfo* info);
     void VkShader_destroy(VkShader* shader);
-    void VkShader_update(VkShader* shader, VkShaderInfo* info);
+    void VkShader_setInfo(VkShader* shader, VkShaderInfo* info);
 
     VkBindingLayout* VkBindingLayout_create(VkContext* context, VkBindingInfo* info);
     void VkBindingLayout_destroy(VkBindingLayout* layout);
-    void VkBindingLayout_update(VkBindingLayout* layout, VkBindingInfo* info);
+    void VkBindingLayout_setInfo(VkBindingLayout* layout, VkBindingInfo* info);
 
     VkRenderTarget* VkRenderTarget_create(VkContext* context, VkRenderTargetInfo* info);
     void VkRenderTarget_destroy(VkRenderTarget* render_target);
+    void VkRenderTarget_setInfo(VkRenderTarget* render_target, VkRenderTargetInfo* info);
     void VkRenderTarget_resize(VkRenderTarget* render_target, u32 width, u32 height);
 
     VkBufferResource* VkBufferResource_create(VkContext* context, VkBufferInfo* info);
     void VkBufferResource_destroy(VkBufferResource* buffer_resource);
-    void* VkBufferResource_map(VkBufferResource* buffer_resource);
+    void VkBufferResource_setInfo(VkBufferResource* buffer_resource, VkBufferInfo* info);
+    void* VkBufferResource_map(VkBufferResource* buffer_resource, u32 frame);
     void VkBufferResource_unmap(VkBufferResource* buffer_resource);
-    void VkBufferResource_updateBinding(VkBufferResource* buffer_resource, u32 frame);
 
     VkSamplerResource* VkSamplerResource_create(VkContext* context, VkSamplerInfo* info);
     void VkSamplerResource_destroy(VkSamplerResource* sampler_resource);
-    void VkSamplerResource_updateBinding(VkSamplerResource* sampler_resource, u32 frame);
+    void VkSamplerResource_setInfo(VkSamplerResource* sampler_resource, VkSamplerInfo* info);
 
     VkTextureResource* VkTextureResource_create(VkContext* context, VkTextureInfo* info);
     void VkTextureResource_destroy(VkTextureResource* texture_resource);
-    void* VkTextureResource_map(VkTextureResource* texture_resource);
+    void VkTextureResource_setInfo(VkTextureResource* texture_resource, VkTextureInfo* info);
+    void* VkTextureResource_map(VkTextureResource* texture_resource, u32 frame);
     void VkTextureResource_unmap(VkTextureResource* texture_resource);
-    void VkTextureResource_updateBinding(VkTextureResource* texture_resource, u32 frame);
 
     VkPipe* VkPipe_create(VkContext* context, VkPipeInfo* info);
     void VkPipe_destroy(VkPipe* pipe);
-    void VkPipe_update(VkPipe* pipe, VkPipeInfo* info);
+    void VkPipe_setInfo(VkPipe* pipe, VkPipeInfo* info);
 
     void VkCommandBufferResource_reset(VkCommandBufferResource* command_buffer_resource);
     void VkCommandBufferResource_begin(VkCommandBufferResource* command_buffer_resource);

@@ -4,6 +4,7 @@ atomicfu = "0.29.0"
 coreKtx = "1.13.1"
 firebaseAnalyticsKtx = "22.5.0"
 firebaseCrashlyticsKtx = "19.4.4"
+jinput = "2.0.10"
 koin = "4.1.1"
 kotlinxBrowser = "0.14.0"
 kotlinxCoroutinesCore = "1.10.2"
@@ -11,7 +12,6 @@ kotlinxDatetime = "0.7.1"
 kotlinxSerializationCore = "1.7.3"
 kotlinxSerializationJson = "1.6.3"
 ktorSerializationKotlinxJsonVersion = "3.0.0"
-protobuf = "3.25.3"
 kotlin = "2.2.10"
 jetbrainsKotlinJvm = "2.2.10"
 compose = "1.8.2"
@@ -25,6 +25,7 @@ junit = "1.3.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+jinput = { module = "net.java.jinput:jinput", version.ref = "jinput" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
@@ -46,7 +47,6 @@ ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negoti
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-tests = { module = "io.ktor:ktor-server-tests", version.ref = "ktor" }
-protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

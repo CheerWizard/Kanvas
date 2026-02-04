@@ -76,7 +76,7 @@ open class BaseWindow(
         }
     }
 
-    fun pollEvents() {
+    open fun pollEvents() {
         lock.withLock {
             while (events.isNotEmpty()) {
                 dispatchEvent(events.removeFirst())
@@ -84,7 +84,7 @@ open class BaseWindow(
         }
     }
 
-    open fun dispatchEvent(event: Any) {}
+    protected open fun dispatchEvent(event: Any) {}
 
 }
 

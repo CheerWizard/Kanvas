@@ -12,11 +12,11 @@ external interface GPUBindGroupLayoutEntry {
 
 fun GPUBindGroupLayoutEntry(
     binding: GPUIndex32,
-    buffer: GPUBufferBindingLayout?,
-    externalTexture: GPUExternalTextureBindingLayout?,
-    sampler: GPUSamplerBindingLayout?,
-    storageTexture: GPUStorageTextureBindingLayout?,
-    texture: GPUTextureBindingLayout?,
+    buffer: GPUBufferBindingLayout? = null,
+    externalTexture: GPUExternalTextureBindingLayout? = null,
+    sampler: GPUSamplerBindingLayout? = null,
+    storageTexture: GPUStorageTextureBindingLayout? = null,
+    texture: GPUTextureBindingLayout? = null,
     visibility: GPUShaderStageFlags,
 ) : GPUBindGroupLayoutEntry = js("{}").unsafeCast<GPUBindGroupLayoutEntry>().apply {
     this.binding = binding

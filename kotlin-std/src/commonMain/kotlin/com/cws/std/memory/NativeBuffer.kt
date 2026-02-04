@@ -5,6 +5,8 @@ expect open class NativeBuffer(
     memoryLayout: MemoryLayout = MemoryLayout.KOTLIN,
 ) {
 
+    constructor(address: Long, capacity: Int)
+
     var position: Int
     val capacity: Int
     val address: Long

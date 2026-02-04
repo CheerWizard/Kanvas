@@ -51,12 +51,20 @@ void VkContext_destroy(VkContext* context) {
     delete context;
 }
 
+void VkContext_setInfo(VkContext* context, VkContextInfo* info) {
+    context->info = *info;
+}
+
 void VkContext_wait(VkContext* context) {
     context->wait();
 }
 
 void VkContext_resize(VkContext* context, u32 width, u32 height) {
     context->resize(width, height);
+}
+
+void VkContext_setSurface(VkContext* context, void* surface) {
+    context->setSurface(surface);
 }
 
 VkRenderTarget* VkContext_getRenderTarget(VkContext* context) {
@@ -481,7 +489,7 @@ void VkContext::endFrame(u32 frame) {
     commandBuffer->end();
     commandBuffer->submit(imageSemaphore, renderFinishedSemaphores[frame], fences[frame]);
     bool presented = commandBuffer->present(surface, imageSemaphore);
-    if (!presented || surface->needsResize) {
+    if (!presented || surface->needsRecreation) {
         surface->recreateSwapChain();
     }
 }
@@ -494,6 +502,10 @@ void VkContext::wait() {
 
 void VkContext::resize(u32 width, u32 height) {
     surface->resize(width, height);
+}
+
+void VkContext::setSurface(void* surface) {
+    this->surface->updateSurface(findSurface(surface));
 }
 
 #ifdef ANDROID

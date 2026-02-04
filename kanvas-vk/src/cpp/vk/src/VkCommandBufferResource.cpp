@@ -4,10 +4,13 @@
 
 #include "VkCommandBufferResource.hpp"
 
+#include "VkBindingLayout.hpp"
 #include "VkBufferResource.hpp"
+#include "VkDescriptors.hpp"
 #include "VkDeviceQueue.hpp"
 #include "VkPipe.hpp"
-#include "VkTexture.hpp"
+#include "VkShader.hpp"
+#include "VkTextureResource.hpp"
 
 void VkCommandBufferResource_reset(VkCommandBufferResource* command_buffer_resource) {
     command_buffer_resource->reset();
@@ -209,16 +212,35 @@ void VkCommandBufferResource::setViewport(float x, float y, float width, float h
 }
 
 void VkCommandBufferResource::setPipe(VkPipe* pipe, u32 frame) const {
-    setPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, pipe->pipeline);
-    setVertexBuffer(pipe->info.vertexBuffer, frame);
-    setIndexBuffer(pipe->info.indexBuffer, frame);
-    setViewport(
-        pipe->info.viewportX, pipe->info.viewportY,
-        pipe->info.viewportWidth, pipe->info.viewportHeight,
-        pipe->info.viewportMinDepth, pipe->info.viewportMaxDepth
-    );
-    set
-    // TODO set descriptor sets
+    if (pipe) {
+        setPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, pipe->pipeline);
+        if (pipe->info.vertexBuffer) {
+            setVertexBuffer(pipe->info.vertexBuffer, frame);
+        }
+        if (pipe->info.indexBuffer) {
+            setIndexBuffer(pipe->info.indexBuffer, frame);
+        }
+        setViewport(
+            pipe->info.viewportX, pipe->info.viewportY,
+            pipe->info.viewportWidth, pipe->info.viewportHeight,
+            pipe->info.viewportMinDepth, pipe->info.viewportMaxDepth
+        );
+        setScissor(pipe->info.scissorX, pipe->info.scissorY, pipe->info.scissorWidth, pipe->info.scissorHeight);
+        if (pipe->info.vertexShader) {
+            setShader(pipe->pipelineLayout, pipe->info.vertexShader, frame);
+        }
+    }
+}
+
+void VkCommandBufferResource::setShader(VkPipelineLayout pipeline_layout, VkShader* shader, u32 frame) const {
+    if (shader->binding_layout) {
+        setDescriptorSet(
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            pipeline_layout,
+            shader->binding_layout,
+            frame
+        );
+    }
 }
 
 void VkCommandBufferResource::setPipeline(VkPipelineBindPoint pipeline_bind_point, VkPipeline pipeline) const {
@@ -238,17 +260,17 @@ void VkCommandBufferResource::setIndexBuffer(VkBufferResource *buffer, u32 frame
 void VkCommandBufferResource::setDescriptorSet(
     VkPipelineBindPoint pipeline_bind_point,
     VkPipelineLayout pipeline_layout,
-    VkDescriptorSet descriptorSet,
-    uint32_t set,
+    VkBindingLayout* binding_layout,
     u32 frame
 ) const {
+    VkDescriptorSet descriptor_set = VkDescriptors::getSet(binding_layout, frame);
     vkCmdBindDescriptorSets(
       command_buffer,
       pipeline_bind_point,
       pipeline_layout,
-      set,
-      1, &descriptorSet,
-      0, nullptr
+      binding_layout->setIndex,
+      1, &descriptor_set,
+      binding_layout->dynamicOffsets.size(), binding_layout->dynamicOffsets.data()
     );
 }
 

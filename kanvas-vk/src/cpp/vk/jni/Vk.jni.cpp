@@ -25,6 +25,9 @@ Java_com_cws_kanvas_vk_VK_LogBridge_callback(
     jobject callback
 ) {
     env->GetJavaVM(&vm);
+    if (log_bridge_callback) {
+        env->DeleteGlobalRef(log_bridge_callback);
+    }
     log_bridge_callback = env->NewGlobalRef(callback);
 }
 
@@ -35,6 +38,9 @@ Java_com_cws_kanvas_vk_VK_ResultBridge_callback(
     jobject callback
 ) {
     env->GetJavaVM(&vm);
+    if (result_bridge_callback) {
+        env->DeleteGlobalRef(result_bridge_callback);
+    }
     result_bridge_callback = env->NewGlobalRef(callback);
 }
 
@@ -136,6 +142,23 @@ Java_com_cws_kanvas_vk_VK_VkContext_destroy(
 
     auto* ctx = reinterpret_cast<VkContext*>(context);
     VkContext_destroy(ctx);
+}
+
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_VkContext_setInfo(
+        JNIEnv* env,
+        jclass,
+        jlong context,
+        jobject infoBuffer) {
+
+    auto* ctx = reinterpret_cast<VkContext*>(context);
+
+    void* ptr = env->GetDirectBufferAddress(infoBuffer);
+    if (!ptr) return;
+
+    auto* info = reinterpret_cast<VkContextInfo*>(ptr);
+
+    VkContext_setInfo(ctx, info);
 }
 
 JNIEXPORT void JNICALL
@@ -248,7 +271,7 @@ Java_com_cws_kanvas_vk_VK_VkShader_destroy(
 }
 
 JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkShader_update(
+Java_com_cws_kanvas_vk_VK_VkShader_setInfo(
         JNIEnv* env,
         jclass,
         jlong shader,
@@ -261,7 +284,7 @@ Java_com_cws_kanvas_vk_VK_VkShader_update(
 
     auto* info = reinterpret_cast<VkShaderInfo*>(ptr);
 
-    VkShader_update(s, info);
+    VkShader_setInfo(s, info);
 }
 
 // --------------------------------------------------
@@ -297,7 +320,7 @@ Java_com_cws_kanvas_vk_VK_VkBindingLayout_destroy(
 }
 
 JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkBindingLayout_update(
+Java_com_cws_kanvas_vk_VK_VkBindingLayout_setInfo(
         JNIEnv* env,
         jclass,
         jlong layout,
@@ -310,7 +333,7 @@ Java_com_cws_kanvas_vk_VK_VkBindingLayout_update(
 
     auto* info = reinterpret_cast<VkBindingInfo*>(ptr);
 
-    VkBindingLayout_update(l, info);
+    VkBindingLayout_setInfo(l, info);
 }
 
 // --------------------------------------------------
@@ -343,6 +366,23 @@ Java_com_cws_kanvas_vk_VK_VkRenderTarget_destroy(
 
     auto* t = reinterpret_cast<VkRenderTarget*>(target);
     VkRenderTarget_destroy(t);
+}
+
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_VkRenderTarget_setInfo(
+        JNIEnv* env,
+        jclass,
+        jlong target,
+        jobject infoBuffer) {
+
+    auto* t = reinterpret_cast<VkRenderTarget*>(target);
+
+    void* ptr = env->GetDirectBufferAddress(infoBuffer);
+    if (!ptr) return;
+
+    auto* info = reinterpret_cast<VkRenderTargetInfo*>(ptr);
+
+    VkRenderTarget_setInfo(t, info);
 }
 
 JNIEXPORT void JNICALL
@@ -389,15 +429,33 @@ Java_com_cws_kanvas_vk_VK_VkBufferResource_destroy(
     VkBufferResource_destroy(b);
 }
 
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_VkBufferResource_setInfo(
+        JNIEnv* env,
+        jclass,
+        jlong buffer,
+        jobject infoBuffer) {
+
+    auto* b = reinterpret_cast<VkBufferResource*>(buffer);
+
+    void* ptr = env->GetDirectBufferAddress(infoBuffer);
+    if (!ptr) return;
+
+    auto* info = reinterpret_cast<VkBufferInfo*>(ptr);
+
+    VkBufferResource_setInfo(b, info);
+}
+
 JNIEXPORT jlong JNICALL
 Java_com_cws_kanvas_vk_VK_VkBufferResource_map(
         JNIEnv*,
         jclass,
-        jlong buffer) {
+        jlong buffer,
+        jint frame) {
 
     auto* b = reinterpret_cast<VkBufferResource*>(buffer);
     return reinterpret_cast<jlong>(
-        VkBufferResource_map(b));
+        VkBufferResource_map(b, frame));
 }
 
 JNIEXPORT void JNICALL
@@ -408,17 +466,6 @@ Java_com_cws_kanvas_vk_VK_VkBufferResource_unmap(
 
     auto* b = reinterpret_cast<VkBufferResource*>(buffer);
     VkBufferResource_unmap(b);
-}
-
-JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkBufferResource_updateBinding(
-        JNIEnv*,
-        jclass,
-        jlong buffer,
-        jint frame) {
-
-    auto* b = reinterpret_cast<VkBufferResource*>(buffer);
-    VkBufferResource_updateBinding(b, frame);
 }
 
 // --------------------------------------------------
@@ -454,14 +501,20 @@ Java_com_cws_kanvas_vk_VK_VkSamplerResource_destroy(
 }
 
 JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkSamplerResource_updateBinding(
-        JNIEnv*,
+Java_com_cws_kanvas_vk_VK_VkSamplerResource_setInfo(
+        JNIEnv* env,
         jclass,
         jlong sampler,
-        jint frame) {
+        jobject infoBuffer) {
 
     auto* s = reinterpret_cast<VkSamplerResource*>(sampler);
-    VkSamplerResource_updateBinding(s, frame);
+
+    void* ptr = env->GetDirectBufferAddress(infoBuffer);
+    if (!ptr) return;
+
+    auto* info = reinterpret_cast<VkSamplerInfo*>(ptr);
+
+    VkSamplerResource_setInfo(s, info);
 }
 
 // --------------------------------------------------
@@ -496,15 +549,34 @@ Java_com_cws_kanvas_vk_VK_VkTextureResource_destroy(
     VkTextureResource_destroy(t);
 }
 
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_VkTextureResource_setInfo(
+        JNIEnv* env,
+        jclass,
+        jlong tex,
+        jobject infoBuffer) {
+
+    auto* t = reinterpret_cast<VkTextureResource*>(tex);
+
+    void* ptr = env->GetDirectBufferAddress(infoBuffer);
+    if (!ptr) return;
+
+    auto* info = reinterpret_cast<VkTextureInfo*>(ptr);
+
+    VkTextureResource_setInfo(t, info);
+}
+
+
 JNIEXPORT jlong JNICALL
 Java_com_cws_kanvas_vk_VK_VkTextureResource_map(
         JNIEnv*,
         jclass,
-        jlong tex) {
+        jlong tex,
+        jint frame) {
 
     auto* t = reinterpret_cast<VkTextureResource*>(tex);
     return reinterpret_cast<jlong>(
-        VkTextureResource_map(t));
+        VkTextureResource_map(t, frame));
 }
 
 JNIEXPORT void JNICALL
@@ -515,17 +587,6 @@ Java_com_cws_kanvas_vk_VK_VkTextureResource_unmap(
 
     auto* t = reinterpret_cast<VkTextureResource*>(tex);
     VkTextureResource_unmap(t);
-}
-
-JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkTextureResource_updateBinding(
-        JNIEnv*,
-        jclass,
-        jlong tex,
-        jint frame) {
-
-    auto* t = reinterpret_cast<VkTextureResource*>(tex);
-    VkTextureResource_updateBinding(t, frame);
 }
 
 // --------------------------------------------------
@@ -561,7 +622,7 @@ Java_com_cws_kanvas_vk_VK_VkPipe_destroy(
 }
 
 JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_VkPipe_update(
+Java_com_cws_kanvas_vk_VK_VkPipe_setInfo(
         JNIEnv* env,
         jclass,
         jlong pipe,
@@ -574,7 +635,7 @@ Java_com_cws_kanvas_vk_VK_VkPipe_update(
 
     auto* info = reinterpret_cast<VkPipeInfo*>(ptr);
 
-    VkPipe_update(p, info);
+    VkPipe_setInfo(p, info);
 }
 
 // --------------------------------------------------
@@ -697,21 +758,12 @@ Java_com_cws_kanvas_vk_VK_VkCommandBufferResource_addSecondaryBuffers(
         JNIEnv* env,
         jclass,
         jlong commandBuffer,
-        jlongArray secondaryBuffers) {
+        jobject secondaryBuffers,
+        jlong secondaryBuffersCount) {
 
     auto* cmd = reinterpret_cast<VkCommandBufferResource*>(commandBuffer);
-
-    jsize count = env->GetArrayLength(secondaryBuffers);
-    jlong* elements = env->GetLongArrayElements(secondaryBuffers, nullptr);
-
-    std::vector<VkCommandBufferResource*> buffers(count);
-    for (jsize i = 0; i < count; ++i) {
-        buffers[i] = reinterpret_cast<VkCommandBufferResource*>(elements[i]);
-    }
-
-    VkCommandBufferResource_addSecondaryBuffers(cmd, buffers.data(), static_cast<size_t>(count));
-
-    env->ReleaseLongArrayElements(secondaryBuffers, elements, 0);
+    auto* secondaryCommands = reinterpret_cast<VkCommandBufferResource**>(env->GetDirectBufferAddress(secondaryBuffers));
+    VkCommandBufferResource_addSecondaryBuffers(cmd, secondaryCommands, static_cast<size_t>(secondaryBuffersCount));
 }
 
 JNIEXPORT void JNICALL

@@ -149,7 +149,7 @@ fun Mat4(
     return m
 }
 
-fun Mat4.model(translation: Vec3, rx: Float, ry: Float, rz: Float, scalar: Vec3): Mat4 = stackPush {
+fun ModelMatrix(translation: Vec3, rx: Float, ry: Float, rz: Float, scalar: Vec3): Mat4 = stackPush {
     Mat4()
         .identity()
         .translate(translation)
@@ -157,7 +157,7 @@ fun Mat4.model(translation: Vec3, rx: Float, ry: Float, rz: Float, scalar: Vec3)
         .scale(scalar)
 }
 
-fun Mat4.model(translation: Vec3, quaternion: Quaternion, scalar: Vec3): Mat4 = stackPush {
+fun ModelMatrix(translation: Vec3, quaternion: Quaternion, scalar: Vec3): Mat4 = stackPush {
     Mat4()
         .identity()
         .translate(translation)
@@ -165,21 +165,21 @@ fun Mat4.model(translation: Vec3, quaternion: Quaternion, scalar: Vec3): Mat4 = 
         .scale(scalar)
 }
 
-fun Mat4.rigid(translation: Vec3, rx: Float, ry: Float, rz: Float): Mat4 = stackPush {
+fun RigidMatrix(translation: Vec3, rx: Float, ry: Float, rz: Float): Mat4 = stackPush {
     Mat4()
         .identity()
         .translate(translation)
         .rotate(rx, ry, rz, Vec3(1f, 1f, 1f))
 }
 
-fun Mat4.rigid(translation: Vec3, quaternion: Quaternion): Mat4 = stackPush {
+fun RigidMatrix(translation: Vec3, quaternion: Quaternion): Mat4 = stackPush {
     Mat4()
         .identity()
         .translate(translation)
         .rotate(quaternion)
 }
 
-fun Mat4.view(position: Vec3, front: Vec3, up: Vec3): Mat4 = stackPush {
+fun ViewMatrix(position: Vec3, front: Vec3, up: Vec3): Mat4 = stackPush {
     val right = cross(front, up).normalize()
     val f = -front
     val c = cross(right, front)
@@ -192,7 +192,7 @@ fun Mat4.view(position: Vec3, front: Vec3, up: Vec3): Mat4 = stackPush {
     return m.transpose().inverse()
 }
 
-fun Mat4.ortho(left: Float, right: Float, bottom: Float, top: Float, zNear: Float, zFar: Float): Mat4 = stackPush {
+fun OrthoMatrix(left: Float, right: Float, bottom: Float, top: Float, zNear: Float, zFar: Float): Mat4 = stackPush {
     Mat4(
         2.0f / (right - left), 0.0f, 0.0f, 0.0f,
         0.0f, 2.0f / (bottom - top), 0.0f, 0.0f,
@@ -201,7 +201,7 @@ fun Mat4.ortho(left: Float, right: Float, bottom: Float, top: Float, zNear: Floa
     )
 }
 
-fun Mat4.perspective(aspectRatio: Float, fov: Degree, zNear: Float, zFar: Float): Mat4 = stackPush {
+fun PerspectiveMatrix(aspectRatio: Float, fov: Degree, zNear: Float, zFar: Float): Mat4 = stackPush {
     val f = 1.0f / tan((fov * 0.5f).radians.value)
     Mat4(
         f / aspectRatio, 0.0f, 0.0f, 0.0f,
@@ -211,7 +211,7 @@ fun Mat4.perspective(aspectRatio: Float, fov: Degree, zNear: Float, zFar: Float)
     )
 }
 
-fun Mat4.normal(): Mat4 = stackPush {
+fun NormalMatrix(): Mat4 = stackPush {
     return Mat4()
         .identity()
         .inverse()

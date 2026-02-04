@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <vulkan/vulkan_core.h>
 
+using u8 = uint8_t;
 using u32 = uint32_t;
 
 typedef struct VkBufferResource VkBufferResource;
@@ -33,8 +34,7 @@ typedef struct VkBufferInfo {
     VkMemoryPropertyFlagBits memoryType;
     u32 usages;
     size_t size;
-    VkBool32 mapOnCreate;
-    VkBool32 isStatic;
+    u8 isStatic;
 } VkBufferInfo;
 
 typedef struct VkSamplerInfo {
@@ -46,10 +46,10 @@ typedef struct VkSamplerInfo {
     VkSamplerAddressMode addressModeU;
     VkSamplerAddressMode addressModeV;
     VkSamplerAddressMode addressModeW;
-    VkBool32 enableAnisotropy;
+    u8 enableAnisotropy;
     float maxAnisotropy;
-    VkBool32 unnormalizedCoordinates;
-    VkBool32 enableCompare;
+    u8 unnormalizedCoordinates;
+    u8 enableCompare;
     VkCompareOp compareOp;
     VkSamplerMipmapMode mipmapMode;
     VkBorderColor borderColor;
@@ -71,11 +71,11 @@ typedef struct VkTextureInfo {
     u32 mips;
     u32 baseMip;
     u32 samples;
-    VkBool32 isStatic;
+    u8 isStatic;
 } VkTextureInfo;
 
 typedef struct VkBlend {
-    VkBool32 enable;
+    u8 enable;
     VkBlendFactor srcFactorColor;
     VkBlendFactor dstFactorColor;
     VkBlendOp blendOpColor;
@@ -92,18 +92,18 @@ typedef struct VkColorAttachment {
 
 typedef struct VkDepthAttachment {
     VkTextureResource* texture;
-    VkBool32 enabled;
+    u8 enabled;
     float depthClearValue;
     VkCompareOp depthCompareOp;
-    VkBool32 depthReadOnly;
-    VkBool32 depthWriteEnabled;
+    u8 depthReadOnly;
+    u8 depthWriteEnabled;
 } VkDepthAttachment;
 
 typedef struct VkStencilAttachment {
     VkTextureResource* texture;
-    VkBool32 enabled;
+    u8 enabled;
     u32 stencilClearValue;
-    VkBool32 stencilReadOnly;
+    u8 stencilReadOnly;
 } VkStencilAttachment;
 
 typedef struct VkRenderTargetInfo {
@@ -152,8 +152,10 @@ typedef struct VkAttribute {
 } VkAttribute;
 
 enum VkBindingType {
-    VK_BINDING_TYPE_UNIFORM_BUFFER = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
-    VK_BINDING_TYPE_STORAGE_BUFFER = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
+    VK_BINDING_TYPE_UNIFORM_BUFFER = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+    VK_BINDING_TYPE_STORAGE_BUFFER = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+    VK_BINDING_TYPE_UNIFORM_BUFFER_DYNAMIC = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
+    VK_BINDING_TYPE_STORAGE_BUFFER_DYNAMIC = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
     VK_BINDING_TYPE_TEXTURE = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
     VK_BINDING_TYPE_SAMPLER = VK_DESCRIPTOR_TYPE_SAMPLER,
     VK_BINDING_TYPE_TEXTURE_SAMPLER = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -179,7 +181,7 @@ typedef struct VkPipelineInfo {
     VkAttribute* vertexAttributes;
     size_t vertexAttributesCount;
     u32 vertexBufferSlot;
-    VkBool32 instanced;
+    u8 instanced;
     VkPrimitiveTopology primitiveTopology;
     VkShader* vertexShader;
     VkShader* fragmentShader;
@@ -221,7 +223,6 @@ extern "C" {
         info.name = VK_NULL_HANDLE;
         info.binding_layout = VK_NULL_HANDLE;
         info.binding = VK_NULL_HANDLE;
-        info.mapOnCreate = VK_FALSE;
         info.isStatic = VK_FALSE;
         return info;
     }
@@ -315,8 +316,8 @@ extern "C" {
         info.name = VK_NULL_HANDLE;
         info.x = 0;
         info.y = 0;
-        info.width;
-        info.height;
+        info.width = 0;
+        info.height = 0;
         info.depth = 1;
         info.colorAttachments = VK_NULL_HANDLE;
         info.colorAttachmentsCount = 0;

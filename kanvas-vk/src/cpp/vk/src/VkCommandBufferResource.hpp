@@ -29,8 +29,7 @@ struct VkCommandBufferResource {
     void setDescriptorSet(
         VkPipelineBindPoint pipeline_bind_point,
         VkPipelineLayout pipeline_layout,
-        VkDescriptorSet descriptorSet,
-        uint32_t set,
+        VkBindingLayout* binding_layout,
         u32 frame
     ) const;
 
@@ -58,6 +57,8 @@ struct VkCommandBufferResource {
     ) const;
 
 private:
+    void setShader(VkPipelineLayout pipeline_layout, VkShader* shader, u32 frame) const;
+
     static constexpr auto TAG = "VkCommandBufferResource";
 };
 

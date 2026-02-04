@@ -13,4 +13,7 @@ interface EventListener {
     fun onMouseScroll(x: Double, y: Double) = Unit
     fun onTapPressed(x: Float, y: Float) = Unit
     fun onTapReleased(x: Float, y: Float) = Unit
+    fun onGamepadPressed(code: GamepadCode, hold: Boolean) = Unit
+    fun onGamepadReleased(code: GamepadCode) = Unit
+    fun onGamepadAxisChanged(code: GamepadAxis, direction: Float, magnitude: Float) = Unit
 }

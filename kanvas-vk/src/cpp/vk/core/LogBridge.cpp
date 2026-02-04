@@ -2,7 +2,7 @@
 // Created by cheerwizard on 01.11.25.
 //
 
-#include "../bridges/LogBridge.hpp"
+#include "LogBridge.hpp"
 
 LogBridgeFn g_callback = nullptr;
 

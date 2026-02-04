@@ -15,7 +15,7 @@ void VkBindingLayout_destroy(VkBindingLayout* layout) {
     delete layout;
 }
 
-void VkBindingLayout_update(VkBindingLayout* layout, VkBindingInfo* info) {
+void VkBindingLayout_setInfo(VkBindingLayout* layout, VkBindingInfo* info) {
     layout->update(*info);
 }
 
@@ -32,6 +32,10 @@ VkBindingLayout::VkBindingLayout(VkDevice device, const VkBindingInfo &info) : d
             .stageFlags = (VkShaderStageFlags) binding.shader_stages,
             .pImmutableSamplers = nullptr,
         };
+        if (binding.type == VK_BINDING_TYPE_UNIFORM_BUFFER_DYNAMIC || binding.type == VK_BINDING_TYPE_STORAGE_BUFFER_DYNAMIC) {
+            // TODO need to get a frame stride
+            dynamicOffsets.emplace_back();
+        }
     }
 
     VkDescriptorSetLayoutCreateInfo create_info = {
@@ -53,10 +57,12 @@ VkBindingLayout::~VkBindingLayout() {
         layout = nullptr;
         VkDescriptors::deletePool(this);
         VkDescriptors::deleteSet(this);
+        dynamicOffsets.clear();
     }
 }
 
 void VkBindingLayout::update(const VkBindingInfo &newInfo) {
+    this->info = newInfo;
     this->~VkBindingLayout();
     new (this) VkBindingLayout(device, newInfo);
 }

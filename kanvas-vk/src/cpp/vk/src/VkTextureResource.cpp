@@ -14,16 +14,16 @@ void VkTextureResource_destroy(VkTextureResource* texture_resource) {
     delete texture_resource;
 }
 
-void* VkTextureResource_map(VkTextureResource* texture_resource) {
-    return texture_resource->map();
+void VkTextureResource_setInfo(VkTextureResource* texture_resource, VkTextureInfo* info) {
+    texture_resource->info = *info;
+}
+
+void* VkTextureResource_map(VkTextureResource* texture_resource, u32 frame) {
+    return texture_resource->map(frame);
 }
 
 void VkTextureResource_unmap(VkTextureResource* texture_resource) {
     texture_resource->unmap();
-}
-
-void VkTextureResource_updateBinding(VkTextureResource* texture_resource, u32 frame) {
-    texture_resource->updateBinding(frame);
 }
 
 VkTextureResource::VkTextureResource(VkContext* context, const VkTextureInfo &info)
@@ -122,10 +122,25 @@ VkTextureResource::~VkTextureResource() {
     }
 }
 
-void* VkTextureResource::map() {
+void* VkTextureResource::map(u32 frame) {
     VK_CHECK(vmaMapMemory(VK_ALLOCATOR, allocation, &mapped));
     ASSERT(!mapped, TAG, "Failed to map VkTextureResource memory");
-    return mapped;
+
+    u32 actualFrame = frame;
+    if (info.isStatic) {
+        actualFrame = 1;
+    }
+
+    VkImageSubresource subresource = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .mipLevel = 0,
+        .arrayLayer = actualFrame,
+    };
+
+    VkSubresourceLayout layout;
+    vkGetImageSubresourceLayout(context->device, image, &subresource, &layout);
+
+    return static_cast<char*>(mapped) + layout.offset;
 }
 
 void VkTextureResource::unmap() {

@@ -3,8 +3,8 @@ package com.cws.print
 enum class LogLevel {
     NONE,
     VERBOSE,
-    DEBUG,
     INFO,
+    DEBUG,
     WARNING,
     ERROR,
     FATAL;
@@ -29,4 +29,15 @@ enum class LogLevel {
             ERROR, FATAL -> "\u001B[31m"
         }
     }
+}
+
+fun Int.toLogLevel(): LogLevel = when (this) {
+    LogLevel.NONE.ordinal -> LogLevel.NONE
+    LogLevel.VERBOSE.ordinal -> LogLevel.VERBOSE
+    LogLevel.INFO.ordinal -> LogLevel.INFO
+    LogLevel.DEBUG.ordinal -> LogLevel.DEBUG
+    LogLevel.WARNING.ordinal -> LogLevel.WARNING
+    LogLevel.ERROR.ordinal -> LogLevel.ERROR
+    LogLevel.FATAL.ordinal -> LogLevel.FATAL
+    else -> LogLevel.NONE
 }

@@ -16,8 +16,8 @@ void VkSamplerResource_destroy(VkSamplerResource* sampler_resource) {
     delete sampler_resource;
 }
 
-void VkSamplerResource_updateBinding(VkSamplerResource* sampler_resource, u32 frame) {
-    sampler_resource->updateBinding(frame);
+void VkSamplerResource_setInfo(VkSamplerResource* sampler_resource, VkSamplerInfo* info) {
+    sampler_resource->info = *info;
 }
 
 VkSamplerResource::VkSamplerResource(VkContext* context, const VkSamplerInfo &info)

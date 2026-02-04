@@ -3,8 +3,6 @@ package com.cws.kanvas.core
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import com.cws.kanvas.event.EventListener
-import com.cws.kanvas.rendering.backend.RenderContextInfo
-import com.cws.kanvas.rendering.backend.RenderThread
 import com.cws.kanvas.utils.fps
 import com.cws.print.Print
 
@@ -60,7 +58,7 @@ class GameLoop(context: Context) : PlatformGameLoop(name = TAG, priority = 1), E
     }
 
     fun onViewportChanged(width: Int, height: Int) {
-//        RenderBridge.resize(width, height)
+        engine.resize(width, height)
     }
 
     fun onMotionEvent(event: Any?) {
@@ -71,7 +69,7 @@ class GameLoop(context: Context) : PlatformGameLoop(name = TAG, priority = 1), E
 
     fun setSurface(surface: Any?) {
         this.surface = surface
-//        RenderBridge.setSurface(surface)
+        engine.setSurface(surface)
     }
 
 }

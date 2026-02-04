@@ -1,24 +1,15 @@
 package com.cws.kanvas.rendering.backend
 
-data class RenderContextInfo(
-    val width: Int,
-    val height: Int,
-    val frameCount: Int = 1,
-    val surface: Any? = null,
-    val appName: String = "",
-    val engineName: String = "",
-    val enableValidation: Boolean = false,
-)
-
-expect class RenderContextHandle
-
-expect class RenderContext(info: RenderContextInfo) : Resource<RenderContextHandle> {
+expect class RenderContext(info: ContextInfo, surface: Any?) : Resource<RenderContextHandle, ContextInfo> {
     override fun onCreate()
     override fun onDestroy()
-
+    override fun setInfo()
     fun wait()
     fun resize(width: Int, height: Int)
+    fun setSurface(surface: Any?)
     fun getRenderTarget(): RenderTarget
     fun beginFrame(frame: Int)
     fun endFrame(frame: Int)
+    fun getPrimaryCommandBuffer(frame: Int): CommandBuffer?
+    fun getSecondaryCommandBuffer(): CommandBuffer?
 }

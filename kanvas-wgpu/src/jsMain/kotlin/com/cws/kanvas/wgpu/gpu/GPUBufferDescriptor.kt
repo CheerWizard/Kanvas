@@ -7,11 +7,13 @@ external interface GPUBufferDescriptor : GPUObjectDescriptorBase {
 }
 
 fun GPUBufferDescriptor(
+    label: String,
     size: GPUSize64,
     usage: GPUBufferUsageFlags,
     mappedAtCreation: Boolean? = null
 ): GPUBufferDescriptor =
     jsObject {
+        this.label = label
         this.size = size
         this.usage = usage
         this.mappedAtCreation = mappedAtCreation

@@ -18,7 +18,7 @@ void VkPipe_destroy(VkPipe* pipe) {
     delete pipe;
 }
 
-void VkPipe_update(VkPipe* pipe, VkPipeInfo* info) {
+void VkPipe_setInfo(VkPipe* pipe, VkPipeInfo* info) {
     pipe->update(*info);
 }
 
@@ -152,6 +152,14 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
         .alphaToOneEnable = VK_FALSE,
     };
 
+    VkPipelineDepthStencilStateCreateInfo depthStencil = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+        .depthTestEnable = VK_TRUE,
+        .depthWriteEnable = VK_TRUE,
+        .depthCompareOp = VK_COMPARE_OP_LESS,
+        .stencilTestEnable = VK_FALSE,
+    };
+
     size_t colorAttachmentsCount = info.renderTarget->info.colorAttachmentsCount;
 
     ASSERT(info.renderTarget != nullptr && colorAttachmentsCount > 0, TAG, "Assertion failed. Render target must be set for VkPipe!")
@@ -201,7 +209,7 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
         .pViewportState = &viewportState,
         .pRasterizationState = &rasterizer,
         .pMultisampleState = &multisampling,
-        .pDepthStencilState = nullptr,
+        .pDepthStencilState = &depthStencil,
         .pColorBlendState = &colorBlending,
         .pDynamicState = &dynamicState,
         .layout = pipelineLayout,
@@ -223,5 +231,6 @@ VkPipe::~VkPipe() {
 }
 
 void VkPipe::update(const VkPipeInfo &newInfo) {
+    this->info = newInfo;
     // TODO: not implemented!
 }

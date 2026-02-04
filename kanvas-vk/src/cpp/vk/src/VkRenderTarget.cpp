@@ -17,12 +17,18 @@ void VkRenderTarget_destroy(VkRenderTarget* render_target) {
     delete render_target;
 }
 
+void VkRenderTarget_setInfo(VkRenderTarget* render_target, VkRenderTargetInfo* info) {
+    render_target->info = *info;
+}
+
 void VkRenderTarget_resize(VkRenderTarget* render_target, u32 width, u32 height) {
     render_target->resize(width, height);
 }
 
 VkRenderTarget::VkRenderTarget(VkContext* context, const VkRenderTargetInfo &info)
 : context(context), info(info) {
+    u32 frameCount = context->info.frameCount;
+
     std::vector<VkAttachmentDescription> vk_color_attachments(info.colorAttachmentsCount);
     std::vector<VkAttachmentReference> vk_color_references(info.colorAttachmentsCount);
 
@@ -61,8 +67,10 @@ VkRenderTarget::VkRenderTarget(VkContext* context, const VkRenderTargetInfo &inf
     VK_CHECK(vkCreateRenderPass(context->device, &renderPassCreateInfo, VK_CALLBACKS, &render_pass));
     VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_RENDER_PASS, render_pass, info.name);
 
-    for (int i = 0 ; i < info.colorAttachmentsCount ; i++) {
-        auto views = info.colorAttachments[i].texture->views;
+    std::vector<VkImageView> vk_image_views();
+
+    for (int i = 0 ; i < frameCount ; i++) {
+        auto views = info.colorAttachments[]texture->views;
         VkFramebufferCreateInfo framebufferCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
             .renderPass = render_pass,
@@ -72,22 +80,21 @@ VkRenderTarget::VkRenderTarget(VkContext* context, const VkRenderTargetInfo &inf
             .height = info.height,
             .layers = info.depth,
         };
-        VK_CHECK(vkCreateFramebuffer(context->device, &framebufferCreateInfo, VK_CALLBACKS, &framebuffer));
-        VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_FRAMEBUFFER, framebuffer, info.name);
+        VK_CHECK(vkCreateFramebuffer(context->device, &framebufferCreateInfo, VK_CALLBACKS, &framebuffers[i]));
+        VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_FRAMEBUFFER, framebuffers[i], info.name);
     }
 }
 
 VkRenderTarget::~VkRenderTarget() {
-    for (int i = 0 ; i < info.colorAttachmentsCount ; i++) {
-        vkDestroyImageView(context->device, info.colorAttachments[i].texture->view, VK_CALLBACKS);
-    }
     info.colorAttachments = nullptr;
     info.colorAttachmentsCount = 0;
+    info.depthAttachment = nullptr;
+    info.stencilAttachment = nullptr;
 
-    if (framebuffer) {
-        vkDestroyFramebuffer(context->device, framebuffer, VK_CALLBACKS);
-        framebuffer = nullptr;
+    for (int i = 0 ; i < framebuffers.size() ; i++) {
+        vkDestroyFramebuffer(context->device, framebuffers[i], VK_CALLBACKS);
     }
+    framebuffers.clear();
 
     if (render_pass) {
         vkDestroyRenderPass(context->device, render_pass, VK_CALLBACKS);

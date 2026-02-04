@@ -13,8 +13,8 @@ actual open class NativeBuffer actual constructor(
         this.buffer = buffer
     }
 
-    constructor(ptr: Long, capacity: Int) : this(capacity) {
-        this.buffer = CMemory.toByteBuffer(ptr, capacity) ?: throw RuntimeException("Failed to allocate for NativeBuffer $capacity bytes from ptr $ptr")
+    actual constructor(address: Long, capacity: Int) : this(capacity) {
+        this.buffer = CMemory.toByteBuffer(address, capacity) ?: throw RuntimeException("Failed to allocate for NativeBuffer $capacity bytes from ptr $ptr")
     }
 
     var buffer: ByteBuffer = CMemory.malloc(capacity)

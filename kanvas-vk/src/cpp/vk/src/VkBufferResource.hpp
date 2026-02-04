@@ -17,11 +17,12 @@ struct VkBufferResource {
     VmaAllocation allocation = {};
     VkBufferInfo info;
     void* mapped = nullptr;
+    u32 frameStride = 0;
 
     VkBufferResource(VkContext* context, const VkBufferInfo& info);
     ~VkBufferResource();
 
-    void* map();
+    void* map(u32 frame);
     void unmap();
 
     void resize(size_t size);

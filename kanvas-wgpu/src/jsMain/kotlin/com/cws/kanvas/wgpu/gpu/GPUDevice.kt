@@ -1,5 +1,6 @@
 package com.cws.kanvas.wgpu.gpu
 
+import kotlinx.coroutines.await
 import org.w3c.dom.events.EventTarget
 import kotlin.js.JsName
 import kotlin.js.Promise

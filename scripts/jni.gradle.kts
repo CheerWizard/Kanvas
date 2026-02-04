@@ -39,20 +39,21 @@ fun cmakeTask(project: String, platform: String, generator: String) = tasks.regi
             commandLine("cmake", "--build", ".")
         }
 
-        val libName = when(platform) {
-            "linux-x86_64" -> "lib$project.so"
-            "windows-x86_64" -> "$project.dll"
-            "macos-x86_64" -> "lib$project.dylib"
-            else -> throw GradleException("Unknown platform")
-        }
-
-        copy {
-            val fromDir = "$outDir/$libName"
-            val toDir = "src/desktopMain/resources/jni/$platform"
-            println("Copying $fromDir -> $toDir")
-            from(fromDir)
-            into(toDir)
-        }
+        // may be already copied by CMake build
+//        val libName = when(platform) {
+//            "linux-x86_64" -> "lib$project.so"
+//            "windows-x86_64" -> "$project.dll"
+//            "macos-x86_64" -> "lib$project.dylib"
+//            else -> throw GradleException("Unknown platform")
+//        }
+//
+//        copy {
+//            val fromDir = "$outDir/$libName"
+//            val toDir = "src/desktopMain/resources/jni/$platform"
+//            println("Copying $fromDir -> $toDir")
+//            from(fromDir)
+//            into(toDir)
+//        }
     }
 }
 
@@ -70,10 +71,12 @@ val generator = when {
 }
 
 val platform = when {
-    osName.contains("windows") && osArch.contains("64") -> "windows-x86_64"
-    osName.contains("linux") && osArch.contains("64") -> "linux-x86_64"
-    osName.contains("mac") && osArch.contains("64") -> "macos-x86_64"
-    else -> throw GradleException("Unsupported OS/Arch: $osName / $osArch")
+    osName.contains("win") && (osArch == "amd64" || osArch == "x86_64") -> "windows-x86_64"
+    osName.contains("linux") && (osArch == "amd64" || osArch == "x86_64") -> "linux-x86_64"
+    osName.contains("linux") && (osArch == "aarch64" || osArch == "arm64") -> "linux-arm64"
+    osName.contains("mac") && (osArch == "x86_64") -> "macos-x86_64"
+    osName.contains("mac") && (osArch == "aarch64" || osArch == "arm64") -> "macos-arm64"
+    else -> throw GradleException("Unsupported platform: $osName / $osArch")
 }
 
 val cmakeBuild = cmakeTask(jniProject, platform, generator)

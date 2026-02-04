@@ -34,22 +34,17 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
 endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../desktopMain/resources/libs/windows-x86_64)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/desktopMain/resources/jni/windows-${CMAKE_SYSTEM_PROCESSOR})
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../desktopMain/resources/libs/linux-x86_64)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/desktopMain/resources/jni/linux-${CMAKE_SYSTEM_PROCESSOR})
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../../jniMain/desktopMain/resources/libs/macos-x86_64)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/desktopMain/resources/jni/macos-${CMAKE_SYSTEM_PROCESSOR})
 endif()
 
 include_directories(.)
 
 # include all sources and exclude platform specific sources
-file(GLOB_RECURSE SRC RELATIVE . "*.cpp")
-foreach(file ${SRC})
-    if(file MATCHES "^jni")
-        list(REMOVE_ITEM SRC ${file})
-    endif()
-endforeach()
+file(GLOB_RECURSE SRC "src/*.cpp" "core/*.cpp")
 
 macro(build_windows)
     file(GLOB_RECURSE PLATFORM_SRC jni/*.cpp)
@@ -118,4 +113,4 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "iOS")
 endif ()
 
 # optionally enable warnings
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror)
+#target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror)

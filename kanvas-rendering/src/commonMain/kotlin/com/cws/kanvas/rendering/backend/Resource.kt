@@ -1,6 +1,8 @@
 package com.cws.kanvas.rendering.backend
 
-abstract class Resource<Handle>() {
+import com.cws.std.memory.INativeData
+
+abstract class Resource<Handle, Info : INativeData>(val info: Info) {
 
     var handle: Handle? = null
         protected set
@@ -22,7 +24,9 @@ abstract class Resource<Handle>() {
 
     protected abstract fun onDestroy()
 
-    inline fun <T : Resource<Handle>, R> T.useOnce(block: T.() -> R): R {
+    abstract fun setInfo()
+
+    inline fun <T : Resource<Handle, Info>, R> T.useOnce(block: T.() -> R): R {
         create()
         val result = block()
         destroy()

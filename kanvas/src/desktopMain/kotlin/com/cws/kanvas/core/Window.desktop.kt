@@ -11,8 +11,12 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.window.WindowState
+import com.cws.kanvas.event.GamepadAxis
+import com.cws.kanvas.event.GamepadCode
 import com.cws.kanvas.event.KeyCode
 import com.cws.kanvas.event.MouseCode
+import com.cws.kanvas.gfx.texture.Pixels
+import net.java.games.input.Component
 import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 
@@ -35,11 +39,12 @@ actual class Window : BaseWindow {
     lateinit var onBitmapChanged: (ImageBitmap?) -> Unit
 
     @Volatile
-    var composeState: WindowState? = null
+    var windowState: WindowState? = null
 
     private var closed = false
     private val bitmap = ImageBitmap(config.width, config.height, ImageBitmapConfig.Argb8888)
     private var windowPixels: WindowPixels? = null
+    private val gamepadManager = GamepadManager(eventListeners)
 
     actual constructor(config: WindowConfig) : super(config) {
         createPixels(config.width, config.height)
@@ -66,7 +71,7 @@ actual class Window : BaseWindow {
     }
 
     private fun checkComposeState() {
-        composeState?.let { state ->
+        windowState?.let { state ->
             val newX = state.position.x.value.roundToInt()
             val newY = state.position.y.value.roundToInt()
             val newWidth = state.size.width.value.roundToInt()
@@ -138,6 +143,11 @@ actual class Window : BaseWindow {
 
     fun onMouseScroll(x: Float, y: Float) {
         eventListeners.forEach { it.onMouseScroll(x.toDouble(), y.toDouble()) }
+    }
+
+    override fun pollEvents() {
+        super.pollEvents()
+        gamepadManager.poll()
     }
 
     private fun Key.toKeyCode(): KeyCode {

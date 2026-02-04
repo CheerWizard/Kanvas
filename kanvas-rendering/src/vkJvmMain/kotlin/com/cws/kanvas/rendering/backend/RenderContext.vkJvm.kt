@@ -1,59 +1,93 @@
 package com.cws.kanvas.rendering.backend
 
 import com.cws.kanvas.vk.*
-import com.cws.std.memory.CString
+import com.cws.print.LogLevel
+import com.cws.print.Print
+import com.cws.print.toLogLevel
+import com.cws.std.memory.NativeString
 
-actual typealias RenderContextHandle = Long
+actual class RenderContext actual constructor(
+    info: ContextInfo,
+    private val surface: Any?,
+) : Resource<RenderContextHandle, ContextInfo>(info) {
 
-actual class RenderContext actual constructor(info: RenderContextInfo) : Resource<RenderContextHandle>() {
-
-    private val vkInfo = VkContextInfo(
-        applicationName = CString(info.appName),
-        engineName = CString(info.engineName),
-        width = info.width,
-        height = info.height,
-        frameCount = info.frameCount,
-    )
-    private val surface = info.surface
+    init {
+        VK.LogBridge_callback { level, tag, msg, exceptionMsg ->
+            Print.log(level, tag, msg, exceptionMsg)
+        }
+        VK.ResultBridge_callback { result ->
+            Print.log(LogLevel.DEBUG, "RenderContext", "VkResult received - $result")
+        }
+    }
 
     actual override fun onCreate() {
-        vkInfo.pack()?.let {
-            handle = VK.VkContext_create(surface, it.buffer)
+        info.pack()?.buffer?.let { info ->
+            handle = RenderContextHandle(VK.VkContext_create(surface, info))
         }
     }
 
     actual override fun onDestroy() {
         handle?.let {
-            VK.VkContext_destroy(it)
+            VK.VkContext_destroy(it.value)
+        }
+    }
+
+    actual override fun setInfo() {
+        handle?.let { handle ->
+            info.pack()?.buffer?.let { info ->
+                VK.VkContext_setInfo(handle.value, info)
+            }
         }
     }
 
     actual fun wait() {
         handle?.let {
-            VK.VkContext_wait(it)
+            VK.VkContext_wait(it.value)
         }
     }
 
     actual fun resize(width: Int, height: Int) {
         handle?.let {
-            VK.VkContext_resize(it, width, height)
+            VK.VkContext_resize(it.value, width, height)
+        }
+    }
+
+    actual fun setSurface(surface: Any?) {
+        handle?.let {
+            VK.VkContext_setSurface(it.value, surface)
         }
     }
 
     actual fun getRenderTarget(): RenderTarget {
-        return RenderTarget(this, VK.VkContext_getRenderTarget(handle!!))
+        return RenderTarget(this, RenderTargetHandle(VK.VkContext_getRenderTarget(handle?.value ?: 0)))
     }
 
     actual fun beginFrame(frame: Int) {
         handle?.let {
-            VK.VkContext_beginFrame(it, frame)
+            VK.VkContext_beginFrame(it.value, frame)
         }
     }
 
     actual fun endFrame(frame: Int) {
         handle?.let {
-            VK.VkContext_endFrame(it, frame)
+            VK.VkContext_endFrame(it.value, frame)
         }
+    }
+
+    actual fun getPrimaryCommandBuffer(frame: Int): CommandBuffer? {
+        val handle = handle?.value ?: return null
+        return CommandBuffer(
+            this,
+            CommandBufferHandle(VK.VkContext_getPrimaryCommandBuffer(handle, frame)),
+        )
+    }
+
+    actual fun getSecondaryCommandBuffer(): CommandBuffer? {
+        val handle = handle?.value ?: return null
+        return CommandBuffer(
+            this,
+            CommandBufferHandle(VK.VkContext_getSecondaryCommandBuffer(handle)),
+        )
     }
 
 }

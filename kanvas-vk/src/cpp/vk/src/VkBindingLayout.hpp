@@ -7,10 +7,15 @@
 
 #include "../api/Vk.h"
 
+#include <vector>
+
 struct VkBindingLayout {
     VkDevice device = nullptr;
     VkDescriptorSetLayout layout;
+    VkDescriptorSet set = VK_NULL_HANDLE;
+    u32 setIndex = 0;
     VkBindingInfo info;
+    std::vector<u32> dynamicOffsets;
 
     VkBindingLayout(VkDevice device, const VkBindingInfo& info);
     ~VkBindingLayout();

@@ -6,21 +6,21 @@
 
 #include <thread>
 
-vk::Logger::Logger() {
+Logger::Logger() {
     std::thread thread([this]() { runLoop(); });
     thread.detach();
 }
 
-vk::Logger::~Logger() {
+Logger::~Logger() {
     running = false;
 }
 
-vk::Logger& vk::Logger::getInstance() {
+Logger& Logger::getInstance() {
     static Logger instance;
     return instance;
 }
 
-void vk::Logger::runLoop() {
+void Logger::runLoop() {
     running = true;
     // todo: potentially insecure for CPU usage, maybe add small sleep duration
     while (running) {

@@ -1,33 +1,16 @@
 package com.cws.kanvas.rendering.backend
 
-expect enum class BindingType {
-    UNIFORM_BUFFER,
-    STORAGE_BUFFER,
-    TEXTURE,
-    SAMPLER,
-}
+import com.cws.std.memory.INativeData
+import com.cws.std.memory.MemoryLayout
+import com.cws.std.memory.NativeBuffer
 
-interface BindingResource
-
-data class Binding(
-    var type: BindingType,
-    var shaderStages: Int,
-    var set: Int,
-    var binding: Int,
-    var count: Int = 1,
-    var resource: BindingResource? = null
-)
-
-data class BindingLayoutInfo(
-    val name: String,
-    val bindings: List<Binding>,
-)
-
-expect class BindingLayoutHandle
-
-expect class BindingLayout(renderContext: RenderContext, info: BindingLayoutInfo) : Resource<BindingLayoutHandle> {
-    val info: BindingLayoutInfo
+expect class BindingLayout(context: RenderContext, info: BindingInfo)
+    : Resource<BindingLayoutHandle, BindingInfo>, INativeData {
     override fun onCreate()
     override fun onDestroy()
-    fun update()
+    override fun setInfo()
+    override val buffer: NativeBuffer?
+    override fun sizeBytes(layout: MemoryLayout): Int
+    override fun pack(buffer: NativeBuffer)
+    override fun unpack(buffer: NativeBuffer): INativeData
 }

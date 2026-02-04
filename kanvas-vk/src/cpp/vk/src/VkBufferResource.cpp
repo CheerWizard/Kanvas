@@ -8,23 +8,23 @@
 #include "VkContext.hpp"
 
 VkBufferResource* VkBufferResource_create(VkContext* context, VkBufferInfo* info) {
-    return new VkBufferResource(context->device, *info);
+    return new VkBufferResource(context, *info);
 }
 
 void VkBufferResource_destroy(VkBufferResource* buffer_resource) {
     delete buffer_resource;
 }
 
-void* VkBufferResource_map(VkBufferResource* buffer_resource) {
-    return buffer_resource->map();
+void VkBufferResource_setInfo(VkBufferResource* buffer_resource, VkBufferInfo* info) {
+    buffer_resource->info = *info;
+}
+
+void* VkBufferResource_map(VkBufferResource* buffer_resource, u32 frame) {
+    return buffer_resource->map(frame);
 }
 
 void VkBufferResource_unmap(VkBufferResource* buffer_resource) {
     buffer_resource->unmap();
-}
-
-void VkBufferResource_updateBinding(VkBufferResource* buffer_resource, u32 frame) {
-    buffer_resource->updateBinding(frame);
 }
 
 VkBufferResource::VkBufferResource(
@@ -37,9 +37,21 @@ VkBufferResource::VkBufferResource(
         frameCount = 1;
     }
 
+    if (info.usages & VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT) {
+        u32 minAlignment = context->properties.limits.minUniformBufferOffsetAlignment;
+        frameStride = (info.size + minAlignment - 1) & ~(minAlignment - 1);
+    }
+    else if (info.usages & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT) {
+        u32 minAlignment = context->properties.limits.minStorageBufferOffsetAlignment;
+        frameStride = (info.size + minAlignment - 1) & ~(minAlignment - 1);
+    }
+    else {
+        frameStride = info.size;
+    }
+
     VkBufferCreateInfo createInfo = {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = info.size * frameCount,
+        .size = frameStride * frameCount,
         .usage = info.usages,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
@@ -64,10 +76,6 @@ VkBufferResource::VkBufferResource(
 
     VK_CHECK(vmaCreateBuffer(VK_ALLOCATOR, &createInfo, &allocInfo, &buffer, &allocation, nullptr));
     VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_BUFFER, buffer, info.name);
-
-    if (info.mapOnCreate) {
-        map();
-    }
 }
 
 VkBufferResource::~VkBufferResource() {
@@ -78,10 +86,16 @@ VkBufferResource::~VkBufferResource() {
     }
 }
 
-void* VkBufferResource::map() {
+void* VkBufferResource::map(u32 frame) {
     VK_CHECK(vmaMapMemory(VK_ALLOCATOR, allocation, &mapped));
     ASSERT(!mapped, TAG, "Failed to map VkBufferResource memory");
-    return mapped;
+
+    u32 actualFrame = frame;
+    if (info.isStatic) {
+        actualFrame = 1;
+    }
+
+    return static_cast<char*>(mapped) + actualFrame * info.size;
 }
 
 void VkBufferResource::unmap() {

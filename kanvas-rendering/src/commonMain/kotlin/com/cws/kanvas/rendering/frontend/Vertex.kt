@@ -7,23 +7,27 @@ import com.cws.kanvas.rendering.backend.AttributeFormat
 import com.cws.kanvas.rendering.backend.AttributeType
 import com.cws.std.memory.NativeData
 
-val VertexAttributes = arrayOf(
+val DefaultVertexAttributes = arrayOf(
     Attribute(
-        location = 0u,
+        location = 0,
         type = AttributeType.ATTRIBUTE_TYPE_VEC3,
         format = AttributeFormat.FLOAT3,
     ),
     Attribute(
-        location = 1u,
+        location = 1,
         type = AttributeType.ATTRIBUTE_TYPE_VEC2,
         format = AttributeFormat.FLOAT2,
     ),
     Attribute(
-        location = 2u,
+        location = 2,
         type = AttributeType.ATTRIBUTE_TYPE_VEC3,
         format = AttributeFormat.FLOAT3,
     ),
 )
+
+val Array<Attribute>.sizeInBytes: Int get() = sumOf { attribute ->
+    attribute.type.value * Float.SIZE_BYTES
+}
 
 @NativeData
 data class _Vertex(

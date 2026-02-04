@@ -13,6 +13,15 @@ actual open class NativeBuffer actual constructor(
     memoryLayout: MemoryLayout,
 ) {
 
+    actual constructor(address: Long, capacity: Int) : this(capacity) {
+        // TODO here probably I would need to use WASM HEAPU8 global buffer with offsets,
+        //  but not quite sure if I ever need it.
+    }
+
+    constructor(buffer: ArrayBuffer, memoryLayout: MemoryLayout = MemoryLayout.KOTLIN) : this(buffer.byteLength, memoryLayout) {
+        this.buffer = buffer
+    }
+
     actual val memoryLayout: MemoryLayout = memoryLayout
 
     actual var position: Int
@@ -21,11 +30,11 @@ actual open class NativeBuffer actual constructor(
         }
         get() = _position
 
-    actual val capacity: Int get() = Module.HEAPU8.byteLength
+    actual val capacity: Int get() = buffer.byteLength
 
     actual val address: Long get() = 0L
 
-    var buffer = Module.HEAPU8.buffer
+    var buffer = ArrayBuffer(capacity)
     protected var _position: Int = 0
 
     private var byteView = Uint8Array(buffer)

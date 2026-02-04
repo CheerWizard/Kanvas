@@ -11,8 +11,8 @@ object VK {
     // Callbacks
     // --------------------------------------------------
 
-    external fun LogBridge_callback(callback: (String) -> Unit)
-    external fun ResultBridge_callback(callback: (Int) -> Unit)
+    external fun LogBridge_callback(callback: (level: Int, tag: String, msg: String, exceptionMsg: String) -> Unit)
+    external fun ResultBridge_callback(callback: (result: Int) -> Unit)
     external fun removeCallbacks()
 
     // --------------------------------------------------
@@ -21,32 +21,34 @@ object VK {
 
     external fun VkContext_create(surface: Any?, info: ByteBuffer): VkHandle
     external fun VkContext_destroy(context: VkHandle)
+    external fun VkContext_setInfo(
+        context: VkHandle,
+        info: ByteBuffer
+    )
     external fun VkContext_wait(context: VkHandle)
-
     external fun VkContext_resize(
         context: VkHandle,
         width: Int,
         height: Int
     )
-
+    external fun VkContext_setSurface(
+        context: VkHandle,
+        surface: Any?,
+    )
     external fun VkContext_getRenderTarget(
         context: VkHandle
     ): VkHandle
-
     external fun VkContext_getPrimaryCommandBuffer(
         context: VkHandle,
         frame: Int
     ): VkHandle
-
     external fun VkContext_getSecondaryCommandBuffer(
         context: VkHandle
     ): VkHandle
-
     external fun VkContext_beginFrame(
         context: VkHandle,
         frame: Int
     )
-
     external fun VkContext_endFrame(
         context: VkHandle,
         frame: Int
@@ -65,7 +67,7 @@ object VK {
         shader: VkHandle
     )
 
-    external fun VkShader_update(
+    external fun VkShader_setInfo(
         shader: VkHandle,
         info: ByteBuffer
     )
@@ -83,7 +85,7 @@ object VK {
         layout: VkHandle
     )
 
-    external fun VkBindingLayout_update(
+    external fun VkBindingLayout_setInfo(
         layout: VkHandle,
         info: ByteBuffer
     )
@@ -99,6 +101,11 @@ object VK {
 
     external fun VkRenderTarget_destroy(
         target: VkHandle
+    )
+
+    external fun VkRenderTarget_setInfo(
+        target: VkHandle,
+        info: ByteBuffer
     )
 
     external fun VkRenderTarget_resize(
@@ -120,17 +127,18 @@ object VK {
         buffer: VkHandle
     )
 
+    external fun VkBufferResource_setInfo(
+        buffer: VkHandle,
+        info: ByteBuffer
+    )
+
     external fun VkBufferResource_map(
-        buffer: VkHandle
-    ): Long
+        buffer: VkHandle,
+        frame: Int
+    ): ByteBuffer?
 
     external fun VkBufferResource_unmap(
         buffer: VkHandle
-    )
-
-    external fun VkBufferResource_updateBinding(
-        buffer: VkHandle,
-        frame: Int
     )
 
     // --------------------------------------------------
@@ -146,9 +154,9 @@ object VK {
         sampler: VkHandle
     )
 
-    external fun VkSamplerResource_updateBinding(
+    external fun VkSamplerResource_setInfo(
         sampler: VkHandle,
-        frame: Int
+        info: ByteBuffer
     )
 
     // --------------------------------------------------
@@ -164,17 +172,18 @@ object VK {
         texture: VkHandle
     )
 
+    external fun VkTextureResource_setInfo(
+        texture: VkHandle,
+        info: ByteBuffer
+    )
+
     external fun VkTextureResource_map(
-        texture: VkHandle
-    ): Long
+        texture: VkHandle,
+        frame: Int
+    ): ByteBuffer?
 
     external fun VkTextureResource_unmap(
         texture: VkHandle
-    )
-
-    external fun VkTextureResource_updateBinding(
-        texture: VkHandle,
-        frame: Int
     )
 
     // --------------------------------------------------
@@ -190,7 +199,7 @@ object VK {
         pipe: VkHandle
     )
 
-    external fun VkPipe_update(
+    external fun VkPipe_setInfo(
         pipe: VkHandle,
         info: ByteBuffer
     )
@@ -251,7 +260,8 @@ object VK {
 
     external fun VkCommandBufferResource_addSecondaryBuffers(
         cmd: VkHandle,
-        secondaryBuffers: VkHandles
+        secondaryBuffers: ByteBuffer,
+        secondaryBuffersCount: Long,
     )
 
     external fun VkCommandBufferResource_draw(
@@ -275,7 +285,7 @@ object VK {
     external fun VkCommandBufferResource_drawIndexedIndirect(
         cmd: VkHandle,
         indirectBuffer: VkHandle,
-        offset: Long,
+        offset: Int,
         drawCount: Int
     )
 
@@ -283,9 +293,9 @@ object VK {
         cmd: VkHandle,
         src: VkHandle,
         dst: VkHandle,
-        srcOffset: Long,
-        dstOffset: Long,
-        size: Long
+        srcOffset: Int,
+        dstOffset: Int,
+        size: Int
     )
 
     external fun VkCommandBufferResource_copyBufferToImage(

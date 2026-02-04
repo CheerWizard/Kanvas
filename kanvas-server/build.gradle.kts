@@ -20,14 +20,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
 
-    // Protobuf
-    implementation(libs.protobuf.kotlin)
-
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
-    implementation(project(":print"))
 
     // logging
+    implementation(project(":print"))
 
     // Testing
     testImplementation(kotlin("test"))

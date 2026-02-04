@@ -50,7 +50,7 @@ fun GameView(
     }
 
     LaunchedEffect(composeWindow) {
-        window?.composeState = composeWindow
+        window?.windowState = composeWindow
     }
 
     Window(

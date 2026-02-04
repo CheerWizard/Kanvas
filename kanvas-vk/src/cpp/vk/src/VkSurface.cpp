@@ -27,7 +27,7 @@ void VkSurface::recreateSwapChain() {
     releaseSwapChain();
     swapchain = newSwapchain;
     initImages(width, height);
-    needsResize = false;
+    needsRecreation = false;
 }
 
 void VkSurface::initSurface(VkSurfaceKHR surface) {
@@ -175,12 +175,17 @@ void VkSurface::releaseSwapChain() {
 void VkSurface::resize(int width, int height) {
     render_target->info.width = width;
     render_target->info.height = height;
-    needsResize = true;
+    needsRecreation = true;
+}
+
+void VkSurface::updateSurface(VkSurfaceKHR surface) {
+    initSurface(surface);
+    needsRecreation = true;
 }
 
 bool VkSurface::getImage(const VkSemaphoreResource &semaphore) {
     VkResult result = vkAcquireNextImageKHR(context->device, swapchain, UINT64_MAX, semaphore.semaphore, VK_NULL_HANDLE, &currentImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || needsResize) {
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || needsRecreation) {
         recreateSwapChain();
         return false;
     }

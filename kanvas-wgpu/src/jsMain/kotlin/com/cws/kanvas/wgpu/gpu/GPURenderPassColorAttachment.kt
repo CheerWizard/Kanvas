@@ -11,10 +11,10 @@ external interface GPURenderPassColorAttachment {
 
 fun GPURenderPassColorAttachment(
     view: GPUTextureView,
-    loadOp: GPULoadOp,
-    storeOp: GPUStoreOp,
+    loadOp: GPULoadOp = GPULoadOp.clear,
+    storeOp: GPUStoreOp = GPUStoreOp.store,
     resolveTarget: GPUTextureView? = null,
-    clearValue: GPUColor? = null,
+    clearValue: GPUColor = GPUColor(0.0, 0.0, 0.0, 1.0),
     depthSlice: GPUIntegerCoordinate? = null
 ): GPURenderPassColorAttachment = jsObject {
     this.view = view

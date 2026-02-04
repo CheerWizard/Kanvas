@@ -16,3 +16,19 @@ interface INativeData {
         buffer?.release()
     }
 }
+
+fun INativeData?.pack(buffer: NativeBuffer) {
+    if (this == null) {
+        buffer.pushLong(0)
+    } else {
+        pack(buffer)
+    }
+}
+
+fun INativeData?.unpack(buffer: NativeBuffer) {
+    if (this == null) {
+        buffer.popLong()
+    } else {
+        unpack(buffer)
+    }
+}

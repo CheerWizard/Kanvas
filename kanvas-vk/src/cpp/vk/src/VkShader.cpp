@@ -15,7 +15,7 @@ void VkShader_destroy(VkShader* shader) {
     delete shader;
 }
 
-void VkShader_update(VkShader* shader, VkShaderInfo* info) {
+void VkShader_setInfo(VkShader* shader, VkShaderInfo* info) {
     shader->update(*info);
 }
 

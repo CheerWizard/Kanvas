@@ -22,12 +22,13 @@ struct VkSurface {
     VkPresentModeKHR present_mode;
     VkSwapchainKHR swapchain = nullptr;
     VkRenderTarget* render_target = nullptr;
-    bool needsResize = false;
+    bool needsRecreation = false;
 
     VkSurface(VkContext* context, VkSurfaceKHR surface, u32 width, u32 height);
     ~VkSurface();
 
     void resize(int width, int height);
+    void updateSurface(VkSurfaceKHR surface);
     bool getImage(const VkSemaphoreResource& semaphore);
     void recreateSwapChain();
 

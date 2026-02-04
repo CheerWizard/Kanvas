@@ -78,7 +78,7 @@ open class BasePrint {
 
     fun log(logLevel: Int, tag: String, message: String, exceptionMessage: String? = null) {
         log(
-            LogLevel.entries[logLevel],
+            logLevel.toLogLevel(),
             tag,
             message,
             exceptionMessage?.let { RuntimeException(it) }

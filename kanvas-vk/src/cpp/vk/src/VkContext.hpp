@@ -37,6 +37,7 @@ struct VkContext {
     void endFrame(u32 frame);
     void wait();
     void resize(u32 width, u32 height);
+    void setSurface(void* surface);
     VkCommandBufferResource* getPrimaryCommandBuffer(u32 frame);
     VkCommandBufferResource* getSecondaryCommandBuffer();
 

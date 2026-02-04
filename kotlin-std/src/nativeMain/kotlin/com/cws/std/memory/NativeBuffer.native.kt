@@ -26,13 +26,9 @@ actual open class NativeBuffer actual constructor(
 
     actual val memoryLayout: MemoryLayout = memoryLayout
 
-    constructor(ptr: Long, capacity: Int) : this(capacity) {
-        this.buffer = ptr.toCPointer<ByteVar>()
+    actual constructor(address: Long, capacity: Int) : this(capacity) {
+        this.buffer = address.toCPointer<ByteVar>()
             ?: throw RuntimeException("Failed to convert Long ptr to Native CPointer!")
-    }
-
-    constructor(ptr: CPointer<ByteVar>, capacity: Int) : this(capacity) {
-        this.buffer = ptr
     }
 
     actual var position: Int

@@ -10,7 +10,7 @@
 
 struct VkRenderTarget {
     VkContext* context = nullptr;
-    std::vector<VkRenderPass> render_passes;
+    VkRenderPass render_pass;
     std::vector<VkFramebuffer> framebuffers;
     VkRenderTargetInfo info;
 

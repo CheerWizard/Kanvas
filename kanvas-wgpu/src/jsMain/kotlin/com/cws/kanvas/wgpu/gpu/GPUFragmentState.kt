@@ -13,7 +13,6 @@ fun GPUFragmentState(
     entryPoint: String,
     targets: JsReadonlyArray<GPUColorTargetState?>,
     constants: dynamic = null,
-    label: String? = null
 ): GPUFragmentState = jsObject {
     this.module = module
     this.entryPoint = entryPoint
