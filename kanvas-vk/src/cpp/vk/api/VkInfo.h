@@ -206,6 +206,16 @@ typedef struct VkPipelineInfo {
     VkRenderTarget* renderTarget;
 } VkPipeInfo;
 
+typedef struct VkComputePipeInfo {
+    const char* name;
+    VkShader* computeShader;
+} VkComputePipeInfo;
+
+enum VkMemoryBarrierAccess {
+    READ,
+    WRITE
+};
+
 extern "C" {
 
     inline VkContextInfo VkContextInfo_default() {
@@ -390,6 +400,13 @@ extern "C" {
         info.frontFace = VK_FRONT_FACE_CLOCKWISE;
         info.sampleCount = 1;
         info.renderTarget = VK_NULL_HANDLE;
+        return info;
+    }
+
+    inline VkComputePipeInfo VkComputePipeInfo_default() {
+        VkComputePipeInfo info = {};
+        info.name = VK_NULL_HANDLE;
+        info.computeShader = VK_NULL_HANDLE;
         return info;
     }
 

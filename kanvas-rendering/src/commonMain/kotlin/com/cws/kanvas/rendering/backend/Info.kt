@@ -577,6 +577,32 @@ data class PipelineInfo(
 }
 
 /* ============================================================
+ * COMPUTE PIPELINE INFO
+ * ============================================================ */
+
+data class ComputePipelineInfo(
+    var name: NativeString = NativeString(),
+    var computeShader: Shader? = null,
+    override val buffer: NativeBuffer? = NativeBuffer(SIZEOF)
+) : INativeData {
+
+    companion object { const val SIZEOF = 16 }
+
+    override fun sizeBytes(layout: MemoryLayout) = SIZEOF
+
+    override fun pack(buffer: NativeBuffer) {
+        buffer.pushLong(name.address)
+        computeShader?.handle.pack(buffer)
+    }
+
+    override fun unpack(buffer: NativeBuffer): INativeData {
+        buffer.nextLong()
+        computeShader?.handle.unpack(buffer)
+        return this
+    }
+}
+
+/* ============================================================
  * COLOR ATTACHMENT
  * ============================================================ */
 

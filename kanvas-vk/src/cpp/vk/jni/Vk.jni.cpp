@@ -607,8 +607,7 @@ Java_com_cws_kanvas_vk_VK_VkPipe_create(
 
     auto* info = reinterpret_cast<VkPipeInfo*>(ptr);
 
-    return reinterpret_cast<jlong>(
-        VkPipe_create(ctx, info));
+    return reinterpret_cast<jlong>(VkPipe_create(ctx, info));
 }
 
 JNIEXPORT void JNICALL
@@ -636,6 +635,54 @@ Java_com_cws_kanvas_vk_VK_VkPipe_setInfo(
     auto* info = reinterpret_cast<VkPipeInfo*>(ptr);
 
     VkPipe_setInfo(p, info);
+}
+
+// --------------------------------------------------
+// VkComputePipe
+// --------------------------------------------------
+
+JNIEXPORT jlong JNICALL
+Java_com_cws_kanvas_vk_VK_VkComputePipe_create(
+        JNIEnv* env,
+        jclass,
+        jlong context,
+        jobject infoBuffer) {
+
+    auto* ctx = reinterpret_cast<VkContext*>(context);
+
+    void* ptr = env->GetDirectBufferAddress(infoBuffer);
+    if (!ptr) return 0;
+
+    auto* info = reinterpret_cast<VkComputePipeInfo*>(ptr);
+
+    return reinterpret_cast<jlong>(VkComputePipe_create(ctx, info));
+}
+
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_VkComputePipe_destroy(
+        JNIEnv*,
+        jclass,
+        jlong pipe) {
+
+    auto* p = reinterpret_cast<VkComputePipe*>(pipe);
+    VkComputePipe_destroy(p);
+}
+
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_VkComputePipe_setInfo(
+        JNIEnv* env,
+        jclass,
+        jlong pipe,
+        jobject infoBuffer) {
+
+    auto* p = reinterpret_cast<VkComputePipe*>(pipe);
+
+    void* ptr = env->GetDirectBufferAddress(infoBuffer);
+    if (!ptr) return;
+
+    auto* info = reinterpret_cast<VkComputePipeInfo*>(ptr);
+
+    VkComputePipe_setInfo(p, info);
 }
 
 // --------------------------------------------------
@@ -701,12 +748,13 @@ Java_com_cws_kanvas_vk_VK_VkCommandBufferResource_setPipe(
         JNIEnv*,
         jclass,
         jlong cmd,
-        jlong pipe) {
+        jlong pipe,
+        jint frame) {
 
     auto* c = reinterpret_cast<VkCommandBufferResource*>(cmd);
     auto* p = reinterpret_cast<VkPipe*>(pipe);
 
-    VkCommandBufferResource_setPipe(c, p);
+    VkCommandBufferResource_setPipe(c, p, frame);
 }
 
 JNIEXPORT void JNICALL
@@ -882,4 +930,31 @@ Java_com_cws_kanvas_vk_VK_VkCommandBufferResource_copyImageToImage(
         sx, sy, sz,
         dx, dy, dz,
         w, h, dpth);
+}
+
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_VkCommandBufferResource_dispatch(
+        JNIEnv*,
+        jclass,
+        jlong cmd,
+        jint groupsX,
+        jint groupsY,
+        jint groupsZ
+) {
+    auto* c = reinterpret_cast<VkCommandBufferResource*>(cmd);
+    VkCommandBufferResource_dispatch(c, groupsX, groupsY, groupsZ);
+}
+
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_VkCommandBufferResource_pipelineBarrier(
+        JNIEnv*,
+        jclass,
+        jlong cmd,
+        jint srcStages,
+        jint dstStages,
+        jint srcAccessFlags,
+        jint dstAccessFlags
+) {
+    auto* c = reinterpret_cast<VkCommandBufferResource*>(cmd);
+    VkCommandBufferResource_pipelineBarrier(c, srcStages, dstStages, srcAccessFlags, dstAccessFlags);
 }

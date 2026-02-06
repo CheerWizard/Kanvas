@@ -1,7 +1,20 @@
 package com.cws.kanvas.rendering.frontend.shader_dsl
 
+import com.cws.kanvas.rendering.frontend.shader_dsl.nodes.Float2Node
+import com.cws.kanvas.rendering.frontend.shader_dsl.nodes.Float3Node
+import com.cws.kanvas.rendering.frontend.shader_dsl.nodes.FloatNode
+import com.cws.kanvas.rendering.frontend.shader_dsl.nodes.SamplerNode
+import com.cws.kanvas.rendering.frontend.shader_dsl.nodes.TextureNode
+
 expect object Expr {
     fun <T> mod(value: T): String
+    fun sample(samplerNode: SamplerNode, textureNode: TextureNode, uv: Float2Node): String
+    fun texture(samplerNode: SamplerNode, uv: Float2Node): String
+    fun texture(samplerNode: SamplerNode, uv: Float3Node): String
+    fun texture(samplerNode: SamplerNode, uv: Float2Node, bias: FloatNode): String
+    fun textureLod(samplerNode: SamplerNode, uv: Float2Node): String
+    fun textureLod(samplerNode: SamplerNode, uv: Float2Node, lod: FloatNode): String
+    fun textureGrad(samplerNode: SamplerNode, uv: Float2Node, dx: Float2Node, dy: Float2Node): String
 }
 
 // Basic

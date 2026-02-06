@@ -2,6 +2,8 @@
 
 package com.cws.kanvas.rendering.backend
 
+import com.cws.kanvas.wgpu.gpu.GPUComputePassDescriptor
+import com.cws.kanvas.wgpu.gpu.GPUComputePassEncoder
 import com.cws.kanvas.wgpu.gpu.GPUExtent3D
 import com.cws.kanvas.wgpu.gpu.GPUIndexFormat
 import com.cws.kanvas.wgpu.gpu.GPUOrigin3D
@@ -18,6 +20,7 @@ actual class CommandBuffer actual constructor(
 ) {
     actual var handle: CommandBufferHandle? = handle
     private var renderPass: GPURenderPassEncoder? = null
+    private var computePass: GPUComputePassEncoder? = null
 
     actual fun reset() {
         // no-op
@@ -41,6 +44,14 @@ actual class CommandBuffer actual constructor(
 
     actual fun endRenderPass() {
         renderPass?.end()
+    }
+
+    actual fun beginComputePass() {
+        computePass = handle?.value?.beginComputePass(GPUComputePassDescriptor())
+    }
+
+    actual fun endComputePass() {
+        computePass?.end()
     }
 
     actual fun setPipeline(pipeline: RenderPipeline) {
@@ -252,5 +263,18 @@ actual class CommandBuffer actual constructor(
                 depthOrArrayLayers = depth,
             ),
         )
+    }
+
+    actual fun dispatch(groupsX: Int, groupsY: Int, groupsZ: Int) {
+        computePass?.dispatchWorkgroups(groupsX, groupsY, groupsZ)
+    }
+
+    actual fun pipelineBarrier(
+        srcStages: Int,
+        dstStages: Int,
+        srcAccessFlags: Int,
+        dstAccessFlags: Int
+    ) {
+        // WebGPU does pipeline synchronization under the hood
     }
 }

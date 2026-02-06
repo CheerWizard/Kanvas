@@ -45,9 +45,12 @@ enum class AttributeType(override val value: Int): IntEnum {
 
 expect enum class BindingType : IntEnum {
     UNIFORM_BUFFER,
+    UNIFORM_BUFFER_DYNAMIC,
     STORAGE_BUFFER,
+    STORAGE_BUFFER_DYNAMIC,
     TEXTURE,
-    SAMPLER;
+    SAMPLER,
+    TEXTURE_SAMPLER;
 
     override val value: Int
 }
@@ -234,6 +237,50 @@ expect enum class BorderColor : IntEnum {
     INT_OPAQUE_BLACK,
     FLOAT_OPAQUE_WHITE,
     INT_OPAQUE_WHITE;
+
+    override val value: Int
+}
+
+expect enum class PipelineStage : IntEnum {
+    TOP_OF_PIPE,
+    DRAW_INDIRECT,
+    VERTEX_INPUT,
+    VERTEX_SHADER,
+    GEOMETRY_SHADER,
+    FRAGMENT_SHADER,
+    EARLY_FRAGMENT_TEST,
+    LATE_FRAGMENT_TEST,
+    COLOR_ATTACHMENT_OUTPUT,
+    COMPUTE_SHADER,
+    TRANSFER,
+    BOTTOM_OF_PIPE,
+    HOST,
+    ALL_GRAPHICS,
+    ALL_COMMANDS,
+    NONE;
+
+    override val value: Int
+}
+
+expect enum class AccessFlag : IntEnum {
+    INDIRECT_COMMAND_READ,
+    INDEX_READ,
+    VERTEX_ATTRIBUTE_READ,
+    UNIFORM_READ,
+    INPUT_ATTACHMENT_READ,
+    SHADER_READ,
+    SHADER_WRITE,
+    COLOR_ATTACHMENT_READ,
+    COLOR_ATTACHMENT_WRITE,
+    DEPTH_STENCIL_ATTACHMENT_READ,
+    DEPTH_STENCIL_ATTACHMENT_WRITE,
+    TRANSFER_READ,
+    TRANSFER_WRITE,
+    HOST_READ,
+    HOST_WRITE,
+    MEMORY_READ,
+    MEMORY_WRITE,
+    NONE;
 
     override val value: Int
 }

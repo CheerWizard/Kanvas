@@ -205,6 +205,24 @@ object VK {
     )
 
     // --------------------------------------------------
+    // VkPipe
+    // --------------------------------------------------
+
+    external fun VkComputePipe_create(
+        context: VkHandle,
+        info: ByteBuffer
+    ): VkHandle
+
+    external fun VkComputePipe_destroy(
+        pipe: VkHandle
+    )
+
+    external fun VkComputePipe_setInfo(
+        pipe: VkHandle,
+        info: ByteBuffer
+    )
+
+    // --------------------------------------------------
     // VkCommandBufferResource
     // --------------------------------------------------
 
@@ -321,5 +339,20 @@ object VK {
         width: Int,
         height: Int,
         depth: Int
+    )
+
+    external fun VkCommandBufferResource_dispatch(
+        cmd: VkHandle,
+        groupsX: Int,
+        groupsY: Int,
+        groupsZ: Int,
+    )
+
+    external fun VkCommandBufferResource_pipelineBarrier(
+        cmd: VkHandle,
+        srcStages: Int,
+        dstStages: Int,
+        srcAccessFlags: Int,
+        dstAccessFlags: Int,
     )
 }

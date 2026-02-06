@@ -23,6 +23,7 @@ struct VkCommandBufferResource {
     void endRenderPass() const;
 
     void setPipe(VkPipe* pipe, u32 frame) const;
+    void setComputePipe(VkComputePipe* pipe, u32 frame) const;
     void setPipeline(VkPipelineBindPoint pipeline_bind_point, VkPipeline pipeline) const;
     void setVertexBuffer(VkBufferResource* buffer, u32 frame) const;
     void setIndexBuffer(VkBufferResource* buffer, u32 frame) const;
@@ -56,8 +57,11 @@ struct VkCommandBufferResource {
         u32 width, u32 height, u32 depth
     ) const;
 
+    void dispatch(u32 groupsX, u32 groupsY, u32 groupsZ) const;
+    void pipelineBarrier(u32 srcStages, u32 dstStages, u32 srcAccessFlags, u32 dstAccessFlags) const;
+
 private:
-    void setShader(VkPipelineLayout pipeline_layout, VkShader* shader, u32 frame) const;
+    void setShader(VkPipelineBindPoint pipeline_bind_point, VkPipelineLayout pipeline_layout, VkShader* shader, u32 frame) const;
 
     static constexpr auto TAG = "VkCommandBufferResource";
 };

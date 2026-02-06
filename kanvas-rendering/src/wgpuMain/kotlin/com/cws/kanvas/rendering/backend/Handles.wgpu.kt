@@ -6,6 +6,7 @@ import com.cws.kanvas.wgpu.gpu.GPUBuffer
 import com.cws.kanvas.wgpu.gpu.GPUBufferBinding
 import com.cws.kanvas.wgpu.gpu.GPUCanvasContext
 import com.cws.kanvas.wgpu.gpu.GPUCommandEncoder
+import com.cws.kanvas.wgpu.gpu.GPUComputePassEncoder
 import com.cws.kanvas.wgpu.gpu.GPURenderPassDescriptor
 import com.cws.kanvas.wgpu.gpu.GPURenderPipeline
 import com.cws.kanvas.wgpu.gpu.GPUSampler

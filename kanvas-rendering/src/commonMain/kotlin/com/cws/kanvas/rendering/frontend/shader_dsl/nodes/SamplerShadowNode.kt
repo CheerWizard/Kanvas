@@ -1,19 +1,21 @@
 package com.cws.kanvas.rendering.frontend.shader_dsl.nodes
 
+import com.cws.kanvas.rendering.frontend.shader_dsl.Type
 import com.cws.kanvas.rendering.frontend.shader_dsl.scopes.function.FunctionScope
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 class SamplerShadowNode(
-    name: String
-) : NameNode(name) {
+    override val expr: String,
+    override val type: Type,
+) : Node() {
 
-    fun FunctionScope.sample(textureNode: TextureNode, uv: FVec2Node) = object : ReadOnlyProperty<Any?, FVec4Node> {
-        override fun getValue(thisRef: Any?, property: KProperty<*>): FVec4Node {
+    context(scope: FunctionScope)
+    fun sample(textureNode: TextureNode, uv: Float2Node) =
+        ReadOnlyProperty<Any?, Float4Node> { thisRef, property ->
             val varName = property.name
-            this@sample.appendLine("vec4 $varName = textureSample($textureNode, , $uv);")
-            return FVec4Node(varName)
+            scope.appendLine("vec4 $varName = textureSample($expr, $textureNode, $uv);")
+            Float4Node(varName)
         }
-    }
 
 }

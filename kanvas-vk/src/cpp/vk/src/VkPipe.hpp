@@ -22,4 +22,19 @@ private:
     static constexpr auto TAG = "VkPipe";
 };
 
+struct VkComputePipe {
+    VkDevice device = nullptr;
+    VkPipeline pipeline = nullptr;
+    VkPipelineLayout pipelineLayout = nullptr;
+    VkComputePipeInfo info;
+
+    VkComputePipe(VkDevice device, const VkComputePipeInfo& info);
+    ~VkComputePipe();
+
+    void update(const VkComputePipeInfo& newInfo);
+
+private:
+    static constexpr auto TAG = "VkComputePipe";
+};
+
 #endif //PIPELINE_HPP

@@ -38,9 +38,10 @@ void VkCommandBufferResource_endRenderPass(VkCommandBufferResource* command_buff
 
 void VkCommandBufferResource_setPipe(
     VkCommandBufferResource* command_buffer_resource,
-    VkPipe* pipe
+    VkPipe* pipe,
+    u32 frame
 ) {
-    command_buffer_resource->setPipe(pipe);
+    command_buffer_resource->setPipe(pipe, frame);
 }
 
 void VkCommandBufferResource_setViewport(
@@ -117,6 +118,21 @@ void VkCommandBufferResource_copyImageToImage(
     command_buffer_resource->copyImageToImage(srcImage, dstImage, srcX, srcY, srcZ, dstX, dstY, dstZ, width, height, depth);
 }
 
+void VkCommandBufferResource_dispatch(
+    VkCommandBufferResource* command_buffer_resource,
+    u32 groupsX, u32 groupsY, u32 groupsZ
+) {
+    command_buffer_resource->dispatch(groupsX, groupsY, groupsZ);
+}
+
+void VkCommandBufferResource_pipelineBarrier(
+    VkCommandBufferResource* command_buffer_resource,
+    u32 srcStages, u32 dstStages,
+    u32 srcAccessFlags, u32 dstAccessFlags
+) {
+    command_buffer_resource->pipelineBarrier(srcStages, dstStages, srcAccessFlags, dstAccessFlags);
+}
+
 VkCommandBufferResource::VkCommandBufferResource(VkDeviceQueue& device_queue, const char* name, bool isPrimary)
 : device_queue(device_queue) {
     VkCommandBufferLevel level;
@@ -161,7 +177,8 @@ void VkCommandBufferResource::beginRenderPass(VkRenderTarget *render_target, u32
     VkRenderPassBeginInfo beginInfo = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = render_target->render_pass,
-        .framebuffer = render_target->framebuffer,
+        // TODO finish multi framebuffers
+        .framebuffer = render_target->framebuffers,
         .renderArea = {
             .offset = { .x = render_target->info.x, .y = render_target->info.y },
             .extent = { .width = render_target->info.width, .height = render_target->info.height }
@@ -174,6 +191,7 @@ void VkCommandBufferResource::beginRenderPass(VkRenderTarget *render_target, u32
     if (colorAttachmentIndex < render_target->info.colorAttachmentsCount) {
         const auto& color_attachment = render_target->info.colorAttachments[colorAttachmentIndex];
         const auto& depth_attachment = render_target->info.depthAttachment;
+        const auto& stencil_attachment = render_target->info.stencilAttachment;
         const auto& clearColor = color_attachment.clearColor;
 
         clearValue.color.float32[0] = clearColor[0];
@@ -183,7 +201,10 @@ void VkCommandBufferResource::beginRenderPass(VkRenderTarget *render_target, u32
 
         if (depth_attachment && depth_attachment->enabled) {
             clearValue.depthStencil.depth = depth_attachment->depthClearValue;
-            clearValue.depthStencil.stencil = depth_attachment->stencilClearValue;
+        }
+
+        if (stencil_attachment && stencil_attachment->enabled) {
+            clearValue.depthStencil.stencil = stencil_attachment->stencilClearValue;
         }
 
         clearValueCount = 1;
@@ -227,15 +248,29 @@ void VkCommandBufferResource::setPipe(VkPipe* pipe, u32 frame) const {
         );
         setScissor(pipe->info.scissorX, pipe->info.scissorY, pipe->info.scissorWidth, pipe->info.scissorHeight);
         if (pipe->info.vertexShader) {
-            setShader(pipe->pipelineLayout, pipe->info.vertexShader, frame);
+            setShader(VK_PIPELINE_BIND_POINT_GRAPHICS, pipe->pipelineLayout, pipe->info.vertexShader, frame);
         }
     }
 }
 
-void VkCommandBufferResource::setShader(VkPipelineLayout pipeline_layout, VkShader* shader, u32 frame) const {
+void VkCommandBufferResource::setComputePipe(VkComputePipe* pipe, u32 frame) const {
+    if (pipe) {
+        setPipeline(VK_PIPELINE_BIND_POINT_COMPUTE, pipe->pipeline);
+        if (pipe->info.computeShader) {
+            setShader(VK_PIPELINE_BIND_POINT_COMPUTE, pipe->pipelineLayout, pipe->info.computeShader, frame);
+        }
+    }
+}
+
+void VkCommandBufferResource::setShader(
+    VkPipelineBindPoint pipeline_bind_point,
+    VkPipelineLayout pipeline_layout,
+    VkShader* shader,
+    u32 frame
+) const {
     if (shader->binding_layout) {
         setDescriptorSet(
-            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            pipeline_bind_point,
             pipeline_layout,
             shader->binding_layout,
             frame
@@ -427,3 +462,22 @@ void VkCommandBufferResource::copyImageToImage(
     );
 }
 
+void VkCommandBufferResource::dispatch(u32 groupsX, u32 groupsY, u32 groupsZ) const {
+    vkCmdDispatch(command_buffer, groupsX, groupsY, groupsZ);
+}
+
+void VkCommandBufferResource::pipelineBarrier(u32 srcStages, u32 dstStages, u32 srcAccessFlags, u32 dstAccessFlags) const {
+    VkMemoryBarrier memory_barrier = {
+        .sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+        .srcAccessMask = srcAccessFlags,
+        .dstAccessMask = dstAccessFlags,
+    };
+    vkCmdPipelineBarrier(
+        command_buffer,
+        srcStages, dstStages,
+        0,
+        1, &memory_barrier,
+        0, nullptr,
+        0, nullptr
+    );
+}

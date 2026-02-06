@@ -43,6 +43,14 @@ actual class CommandBuffer actual constructor(
         }
     }
 
+    actual fun beginComputePass() {
+        // do nothing
+    }
+
+    actual fun endComputePass() {
+        // do nothing
+    }
+
     actual fun setPipeline(pipeline: RenderPipeline) {
         val pipeline = pipeline.handle?.value ?: return
         handle?.value?.let { handle ->
@@ -170,6 +178,36 @@ actual class CommandBuffer actual constructor(
                 dstX, dstY, dstZ,
                 width, height, depth,
             )
+        }
+    }
+
+    actual fun copyImageToBuffer(
+        srcImage: TextureHandle,
+        dstBuffer: BufferHandle,
+        srcX: Int,
+        srcY: Int,
+        srcZ: Int,
+        dstOffset: Int,
+        width: Int,
+        height: Int,
+        depth: Int
+    ) {
+    }
+
+    actual fun dispatch(groupsX: Int, groupsY: Int, groupsZ: Int) {
+        handle?.value?.let { handle ->
+            VK.VkCommandBufferResource_dispatch(handle, groupsX, groupsY, groupsZ)
+        }
+    }
+
+    actual fun pipelineBarrier(
+        srcStages: Int,
+        dstStages: Int,
+        srcAccessFlags: Int,
+        dstAccessFlags: Int
+    ) {
+        handle?.value?.let { handle ->
+            VK.VkCommandBufferResource_pipelineBarrier(handle, srcStages, dstStages, srcAccessFlags, dstAccessFlags)
         }
     }
 }

@@ -18,6 +18,7 @@ typedef struct VkShader VkShader;
 typedef struct VkRenderTarget VkRenderTarget;
 typedef struct VkBindingLayout VkBindingLayout;
 typedef struct VkPipe VkPipe;
+typedef struct VkComputePipe VkComputePipe;
 typedef struct VkCommandBufferResource VkCommandBufferResource;
 
 extern "C" {
@@ -67,6 +68,10 @@ extern "C" {
     void VkPipe_destroy(VkPipe* pipe);
     void VkPipe_setInfo(VkPipe* pipe, VkPipeInfo* info);
 
+    VkComputePipe* VkComputePipe_create(VkContext* context, VkComputePipeInfo* info);
+    void VkComputePipe_destroy(VkComputePipe* pipe);
+    void VkComputePipe_setInfo(VkComputePipe* pipe, VkComputePipeInfo* info);
+
     void VkCommandBufferResource_reset(VkCommandBufferResource* command_buffer_resource);
     void VkCommandBufferResource_begin(VkCommandBufferResource* command_buffer_resource);
     void VkCommandBufferResource_end(VkCommandBufferResource* command_buffer_resource);
@@ -78,7 +83,8 @@ extern "C" {
     void VkCommandBufferResource_endRenderPass(VkCommandBufferResource* command_buffer_resource);
     void VkCommandBufferResource_setPipe(
         VkCommandBufferResource* command_buffer_resource,
-        VkPipe* pipe
+        VkPipe* pipe,
+        u32 frame
     );
     void VkCommandBufferResource_setViewport(
         VkCommandBufferResource* command_buffer_resource,
@@ -123,6 +129,17 @@ extern "C" {
         int srcX, int srcY, int srcZ,
         int dstX, int dstY, int dstZ,
         u32 width, u32 height, u32 depth
+    );
+
+    void VkCommandBufferResource_dispatch(
+        VkCommandBufferResource* command_buffer_resource,
+        u32 groupsX, u32 groupsY, u32 groupsZ
+    );
+
+    void VkCommandBufferResource_pipelineBarrier(
+        VkCommandBufferResource* command_buffer_resource,
+        u32 srcStages, u32 dstStages,
+        u32 srcAccessFlags, u32 dstAccessFlags
     );
 
 }

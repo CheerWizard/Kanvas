@@ -16,6 +16,9 @@ expect class CommandBuffer(
     fun beginRenderPass(renderTarget: RenderTargetHandle, colorAttachmentIndex: Int)
     fun endRenderPass()
 
+    fun beginComputePass()
+    fun endComputePass()
+
     fun setPipeline(pipeline: RenderPipeline)
     fun setViewport(
         x: Float, y: Float,
@@ -52,4 +55,8 @@ expect class CommandBuffer(
                          srcX: Int, srcY: Int, srcZ: Int,
                          dstX: Int, dstY: Int, dstZ: Int,
                          width: Int, height: Int, depth: Int)
+
+    fun dispatch(groupsX: Int, groupsY: Int, groupsZ: Int)
+
+    fun pipelineBarrier(srcStages: Int, dstStages: Int, srcAccessFlags: Int, dstAccessFlags: Int)
 }

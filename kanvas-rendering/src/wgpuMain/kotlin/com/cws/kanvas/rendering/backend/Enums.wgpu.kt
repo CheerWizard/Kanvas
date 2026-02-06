@@ -22,9 +22,12 @@ actual enum class BindingType(
     val samplerType: GPUSamplerBindingType?,
 ) : IntEnum {
     UNIFORM_BUFFER(0, GPUBufferBindingType.uniform, null),
-    STORAGE_BUFFER(1, GPUBufferBindingType.storage, null),
-    TEXTURE(2, null, null),
-    SAMPLER(3, null, GPUSamplerBindingType.filtering),
+    UNIFORM_BUFFER_DYNAMIC(1, GPUBufferBindingType.uniform, null),
+    STORAGE_BUFFER(2, GPUBufferBindingType.storage, null),
+    STORAGE_BUFFER_DYNAMIC(3, GPUBufferBindingType.storage, null),
+    TEXTURE(4, null, null),
+    SAMPLER(5, null, GPUSamplerBindingType.filtering),
+    TEXTURE_SAMPLER(5, null, GPUSamplerBindingType.filtering),
 }
 
 /* ===================== BLENDING ===================== */
@@ -240,4 +243,48 @@ actual enum class BorderColor(
     INT_OPAQUE_BLACK(3),
     FLOAT_OPAQUE_WHITE(4),
     INT_OPAQUE_WHITE(5),
+}
+
+actual enum class PipelineStage : IntEnum {
+    TOP_OF_PIPE,
+    DRAW_INDIRECT,
+    VERTEX_INPUT,
+    VERTEX_SHADER,
+    GEOMETRY_SHADER,
+    FRAGMENT_SHADER,
+    EARLY_FRAGMENT_TEST,
+    LATE_FRAGMENT_TEST,
+    COLOR_ATTACHMENT_OUTPUT,
+    COMPUTE_SHADER,
+    TRANSFER,
+    BOTTOM_OF_PIPE,
+    HOST,
+    ALL_GRAPHICS,
+    ALL_COMMANDS,
+    NONE;
+
+    actual override val value: Int = 0
+}
+
+actual enum class AccessFlag : IntEnum {
+    INDIRECT_COMMAND_READ,
+    INDEX_READ,
+    VERTEX_ATTRIBUTE_READ,
+    UNIFORM_READ,
+    INPUT_ATTACHMENT_READ,
+    SHADER_READ,
+    SHADER_WRITE,
+    COLOR_ATTACHMENT_READ,
+    COLOR_ATTACHMENT_WRITE,
+    DEPTH_STENCIL_ATTACHMENT_READ,
+    DEPTH_STENCIL_ATTACHMENT_WRITE,
+    TRANSFER_READ,
+    TRANSFER_WRITE,
+    HOST_READ,
+    HOST_WRITE,
+    MEMORY_READ,
+    MEMORY_WRITE,
+    NONE;
+
+    actual override val value: Int = 0
 }

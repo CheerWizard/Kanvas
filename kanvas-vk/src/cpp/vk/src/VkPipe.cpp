@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "VkBindingLayout.hpp"
 #include "VkContext.hpp"
 #include "VkRenderTarget.hpp"
 #include "VkShader.hpp"
@@ -25,7 +26,6 @@ void VkPipe_setInfo(VkPipe* pipe, VkPipeInfo* info) {
 VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
 : device(device), info(info) {
     uint32_t stride = 0;
-
     std::vector<VkVertexInputAttributeDescription> vk_attributes(info.vertexAttributesCount);
 
     for (int i = 0 ; i < info.vertexAttributesCount; i++) {
@@ -62,7 +62,7 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
     };
 
     VkPipelineVertexInputStateCreateInfo* pVertexInputInfo = nullptr;
-    if (vk_attributes.size() > 0) {
+    if (!vk_attributes.empty()) {
         pVertexInputInfo = &vertexInputInfo;
     }
 
@@ -72,23 +72,42 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
     inputAssembly.topology = (VkPrimitiveTopology) info.primitiveTopology;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-    std::array shaderModules = {
-        std::pair(VK_SHADER_STAGE_VERTEX_BIT, info.vertexShader),
-        std::pair(VK_SHADER_STAGE_FRAGMENT_BIT, info.fragmentShader),
-        std::pair(VK_SHADER_STAGE_GEOMETRY_BIT, info.geometryShader),
-    };
-
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+    std::vector<VkDescriptorSetLayout> descriptor_set_layouts;
 
-    for (auto shaderModule : shaderModules) {
-        if (shaderModule.second) {
-            VkPipelineShaderStageCreateInfo shaderStageInfo {
-                .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-                .stage = shaderModule.first,
-                .module = shaderModule.second->shader,
-                .pName = shaderModule.second->info.entryPoint,
-            };
-            shaderStages.emplace_back(shaderStageInfo);
+    if (info.vertexShader) {
+        shaderStages.emplace_back(VkPipelineShaderStageCreateInfo {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_VERTEX_BIT,
+            .module = info.vertexShader->shader,
+            .pName = info.vertexShader->info.entryPoint,
+        });
+        if (info.vertexShader->binding_layout) {
+            descriptor_set_layouts.emplace_back(info.vertexShader->binding_layout->layout);
+        }
+    }
+
+    if (info.fragmentShader) {
+        shaderStages.emplace_back(VkPipelineShaderStageCreateInfo {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .module = info.fragmentShader->shader,
+            .pName = info.fragmentShader->info.entryPoint,
+        });
+        if (info.fragmentShader->binding_layout) {
+            descriptor_set_layouts.emplace_back(info.fragmentShader->binding_layout->layout);
+        }
+    }
+
+    if (info.geometryShader) {
+        shaderStages.emplace_back(VkPipelineShaderStageCreateInfo {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_GEOMETRY_BIT,
+            .module = info.geometryShader->shader,
+            .pName = info.geometryShader->info.entryPoint,
+        });
+        if (info.geometryShader->binding_layout) {
+            descriptor_set_layouts.emplace_back(info.geometryShader->binding_layout->layout);
         }
     }
 
@@ -160,10 +179,9 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
         .stencilTestEnable = VK_FALSE,
     };
 
+    ASSERT(info.renderTarget != nullptr && info.renderTarget->info.colorAttachmentsCount > 0, TAG, "Assertion failed. Render target must be set for VkPipe!")
+
     size_t colorAttachmentsCount = info.renderTarget->info.colorAttachmentsCount;
-
-    ASSERT(info.renderTarget != nullptr && colorAttachmentsCount > 0, TAG, "Assertion failed. Render target must be set for VkPipe!")
-
     std::vector<VkPipelineColorBlendAttachmentState> colorAttachments(colorAttachmentsCount);
 
     for (int i = 0 ; i < colorAttachmentsCount ; i++) {
@@ -184,15 +202,15 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
         .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
         .logicOpEnable = VK_FALSE,
         .logicOp = VK_LOGIC_OP_COPY,
-        .attachmentCount = (uint32_t) colorAttachments.size(),
+        .attachmentCount = static_cast<u32>(colorAttachments.size()),
         .pAttachments = colorAttachments.data(),
         .blendConstants = { 0.0f, 0.0f, 0.0f, 0.0f },
     };
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = 0,
-        .pSetLayouts = nullptr,
+        .setLayoutCount = static_cast<u32>(descriptor_set_layouts.size()),
+        .pSetLayouts = descriptor_set_layouts.data(),
         .pushConstantRangeCount = 0,
         .pPushConstantRanges = nullptr,
     };
@@ -231,6 +249,71 @@ VkPipe::~VkPipe() {
 }
 
 void VkPipe::update(const VkPipeInfo &newInfo) {
-    this->info = newInfo;
-    // TODO: not implemented!
+    this->~VkPipe();
+    new (this) VkPipe(device, newInfo);
+}
+
+VkComputePipe* VkComputePipe_create(VkContext* context, VkComputePipeInfo* info) {
+    return new VkComputePipe(context->device, *info);
+}
+
+void VkComputePipe_destroy(VkComputePipe* pipe) {
+    delete pipe;
+}
+
+void VkComputePipe_setInfo(VkComputePipe* pipe, VkComputePipeInfo* info) {
+    pipe->update(*info);
+}
+
+VkComputePipe::VkComputePipe(VkDevice device, const VkComputePipeInfo &info)
+: device(device), info(info) {
+    u32 descriptor_set_layout_count = 0;
+    VkDescriptorSetLayout* descriptor_set_layout = nullptr;
+    VkPipelineShaderStageCreateInfo shader_stage_create_info = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+    };
+
+    if (info.computeShader) {
+        shader_stage_create_info.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        shader_stage_create_info.module = info.computeShader->shader;
+        shader_stage_create_info.pName = info.computeShader->info.entryPoint;
+        if (info.computeShader->binding_layout) {
+            descriptor_set_layout_count = 1;
+            descriptor_set_layout = &info.computeShader->binding_layout->layout;
+        }
+    }
+
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+            .setLayoutCount = descriptor_set_layout_count,
+            .pSetLayouts = descriptor_set_layout,
+            .pushConstantRangeCount = 0,
+            .pPushConstantRanges = nullptr,
+    };
+
+    VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, VK_CALLBACKS, &pipelineLayout));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_PIPELINE_LAYOUT, pipelineLayout, info.name);
+
+    VkComputePipelineCreateInfo pipelineInfo = {
+            .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+            .stage = shader_stage_create_info,
+            .layout = pipelineLayout,
+            .basePipelineHandle = VK_NULL_HANDLE,
+            .basePipelineIndex = -1,
+    };
+
+    VK_CHECK(vkCreateComputePipelines(device, nullptr, 1, &pipelineInfo, VK_CALLBACKS, &pipeline));
+    VK_DEBUG_NAME(device, VK_OBJECT_TYPE_PIPELINE, pipeline, info.name);
+}
+
+VkComputePipe::~VkComputePipe() {
+    if (pipeline) {
+        vkDestroyPipeline(device, pipeline, VK_CALLBACKS);
+        pipeline = nullptr;
+    }
+}
+
+void VkComputePipe::update(const VkComputePipeInfo &newInfo) {
+    this->~VkComputePipe();
+    new (this) VkComputePipe(device, newInfo);
 }

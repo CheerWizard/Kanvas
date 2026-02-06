@@ -4,7 +4,6 @@ import com.cws.kanvas.rendering.frontend.shader_dsl.Type
 import com.cws.kanvas.rendering.frontend.shader_dsl.scopes.function.FunctionScope
 import com.cws.kanvas.rendering.frontend.shader_dsl.type
 import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
 
 class ValNode<T : Node>(
     override val expr: String,
@@ -14,13 +13,11 @@ class ValNode<T : Node>(
 }
 
 inline fun <reified T : Node> FunctionScope.Val(node: T): ReadOnlyProperty<Any?, ValNode<T>> {
-    return object : ReadOnlyProperty<Any?, ValNode<T>> {
-        override fun getValue(thisRef: Any?, property: KProperty<*>): ValNode<T> {
-            val varName = property.name
-            val type = type<T>()
-            appendLine("$type $varName = $node;")
-            return ValNode(varName, node)
-        }
+    return ReadOnlyProperty<Any?, ValNode<T>> { thisRef, property ->
+        val varName = property.name
+        val type = type<T>()
+        appendLine("$type $varName = $node;")
+        ValNode(varName, node)
     }
 }
 
