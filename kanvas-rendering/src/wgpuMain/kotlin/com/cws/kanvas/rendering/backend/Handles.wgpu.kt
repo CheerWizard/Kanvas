@@ -7,6 +7,7 @@ import com.cws.kanvas.wgpu.gpu.GPUBufferBinding
 import com.cws.kanvas.wgpu.gpu.GPUCanvasContext
 import com.cws.kanvas.wgpu.gpu.GPUCommandEncoder
 import com.cws.kanvas.wgpu.gpu.GPUComputePassEncoder
+import com.cws.kanvas.wgpu.gpu.GPUComputePipeline
 import com.cws.kanvas.wgpu.gpu.GPURenderPassDescriptor
 import com.cws.kanvas.wgpu.gpu.GPURenderPipeline
 import com.cws.kanvas.wgpu.gpu.GPUSampler
@@ -96,6 +97,28 @@ actual class RenderContextHandle(
 
 actual class RenderPipelineHandle(
     val value: GPURenderPipeline?,
+    actual override val buffer: NativeBuffer? = null
+) : INativeData {
+
+    actual constructor() : this(null)
+
+    var id: Int = nextId()
+
+    actual override fun sizeBytes(layout: MemoryLayout): Int = Int.SIZE_BYTES
+    actual override fun pack(buffer: NativeBuffer) { buffer.pushInt(id) }
+    actual override fun unpack(buffer: NativeBuffer): INativeData {
+        id = buffer.nextInt()
+        return this
+    }
+
+    companion object {
+        private var counter = 1
+        private fun nextId(): Int = counter++
+    }
+}
+
+actual class ComputePipelineHandle(
+    val value: GPUComputePipeline?,
     actual override val buffer: NativeBuffer? = null
 ) : INativeData {
 

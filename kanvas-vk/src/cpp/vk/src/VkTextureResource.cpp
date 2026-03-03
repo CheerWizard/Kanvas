@@ -107,6 +107,9 @@ VkTextureResource::VkTextureResource(VkContext* context, const VkTextureInfo &in
     }
 }
 
+VkTextureResource::VkTextureResource(VkImage image, VkImageView view, const VkTextureInfo &info)
+: image(image), views({ view }), info(info), isImageOwner(false) {}
+
 VkTextureResource::~VkTextureResource() {
     for (int i = 0 ; i < views.size() ; i++) {
         auto view = views[i];
@@ -116,7 +119,7 @@ VkTextureResource::~VkTextureResource() {
     }
     views.clear();
 
-    if (image) {
+    if (isImageOwner && image) {
         vmaDestroyImage(VK_ALLOCATOR, image, allocation);
         image = nullptr;
     }

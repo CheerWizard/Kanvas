@@ -91,3 +91,5 @@ actual class RenderContext actual constructor(
     }
 
 }
+
+actual class Surface

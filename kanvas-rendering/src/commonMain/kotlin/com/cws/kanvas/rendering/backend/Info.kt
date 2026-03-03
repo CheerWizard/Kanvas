@@ -405,6 +405,7 @@ data class ShaderInfo(
     var name: NativeString = NativeString(),
     var entryPoint: NativeString = NativeString(),
 
+    var stage: ShaderStage = ShaderStage.VERTEX,
     var spirvCode: NativeBuffer? = null,
     var spirvCodeSize: Long = 0,
 
@@ -416,7 +417,7 @@ data class ShaderInfo(
 ) : INativeData {
 
     companion object {
-        const val SIZEOF = 40
+        const val SIZEOF = 44
     }
 
     override fun sizeBytes(layout: MemoryLayout) = SIZEOF
@@ -424,6 +425,8 @@ data class ShaderInfo(
     override fun pack(buffer: NativeBuffer) {
         buffer.pushLong(name.address)
         buffer.pushLong(entryPoint.address)
+
+        buffer.pushInt(stage.value)
 
         buffer.pushLong(spirvCode?.address ?: 0)
         buffer.pushLong(spirvCodeSize)
@@ -435,6 +438,8 @@ data class ShaderInfo(
     override fun unpack(buffer: NativeBuffer): INativeData {
         buffer.nextLong() // name
         buffer.nextLong() // entryPoint
+
+        stage = IntEnum.from(buffer.popInt())
 
         spirvCode = NativeBuffer(buffer.nextLong(), buffer.nextLong().toInt())
         spirvCodeSize = spirvCode?.capacity?.toLong() ?: 0L

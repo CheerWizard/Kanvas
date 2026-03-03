@@ -4,6 +4,7 @@
 
 #include "VkSurface.hpp"
 #include "VkContext.hpp"
+#include "VkTextureResource.hpp"
 
 VkSurface::VkSurface(VkContext* context, VkSurfaceKHR surface, u32 width, u32 height)
     : context(context), surface(surface), width(width), height(height) {
@@ -82,9 +83,10 @@ void VkSurface::initImages(u32 width, u32 height) {
     color_attachments.resize(swapImageCount);
 
     for (u32 i = 0; i < swapImageCount; i++) {
+        VkImage image = images[i];
         VkImageViewCreateInfo color_attachment_info = {
                 .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-                .image = images[i],
+                .image = image,
                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
                 .format = surface_format.format,
                 .components = {
@@ -101,20 +103,27 @@ void VkSurface::initImages(u32 width, u32 height) {
                         .layerCount = 1,
                 }
         };
-        auto colorAttachmentView = color_attachments[i].view;
-        VK_CHECK(vkCreateImageView(context->device, &color_attachment_info, VK_CALLBACKS, &colorAttachmentView));
-        VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_IMAGE_VIEW, colorAttachmentView, "VkSwapChain-ColorAttachmentView");
+
+        VkImageView view;
+        VK_CHECK(vkCreateImageView(context->device, &color_attachment_info, VK_CALLBACKS, &view));
+        VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_IMAGE_VIEW, view, "VkSwapChain-ColorAttachmentView");
+
+        VkTextureInfo textureInfo = VkTextureInfo_default();
+        textureInfo.name = "VkSwapChain-ColorAttachment";
+        textureInfo.width = width;
+        textureInfo.height = height;
+        textureInfo.isStatic = true;
+        textureInfo.samples = 1;
+        textureInfo.format = surface_format.format;
+        textureInfo.type = VK_IMAGE_VIEW_TYPE_2D;
+        color_attachments[i].texture = new VkTextureResource(image, view, textureInfo);
     }
 
-    if (render_target) {
-        delete render_target;
-    }
-
-    render_target = new VkRenderTarget(context->device, VkRenderTargetInfo {
-            .width = width,
-            .height = height,
-            .colorAttachments = color_attachments.data(),
-            .colorAttachmentsCount = color_attachments.size()
+    render_target = new VkRenderTarget(context, VkRenderTargetInfo {
+        .width = width,
+        .height = height,
+        .colorAttachments = color_attachments.data(),
+        .colorAttachmentsCount = color_attachments.size()
     });
 }
 
@@ -139,7 +148,7 @@ VkSwapchainKHR VkSurface::initSwapChain(u32 width, u32 height) const {
             .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
             .preTransform = capabilities.currentTransform,
             .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-            .presentMode = (VkPresentModeKHR) present_mode,
+            .presentMode = static_cast<VkPresentModeKHR>(present_mode),
             .clipped = VK_TRUE,
             .oldSwapchain = swapchain,
     };

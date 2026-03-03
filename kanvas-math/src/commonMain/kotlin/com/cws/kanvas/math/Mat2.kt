@@ -23,6 +23,9 @@ interface Mat2 : INativeData {
         val STD430_SIZE_BYTES = Vec2.STD430_SIZE_BYTES * 2
     }
 
+    override val buffer: NativeBuffer?
+        get() = null
+
     override fun sizeBytes(layout: MemoryLayout): Int {
         return when (layout) {
             MemoryLayout.KOTLIN -> SIZE_BYTES

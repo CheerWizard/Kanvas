@@ -15,8 +15,10 @@ struct VkTextureResource {
     VmaAllocation allocation = {};
     void* mapped = nullptr;
     VkTextureInfo info;
+    bool isImageOwner = true;
 
     VkTextureResource(VkContext* context, const VkTextureInfo& info);
+    VkTextureResource(VkImage image, VkImageView view, const VkTextureInfo& info);
     ~VkTextureResource();
 
     void* map(u32 frame);

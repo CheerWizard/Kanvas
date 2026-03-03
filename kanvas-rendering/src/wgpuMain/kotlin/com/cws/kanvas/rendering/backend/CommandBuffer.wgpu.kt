@@ -54,7 +54,7 @@ actual class CommandBuffer actual constructor(
         computePass?.end()
     }
 
-    actual fun setPipeline(pipeline: RenderPipeline) {
+    actual fun setPipeline(pipeline: RenderPipeline, frame: Int) {
         renderPass?.let { renderPass ->
             pipeline.handle?.value?.let { pipeline ->
                 renderPass.setPipeline(pipeline)
@@ -98,6 +98,21 @@ actual class CommandBuffer actual constructor(
 
             pipeline.info.geometryShader?.info?.bindingLayouts?.list?.forEach { bindingLayout ->
                 renderPass.setBindGroup(
+                    index = bindingLayout.groupIndex,
+                    bindGroup = bindingLayout.handle?.group,
+                )
+            }
+        }
+    }
+
+    actual fun setComputePipeline(pipeline: ComputePipeline, frame: Int) {
+        computePass?.let { computePass ->
+            pipeline.handle?.value?.let { pipeline ->
+                computePass.setPipeline(pipeline)
+            }
+
+            pipeline.info.computeShader?.info?.bindingLayouts?.list?.forEach { bindingLayout ->
+                computePass.setBindGroup(
                     index = bindingLayout.groupIndex,
                     bindGroup = bindingLayout.handle?.group,
                 )

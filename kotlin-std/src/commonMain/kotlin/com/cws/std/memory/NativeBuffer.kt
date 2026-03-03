@@ -151,27 +151,27 @@ inline fun <reified T> NativeBuffer.setArray(index: Int, value: T) {
         ByteArray::class -> setBytes(index, value as ByteArray)
 
         BooleanArray::class -> (value as BooleanArray).forEachIndexed { i, v ->
-            setByte(index + i * v.bytes, if (v) 1 else 0)
+            setByte(index + i, if (v) 1 else 0)
         }
 
         ShortArray::class -> (value as ShortArray).forEachIndexed { i, v ->
-            setShort(index + i * v.bytes, v)
+            setShort(index + i, v)
         }
 
         IntArray::class -> (value as IntArray).forEachIndexed { i, v ->
-            setInt(index + i * v.bytes, v)
+            setInt(index + i, v)
         }
 
         LongArray::class -> (value as LongArray).forEachIndexed { i, v ->
-            setLong(index + i * v.bytes, v)
+            setLong(index + i, v)
         }
 
         FloatArray::class -> (value as FloatArray).forEachIndexed { i, v ->
-            setFloat(index + i * v.bytes, v)
+            setFloat(index + i, v)
         }
 
         DoubleArray::class -> (value as DoubleArray).forEachIndexed { i, v ->
-            setDouble(index + i * v.bytes, v)
+            setDouble(index + i, v)
         }
 
         else -> throw UnsupportedOperationException("Unsupported type!")

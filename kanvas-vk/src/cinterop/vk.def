@@ -1,0 +1,5 @@
+headers = Vk.h
+
+compilerOpts = -Isrc/cpp/vk/api -Isrc/cpp/vk/vendor/vulkan/include -DVK_ENABLE_BETA_EXTENSIONS
+package = vk
+linkerOpts.ios = -L${projectDir}/src/desktopMain/resources/jni/macos-arm64/libKVK.dylib -lMoltenVK

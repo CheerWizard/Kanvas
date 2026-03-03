@@ -6,6 +6,9 @@
 
 #include <jni.h>
 
+#include "../api/LogBridge.h"
+#include "../api/ResultBridge.h"
+
 #ifdef ANDROID
 #include <android/native_window_jni.h>
 #include <vulkan/vulkan_android.h>
@@ -20,10 +23,11 @@ void ResultBridge_callback(VkResult result);
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_LogBridge_callback(
+Java_com_cws_kanvas_vk_VK_LogBridge_setCallback(
     JNIEnv* env, jobject /*thiz*/,
     jobject callback
 ) {
+    LogBridge_init(LogBridge_callback);
     env->GetJavaVM(&vm);
     if (log_bridge_callback) {
         env->DeleteGlobalRef(log_bridge_callback);
@@ -33,15 +37,44 @@ Java_com_cws_kanvas_vk_VK_LogBridge_callback(
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_cws_kanvas_vk_VK_ResultBridge_callback(
+Java_com_cws_kanvas_vk_VK_LogBridge_removeCallback(
+        JNIEnv* env, jobject /*thiz*/,
+        jobject callback
+) {
+    LogBridge_init(nullptr);
+    env->GetJavaVM(&vm);
+    if (log_bridge_callback) {
+        env->DeleteGlobalRef(log_bridge_callback);
+    }
+    log_bridge_callback = nullptr;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_ResultBridge_setCallback(
     JNIEnv* env, jobject /*thiz*/,
     jobject callback
 ) {
+    ResultBridge_init(ResultBridge_callback);
     env->GetJavaVM(&vm);
     if (result_bridge_callback) {
         env->DeleteGlobalRef(result_bridge_callback);
     }
     result_bridge_callback = env->NewGlobalRef(callback);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_ResultBridge_removeCallback(
+        JNIEnv* env, jobject /*thiz*/,
+        jobject callback
+) {
+    ResultBridge_init(nullptr);
+    env->GetJavaVM(&vm);
+    if (result_bridge_callback) {
+        env->DeleteGlobalRef(result_bridge_callback);
+    }
+    result_bridge_callback = nullptr;
 }
 
 extern "C"
@@ -100,7 +133,7 @@ void ResultBridge_callback(VkResult result) {
 
     jclass clazz = env->GetObjectClass(result_bridge_callback);
     jmethodID invoke = env->GetMethodID(clazz, "invoke", "(Ljava/lang/Object;)Ljava/lang/Object;");
-    env->CallObjectMethod(result_bridge_callback, invoke, result);
+    env->CallVoidMethod(result_bridge_callback, invoke, result);
 
     if (detach) {
         vm->DetachCurrentThread();
@@ -755,6 +788,20 @@ Java_com_cws_kanvas_vk_VK_VkCommandBufferResource_setPipe(
     auto* p = reinterpret_cast<VkPipe*>(pipe);
 
     VkCommandBufferResource_setPipe(c, p, frame);
+}
+
+JNIEXPORT void JNICALL
+Java_com_cws_kanvas_vk_VK_VkCommandBufferResource_setComputePipe(
+        JNIEnv*,
+        jclass,
+        jlong cmd,
+        jlong pipe,
+        jint frame) {
+
+    auto* c = reinterpret_cast<VkCommandBufferResource*>(cmd);
+    auto* p = reinterpret_cast<VkComputePipe*>(pipe);
+
+    VkCommandBufferResource_setComputePipe(c, p, frame);
 }
 
 JNIEXPORT void JNICALL

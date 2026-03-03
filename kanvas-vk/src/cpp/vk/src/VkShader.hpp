@@ -11,7 +11,6 @@
 struct VkShader {
     VkDevice device = nullptr;
     VkShaderModule shader = nullptr;
-    VkBindingLayout* binding_layout = nullptr;
     VkShaderInfo info;
 
     VkShader(VkDevice device, const VkShaderInfo& info);

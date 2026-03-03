@@ -51,10 +51,17 @@ actual class CommandBuffer actual constructor(
         // do nothing
     }
 
-    actual fun setPipeline(pipeline: RenderPipeline) {
+    actual fun setPipeline(pipeline: RenderPipeline, frame: Int) {
         val pipeline = pipeline.handle?.value ?: return
         handle?.value?.let { handle ->
-            VK.VkCommandBufferResource_setPipe(handle, pipeline)
+            VK.VkCommandBufferResource_setPipe(handle, pipeline, frame)
+        }
+    }
+
+    actual fun setComputePipeline(pipeline: ComputePipeline, frame: Int) {
+        val pipeline = pipeline.handle?.value ?: return
+        handle?.value?.let { handle ->
+            VK.VkCommandBufferResource_setComputePipe(handle, pipeline, frame)
         }
     }
 

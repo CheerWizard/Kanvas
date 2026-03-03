@@ -39,6 +39,8 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/desktopMain/resources/jni/linux-${CMAKE_SYSTEM_PROCESSOR})
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/desktopMain/resources/jni/macos-${CMAKE_SYSTEM_PROCESSOR})
+elseif (CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/desktopMain/resources/jni/ios-${CMAKE_SYSTEM_PROCESSOR})
 endif()
 
 include_directories(.)

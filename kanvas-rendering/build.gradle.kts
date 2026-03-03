@@ -70,7 +70,9 @@ kotlin {
         }
 
         val vkNativeMain by creating {
-            // TODO: compile with cinterop VK wrapper library
+            dependencies {
+                implementation(project(":kanvas-vk"))
+            }
             dependsOn(glslMain)
         }
 

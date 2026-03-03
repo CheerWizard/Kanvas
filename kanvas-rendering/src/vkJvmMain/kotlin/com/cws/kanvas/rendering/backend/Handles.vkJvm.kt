@@ -87,6 +87,26 @@ actual class RenderPipelineHandle(
 
 }
 
+actual class ComputePipelineHandle(
+    var value: Long,
+    actual override val buffer: NativeBuffer? = null,
+) : INativeData {
+
+    actual constructor() : this(0)
+
+    actual override fun sizeBytes(layout: MemoryLayout): Int = Long.SIZE_BYTES
+
+    actual override fun pack(buffer: NativeBuffer) {
+        buffer.pushLong(value)
+    }
+
+    actual override fun unpack(buffer: NativeBuffer): INativeData {
+        value = buffer.nextLong()
+        return this
+    }
+
+}
+
 actual class RenderTargetHandle(
     var value: Long,
     actual override val buffer: NativeBuffer? = null,

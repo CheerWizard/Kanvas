@@ -19,6 +19,7 @@ open class BasePrint {
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val mutex = Mutex()
     private val loggers = mutableSetOf<Logger>()
+    private var isInstalled = false
 
     fun install(
         context: Context,
@@ -26,6 +27,8 @@ open class BasePrint {
         loggers: Set<Logger> = setOf(ConsoleLogger()),
         block: () -> Unit,
     ) {
+        if (isInstalled) return
+
         launch {
             this.logLevel = logLevel
             loggers.forEach { this.loggers.add(it) }
@@ -41,6 +44,8 @@ open class BasePrint {
         GlobalExceptionHandler(context) { throwable ->
             reportCrash(throwable)
         }
+
+        isInstalled = true
     }
 
     // optional to call, not really required to call from client side
@@ -50,6 +55,8 @@ open class BasePrint {
                 logger.close()
             }
         }
+
+        isInstalled = false
     }
 
     fun addLogger(logger: Logger) {

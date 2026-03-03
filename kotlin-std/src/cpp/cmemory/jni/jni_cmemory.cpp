@@ -48,11 +48,11 @@ Java_com_cws_std_memory_CMemory_addressOf(JNIEnv * env, jobject thiz, jobject bu
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_cws_std_memory_CMemory_toByteBuffer(JNIEnv * env, jobject thiz, jlong ptr, jint capacity) {
-    return env->NewDirectByteBuffer(ptr, capacity);
+    return env->NewDirectByteBuffer((void*) ptr, capacity);
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_cws_std_memory_CMemory_toByteBuffer(JNIEnv * env, jobject thiz, jlong ptr) {
-    return env->NewDirectByteBuffer(ptr, strlen((const char*) ptr));
+Java_com_cws_std_memory_CMemory_toByteBufferString(JNIEnv * env, jobject thiz, jlong ptr) {
+    return env->NewDirectByteBuffer((void*) ptr, strlen((const char*) ptr));
 }

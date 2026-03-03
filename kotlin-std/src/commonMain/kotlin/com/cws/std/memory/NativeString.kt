@@ -1,9 +1,5 @@
 package com.cws.std.memory
 
-import io.ktor.utils.io.charsets.Charsets
-import io.ktor.utils.io.core.String
-import io.ktor.utils.io.core.toByteArray
-
 data class NativeString(
     var value: String = "",
     override val buffer: NativeBuffer? = null,
@@ -27,7 +23,7 @@ data class NativeString(
     }
 
     operator fun get(i: Int): Char {
-        buffer ?: throw IndexOutOfBoundsException("CString buffer is null!")
+        buffer ?: throw IndexOutOfBoundsException("NativeString buffer is null!")
         return buffer.getByte(i).toInt().toChar()
     }
 
@@ -37,17 +33,18 @@ data class NativeString(
 
     override fun pack(buffer: NativeBuffer) {
         buffer.clear()
-        buffer.pushBytes(value.toByteArray(Charsets.UTF_8))
+        buffer.pushBytes(value.encodeToByteArray())
         buffer.push(0)
         buffer.flip()
     }
 
     override fun unpack(buffer: NativeBuffer): INativeData {
-        val chars = ByteArray(buffer.capacity)
-        repeat(buffer.capacity) { i ->
-            chars[i] = buffer.getByte(i)
+        val chars = CharArray(buffer.capacity)
+        repeat(buffer.capacity - 1) { i ->
+            chars[i] = buffer.pop().toInt().toChar()
         }
-        value = String(chars, 0, buffer.capacity, Charsets.UTF_8)
+        buffer.pop() // pop null-terminated char
+        value = chars.concatToString(0, buffer.capacity)
         return this
     }
 

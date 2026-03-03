@@ -2,9 +2,9 @@
 // Created by cheerwizard on 01.11.25.
 //
 
-#include "LogBridge.hpp"
+#include "../api/LogBridge.h"
 
-LogBridgeFn g_callback = nullptr;
+inline LogBridgeFn g_callback = nullptr;
 
 void LogBridge_init(LogBridgeFn callback) {
     g_callback = callback;

@@ -6,7 +6,7 @@
 #define LOGGER_HPP
 
 #include "thread_pool.hpp"
-#include "LogBridge.hpp"
+#include "../api/LogBridge.h"
 
 #define ASSERT(condition, tag, msg, ...) \
 if (!(condition)) { \

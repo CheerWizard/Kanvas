@@ -53,7 +53,7 @@ class GameLoop(context: Context) : PlatformGameLoop(name = TAG, priority = 1), E
     }
 
     @Composable
-    private fun BoxScope.renderUI() {
+    private fun renderUI() {
         gameModuleManager?.onRenderUI()
     }
 

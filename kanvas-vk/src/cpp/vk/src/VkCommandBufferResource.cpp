@@ -27,9 +27,9 @@ void VkCommandBufferResource_end(VkCommandBufferResource* command_buffer_resourc
 void VkCommandBufferResource_beginRenderPass(
     VkCommandBufferResource* command_buffer_resource,
     VkRenderTarget* render_target,
-    u32 colorAttachmentIndex
+    u32 surfaceImageIndex
 ) {
-    command_buffer_resource->beginRenderPass(render_target, colorAttachmentIndex);
+    command_buffer_resource->beginRenderPass(render_target, surfaceImageIndex);
 }
 
 void VkCommandBufferResource_endRenderPass(VkCommandBufferResource* command_buffer_resource) {
@@ -42,6 +42,14 @@ void VkCommandBufferResource_setPipe(
     u32 frame
 ) {
     command_buffer_resource->setPipe(pipe, frame);
+}
+
+void VkCommandBufferResource_setComputePipe(
+    VkCommandBufferResourcePtr command_buffer_resource,
+    VkComputePipePtr pipe,
+    u32 frame
+) {
+    command_buffer_resource->setComputePipe(pipe, frame);
 }
 
 void VkCommandBufferResource_setViewport(
@@ -173,12 +181,11 @@ void VkCommandBufferResource::end() {
     VK_CHECK(vkEndCommandBuffer(command_buffer));
 }
 
-void VkCommandBufferResource::beginRenderPass(VkRenderTarget *render_target, u32 colorAttachmentIndex) {
+void VkCommandBufferResource::beginRenderPass(VkRenderTarget *render_target, u32 surfaceImageIndex) {
     VkRenderPassBeginInfo beginInfo = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = render_target->render_pass,
-        // TODO finish multi framebuffers
-        .framebuffer = render_target->framebuffers,
+        .framebuffer = render_target->framebuffers[surfaceImageIndex],
         .renderArea = {
             .offset = { .x = render_target->info.x, .y = render_target->info.y },
             .extent = { .width = render_target->info.width, .height = render_target->info.height }
@@ -188,8 +195,8 @@ void VkCommandBufferResource::beginRenderPass(VkRenderTarget *render_target, u32
     VkClearValue clearValue = {};
     u32 clearValueCount = 0;
 
-    if (colorAttachmentIndex < render_target->info.colorAttachmentsCount) {
-        const auto& color_attachment = render_target->info.colorAttachments[colorAttachmentIndex];
+    if (surfaceImageIndex < render_target->info.colorAttachmentsCount) {
+        const auto& color_attachment = render_target->info.colorAttachments[surfaceImageIndex];
         const auto& depth_attachment = render_target->info.depthAttachment;
         const auto& stencil_attachment = render_target->info.stencilAttachment;
         const auto& clearColor = color_attachment.clearColor;
@@ -268,13 +275,15 @@ void VkCommandBufferResource::setShader(
     VkShader* shader,
     u32 frame
 ) const {
-    if (shader->binding_layout) {
-        setDescriptorSet(
-            pipeline_bind_point,
-            pipeline_layout,
-            shader->binding_layout,
-            frame
-        );
+    for (int i = 0 ; i < shader->info.binding_layouts_count ; i++) {
+        if (auto binding_layout = shader->info.binding_layouts[i]) {
+            setDescriptorSet(
+                pipeline_bind_point,
+                pipeline_layout,
+                binding_layout,
+                frame
+            );
+        }
     }
 }
 

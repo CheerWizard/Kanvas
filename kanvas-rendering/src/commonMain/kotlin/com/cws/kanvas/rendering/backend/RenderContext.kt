@@ -1,6 +1,8 @@
 package com.cws.kanvas.rendering.backend
 
-expect class RenderContext(info: ContextInfo, surface: Any?) : Resource<RenderContextHandle, ContextInfo> {
+expect class Surface
+
+expect class RenderContext(info: ContextInfo, surface: Surface?) : Resource<RenderContextHandle, ContextInfo> {
     override fun onCreate()
     override fun onDestroy()
     override fun setInfo()

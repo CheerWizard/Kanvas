@@ -19,7 +19,9 @@ expect class CommandBuffer(
     fun beginComputePass()
     fun endComputePass()
 
-    fun setPipeline(pipeline: RenderPipeline)
+    fun setPipeline(pipeline: RenderPipeline, frame: Int)
+    fun setComputePipeline(pipeline: ComputePipeline, frame: Int)
+
     fun setViewport(
         x: Float, y: Float,
         width: Float, height: Float,

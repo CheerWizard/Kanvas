@@ -28,11 +28,6 @@ VkShader::VkShader(VkDevice device, const VkShaderInfo &info)
     };
     VK_CHECK(vkCreateShaderModule(device, &create_info, VK_CALLBACKS, &shader));
     VK_DEBUG_NAME(device, VK_OBJECT_TYPE_SHADER_MODULE, shader, info.name);
-
-    binding_layout = new VkBindingLayout(device, VkBindingInfo {
-        .bindings = info.bindings,
-        .bindingsCount = info.bindingsCount,
-    });
 }
 
 VkShader::~VkShader() {
@@ -40,24 +35,19 @@ VkShader::~VkShader() {
         vkDestroyShaderModule(device, shader, VK_CALLBACKS);
         shader = nullptr;
     }
-
-    if (binding_layout) {
-        delete binding_layout;
-        binding_layout = nullptr;
-    }
 }
 
 void VkShader::update(const VkShaderInfo& newInfo) {
     this->~VkShader();
     new (this) VkShader(device, newInfo);
 
-    if (pipe) {
-        pipe->update();
+    for (int i = 0 ; i < info.binding_layouts_count ; i++) {
+        auto binding_layout = info.binding_layouts[i];
+        if (binding_layout) {
+            binding_layout->update(binding_layout->info);
+        }
     }
 
-    if (binding_layout) {
-        binding_layout->update(VkBindingInfo {
-
-        });
-    }
+    VkPipe::onShaderUpdated(this);
+    VkComputePipe::onShaderUpdated(this);
 }

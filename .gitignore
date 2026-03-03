@@ -17,3 +17,5 @@ local.properties
 .idea
 .kotlin
 kotlin-js-store
+cmake-build-debug
+cmake-build-release

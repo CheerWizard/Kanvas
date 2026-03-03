@@ -13,6 +13,6 @@ object CMemory {
     external fun realloc(buffer: ByteBuffer, size: Int): ByteBuffer?
     external fun addressOf(buffer: ByteBuffer): Long
     external fun toByteBuffer(ptr: Long, capacity: Int): ByteBuffer?
-    external fun toByteBuffer(ptr: Long): ByteBuffer?
+    external fun toByteBufferString(ptr: Long): ByteBuffer?
 
 }

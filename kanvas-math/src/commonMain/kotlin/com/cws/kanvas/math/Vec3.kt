@@ -27,6 +27,9 @@ interface Vec3 : INativeData {
         val STD430_SIZE_BYTES = Float.STD430_SIZE_BYTES * 3
     }
 
+    override val buffer: NativeBuffer?
+        get() = null
+
     override fun sizeBytes(layout: MemoryLayout): Int {
         return when (layout) {
             MemoryLayout.KOTLIN -> SIZE_BYTES

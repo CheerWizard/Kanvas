@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -7,9 +9,20 @@ plugins {
 kotlin {
     androidTarget()
     jvm("desktop")
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     compilerOptions {
         freeCompilerArgs.add("-Xcontext-receivers")
+    }
+
+    targets.withType<KotlinNativeTarget>().all {
+        compilations["main"].cinterops {
+            val vk by creating {
+                defFile(project.file("src/cinterop/vk.def"))
+            }
+        }
     }
 
     sourceSets {
@@ -32,6 +45,16 @@ kotlin {
         val desktopMain by getting {
             dependsOn(jniMain)
         }
+
+        val vkNativeMain by creating {
+            dependsOn(jniMain)
+            kotlin.srcDir("build/classes/kotlin/iosArm64/main/cinterop/kanvas-vk-cinterop-vk/default/linkdata/package_vk")
+        }
+
+        val iosMain by creating { dependsOn(vkNativeMain) }
+        val iosArm64Main by getting { dependsOn(iosMain) }
+        val iosX64Main by getting { dependsOn(iosMain) }
+        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
     }
 }
 

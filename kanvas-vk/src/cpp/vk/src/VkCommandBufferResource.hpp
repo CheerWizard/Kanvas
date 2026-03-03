@@ -19,7 +19,7 @@ struct VkCommandBufferResource {
     void begin() const;
     void end();
 
-    void beginRenderPass(VkRenderTarget* render_target, u32 colorAttachmentIndex);
+    void beginRenderPass(VkRenderTarget* render_target, u32 surfaceImageIndex);
     void endRenderPass() const;
 
     void setPipe(VkPipe* pipe, u32 frame) const;

@@ -8,10 +8,6 @@ plugins {
 }
 
 kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
-    }
-
     androidTarget()
     js(IR) {
         browser {
@@ -31,6 +27,10 @@ kotlin {
     iosX64()
     iosSimulatorArm64()
 
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-receivers")
+    }
+
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
         binaries.all {
             linkerOpts(
@@ -39,16 +39,6 @@ kotlin {
             )
         }
     }
-
-//    val iosTargets = listOf("iosX64", "iosArm64", "iosSimulatorArm64")
-//    iosTargets.forEach { targetName ->
-//        val target = kotlin.targets.getByName(targetName) as org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-//        target.compilations.getByName("main").cinterops {
-//            val moltenVk by creating {
-//                definitionFile = file("src/moltenVkMain/cinterop/vulkan.def")
-//            }
-//        }
-//    }
 
     sourceSets {
         val commonMain by getting {

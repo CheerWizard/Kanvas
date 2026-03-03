@@ -250,7 +250,14 @@ object VK {
 
     external fun VkCommandBufferResource_setPipe(
         cmd: VkHandle,
-        pipe: VkHandle
+        pipe: VkHandle,
+        frame: Int,
+    )
+
+    external fun VkCommandBufferResource_setComputePipe(
+        cmd: VkHandle,
+        pipe: VkHandle,
+        frame: Int,
     )
 
     external fun VkCommandBufferResource_setViewport(

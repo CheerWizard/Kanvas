@@ -1,6 +1,7 @@
 package com.cws.std.memory
 
 import java.nio.ByteBuffer
+import java.nio.ShortBuffer
 
 actual open class NativeBuffer actual constructor(
     capacity: Int,
@@ -14,7 +15,8 @@ actual open class NativeBuffer actual constructor(
     }
 
     actual constructor(address: Long, capacity: Int) : this(capacity) {
-        this.buffer = CMemory.toByteBuffer(address, capacity) ?: throw RuntimeException("Failed to allocate for NativeBuffer $capacity bytes from ptr $ptr")
+        this.buffer = CMemory.toByteBuffer(address, capacity)
+            ?: throw RuntimeException("Failed to allocate for NativeBuffer $capacity bytes from address $address")
     }
 
     var buffer: ByteBuffer = CMemory.malloc(capacity)
@@ -103,6 +105,10 @@ actual open class NativeBuffer actual constructor(
 
     actual fun getFloat(index: Int): Float {
         return buffer.getFloat(index)
+    }
+
+    fun copy(shortBuffer: ShortBuffer) {
+        buffer.asShortBuffer().put(shortBuffer)
     }
 
 }

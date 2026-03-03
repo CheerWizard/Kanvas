@@ -59,7 +59,6 @@ class RenderThread(
 
     private fun renderFrame(frame: Frame) {
         context.beginFrame(currentFrameIndex)
-        // TODO render per frame, consider how to apply command buffers in API agnostic way
 
         //    void RenderApi::render(Scope<CommandBuffer> &commandBuffer, u32 frame) {
 //        u32 width = context->surface->render_target->info.width;

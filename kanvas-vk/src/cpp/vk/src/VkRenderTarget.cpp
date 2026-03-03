@@ -28,17 +28,18 @@ void VkRenderTarget_resize(VkRenderTarget* render_target, u32 width, u32 height)
 VkRenderTarget::VkRenderTarget(VkContext* context, const VkRenderTargetInfo &info)
 : context(context), info(info) {
     u32 frameCount = context->info.frameCount;
+    u32 colorAttachmentsCount = info.colorAttachmentsCount;
 
-    std::vector<VkAttachmentDescription> vk_color_attachments(info.colorAttachmentsCount);
-    std::vector<VkAttachmentReference> vk_color_references(info.colorAttachmentsCount);
+    std::vector<VkAttachmentDescription> vk_color_attachments(colorAttachmentsCount);
+    std::vector<VkAttachmentReference> vk_color_references(colorAttachmentsCount);
 
-    for (u32 i = 0 ; i < info.colorAttachmentsCount ; i++) {
+    for (u32 i = 0 ; i < colorAttachmentsCount ; i++) {
         auto& vk_color_attachment = vk_color_attachments[i];
         auto& vk_color_reference = vk_color_references[i];
         const auto& color_attachment = info.colorAttachments[i];
 
         vk_color_attachment.format = color_attachment.texture->info.format;
-        vk_color_attachment.samples = (VkSampleCountFlagBits) color_attachment.texture->info.samples;
+        vk_color_attachment.samples = static_cast<VkSampleCountFlagBits>(color_attachment.texture->info.samples);
         // TODO expose more params
         vk_color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         vk_color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -52,13 +53,13 @@ VkRenderTarget::VkRenderTarget(VkContext* context, const VkRenderTargetInfo &inf
 
     VkSubpassDescription subpass = {
             .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-            .colorAttachmentCount = (u32) vk_color_attachments.size(),
+            .colorAttachmentCount = colorAttachmentsCount,
             .pColorAttachments = vk_color_references.data(),
     };
 
     VkRenderPassCreateInfo renderPassCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-            .attachmentCount = (u32) vk_color_attachments.size(),
+            .attachmentCount = colorAttachmentsCount,
             .pAttachments = vk_color_attachments.data(),
             .subpassCount = 1,
             .pSubpasses = &subpass,
@@ -67,19 +68,22 @@ VkRenderTarget::VkRenderTarget(VkContext* context, const VkRenderTargetInfo &inf
     VK_CHECK(vkCreateRenderPass(context->device, &renderPassCreateInfo, VK_CALLBACKS, &render_pass));
     VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_RENDER_PASS, render_pass, info.name);
 
-    std::vector<VkImageView> vk_image_views();
-
     for (int i = 0 ; i < frameCount ; i++) {
-        auto views = info.colorAttachments[]texture->views;
+        std::vector<VkImageView> vk_image_views(colorAttachmentsCount);
+        for (int j = 0 ; j < colorAttachmentsCount ; j++) {
+            vk_image_views.emplace_back(info.colorAttachments[j].texture->views[i]);
+        }
+
         VkFramebufferCreateInfo framebufferCreateInfo = {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
             .renderPass = render_pass,
-            .attachmentCount = (u32) views.size(),
-            .pAttachments = views.data(),
+            .attachmentCount = colorAttachmentsCount,
+            .pAttachments = vk_image_views.data(),
             .width = info.width,
             .height = info.height,
             .layers = info.depth,
         };
+
         VK_CHECK(vkCreateFramebuffer(context->device, &framebufferCreateInfo, VK_CALLBACKS, &framebuffers[i]));
         VK_DEBUG_NAME(context->device, VK_OBJECT_TYPE_FRAMEBUFFER, framebuffers[i], info.name);
     }

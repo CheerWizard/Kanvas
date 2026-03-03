@@ -8,16 +8,17 @@
 #include <stdint.h>
 #include <vulkan/vulkan_core.h>
 
-using u8 = uint8_t;
-using u32 = uint32_t;
+typedef uint8_t u8;
+typedef uint32_t u32;
 
-typedef struct VkBufferResource VkBufferResource;
-typedef struct VkTextureResource VkTextureResource;
-typedef struct VkSamplerResource VkSamplerResource;
-typedef struct VkRenderTarget VkRenderTarget;
-typedef struct VkShader VkShader;
+typedef struct VkBufferResource* VkBufferResourcePtr;
+typedef struct VkTextureResource* VkTextureResourcePtr;
+typedef struct VkSamplerResource* VkSamplerResourcePtr;
+typedef struct VkRenderTarget* VkRenderTargetPtr;
+typedef struct VkShader* VkShaderPtr;
+typedef struct VkBindingLayout* VkBindingLayoutPtr;
+
 typedef struct VkBinding VkBinding;
-typedef struct VkBindingLayout VkBindingLayout;
 
 typedef struct VkContextInfo {
     const char* application_name;
@@ -29,7 +30,7 @@ typedef struct VkContextInfo {
 
 typedef struct VkBufferInfo {
     const char* name;
-    VkBindingLayout* binding_layout;
+    VkBindingLayoutPtr binding_layout;
     VkBinding* binding;
     VkMemoryPropertyFlagBits memoryType;
     u32 usages;
@@ -39,7 +40,7 @@ typedef struct VkBufferInfo {
 
 typedef struct VkSamplerInfo {
     const char* name;
-    VkBindingLayout* binding_layout;
+    VkBindingLayoutPtr binding_layout;
     VkBinding* binding;
     VkFilter magFilter;
     VkFilter minFilter;
@@ -60,7 +61,7 @@ typedef struct VkSamplerInfo {
 
 typedef struct VkTextureInfo {
     const char* name;
-    VkBindingLayout* binding_layout;
+    VkBindingLayoutPtr binding_layout;
     VkBinding* binding;
     VkImageViewType type;
     VkMemoryPropertyFlagBits memoryType;
@@ -85,13 +86,13 @@ typedef struct VkBlend {
 } VkBlend;
 
 typedef struct VkColorAttachment {
-    VkTextureResource* texture;
+    VkTextureResourcePtr texture;
     float clearColor[4];
     VkBlend blend;
 } VkColorAttachment;
 
 typedef struct VkDepthAttachment {
-    VkTextureResource* texture;
+    VkTextureResourcePtr texture;
     u8 enabled;
     float depthClearValue;
     VkCompareOp depthCompareOp;
@@ -100,7 +101,7 @@ typedef struct VkDepthAttachment {
 } VkDepthAttachment;
 
 typedef struct VkStencilAttachment {
-    VkTextureResource* texture;
+    VkTextureResourcePtr texture;
     u8 enabled;
     u32 stencilClearValue;
     u8 stencilReadOnly;
@@ -122,9 +123,10 @@ typedef struct VkRenderTargetInfo {
 typedef struct VkShaderInfo {
     const char* name;
     const char* entryPoint;
+    VkShaderStageFlagBits stage;
     u32* spirvCode;
     size_t spirvCodeSize;
-    VkBindingLayout** binding_layouts;
+    VkBindingLayoutPtr* binding_layouts;
     size_t binding_layouts_count;
 } VkShaderInfo;
 
@@ -151,7 +153,7 @@ typedef struct VkAttribute {
     VkAttributeFormat format;
 } VkAttribute;
 
-enum VkBindingType {
+typedef enum VkBindingType {
     VK_BINDING_TYPE_UNIFORM_BUFFER = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
     VK_BINDING_TYPE_STORAGE_BUFFER = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
     VK_BINDING_TYPE_UNIFORM_BUFFER_DYNAMIC = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
@@ -159,7 +161,7 @@ enum VkBindingType {
     VK_BINDING_TYPE_TEXTURE = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
     VK_BINDING_TYPE_SAMPLER = VK_DESCRIPTOR_TYPE_SAMPLER,
     VK_BINDING_TYPE_TEXTURE_SAMPLER = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-};
+} VkBindingType;
 
 typedef struct VkBinding {
     VkBindingType type;
@@ -183,11 +185,11 @@ typedef struct VkPipelineInfo {
     u32 vertexBufferSlot;
     u8 instanced;
     VkPrimitiveTopology primitiveTopology;
-    VkShader* vertexShader;
-    VkShader* fragmentShader;
-    VkShader* geometryShader;
-    VkBufferResource* vertexBuffer;
-    VkBufferResource* indexBuffer;
+    VkShaderPtr vertexShader;
+    VkShaderPtr fragmentShader;
+    VkShaderPtr geometryShader;
+    VkBufferResourcePtr vertexBuffer;
+    VkBufferResourcePtr indexBuffer;
     float viewportX;
     float viewportY;
     float viewportWidth;
@@ -203,20 +205,22 @@ typedef struct VkPipelineInfo {
     VkCullModeFlagBits cullMode;
     VkFrontFace frontFace;
     u32 sampleCount;
-    VkRenderTarget* renderTarget;
+    VkRenderTargetPtr renderTarget;
 } VkPipeInfo;
 
 typedef struct VkComputePipeInfo {
     const char* name;
-    VkShader* computeShader;
+    VkShaderPtr computeShader;
 } VkComputePipeInfo;
 
-enum VkMemoryBarrierAccess {
+typedef enum VkMemoryBarrierAccess {
     READ,
     WRITE
-};
+} VkMemoryBarrierAccess;
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     inline VkContextInfo VkContextInfo_default() {
         VkContextInfo info = {};
@@ -340,6 +344,7 @@ extern "C" {
         VkShaderInfo info = {};
         info.name = VK_NULL_HANDLE;
         info.entryPoint = "main";
+        info.stage = VK_SHADER_STAGE_VERTEX_BIT;
         info.spirvCode = VK_NULL_HANDLE;
         info.spirvCodeSize = 0;
         info.binding_layouts = VK_NULL_HANDLE;
@@ -410,6 +415,8 @@ extern "C" {
         return info;
     }
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif //KVK_VKINFO_H

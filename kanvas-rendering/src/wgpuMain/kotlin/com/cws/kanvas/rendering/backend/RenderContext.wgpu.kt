@@ -71,19 +71,13 @@ actual class RenderContext actual constructor(
     actual override fun onCreate() {
         scope.launch {
             gpu = window.navigator.unsafeCast<NavigatorGPU>().gpu
-            if (gpu == null) {
-                error("Failed to find supported GPU for browser!")
-            }
+            gpu ?: error("Failed to find supported GPU for browser!")
 
             adapter = gpu?.requestAdapter()
-            if (adapter == null) {
-                error("Failed to find supported GPUAdapter for browser!")
-            }
+                ?: error("Failed to find supported GPUAdapter for browser!")
 
             val device = adapter?.requestDevice()
-            if (device == null) {
-                error("Failed to find supported GPUDevice for browser!")
-            }
+                ?: error("Failed to find supported GPUDevice for browser!")
 
             device.label = "KanvasWGPUDevice"
             device.onUncapturedError { event -> onError(event.error)}
@@ -92,7 +86,7 @@ actual class RenderContext actual constructor(
             handle?.value?.configure(
                 GPUCanvasConfiguration(
                     device = device,
-                    format = GPUTextureFormat.bgra8unorm,
+                    format = gpu?.getPreferredCanvasFormat() ?: GPUTextureFormat.bgra8unorm,
                     usage = GPUTextureUsage.RENDER_ATTACHMENT,
                 )
             )
@@ -165,3 +159,5 @@ actual class RenderContext actual constructor(
     actual fun getSecondaryCommandBuffer(): CommandBuffer? = null
 
 }
+
+actual class Surface

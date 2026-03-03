@@ -6,9 +6,11 @@ external interface GPUComputePipelineDescriptor : GPUPipelineDescriptorBase {
 
 fun GPUComputePipelineDescriptor(
     compute: GPUProgrammableStage,
-    label: String? = null
+    layout: GPUPipelineLayout,
+    label: String? = null,
 ): GPUComputePipelineDescriptor =
     jsObject {
         this.compute = compute
         this.label = label
+        this.layout = layout
     }

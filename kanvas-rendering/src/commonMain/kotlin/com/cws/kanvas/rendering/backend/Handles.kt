@@ -34,6 +34,13 @@ expect class RenderPipelineHandle() : INativeData {
     override fun unpack(buffer: NativeBuffer): INativeData
 }
 
+expect class ComputePipelineHandle() : INativeData {
+    override val buffer: NativeBuffer?
+    override fun sizeBytes(layout: MemoryLayout): Int
+    override fun pack(buffer: NativeBuffer)
+    override fun unpack(buffer: NativeBuffer): INativeData
+}
+
 expect class RenderTargetHandle() : INativeData {
     override val buffer: NativeBuffer?
     override fun sizeBytes(layout: MemoryLayout): Int

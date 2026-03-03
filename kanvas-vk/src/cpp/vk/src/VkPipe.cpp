@@ -23,6 +23,8 @@ void VkPipe_setInfo(VkPipe* pipe, VkPipeInfo* info) {
     pipe->update(*info);
 }
 
+std::unordered_map<VkShader*, VkPipe*> VkPipe::shadersWithPipes = {};
+
 VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
 : device(device), info(info) {
     uint32_t stride = 0;
@@ -82,8 +84,10 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
             .module = info.vertexShader->shader,
             .pName = info.vertexShader->info.entryPoint,
         });
-        if (info.vertexShader->binding_layout) {
-            descriptor_set_layouts.emplace_back(info.vertexShader->binding_layout->layout);
+        if (info.vertexShader->info.binding_layouts_count > 0) {
+            for (int i = 0 ; i < info.vertexShader->info.binding_layouts_count ; i++) {
+                descriptor_set_layouts.emplace_back(info.vertexShader->info.binding_layouts[i]->layout);
+            }
         }
     }
 
@@ -94,8 +98,10 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
             .module = info.fragmentShader->shader,
             .pName = info.fragmentShader->info.entryPoint,
         });
-        if (info.fragmentShader->binding_layout) {
-            descriptor_set_layouts.emplace_back(info.fragmentShader->binding_layout->layout);
+        if (info.fragmentShader->info.binding_layouts_count > 0) {
+            for (int i = 0 ; i < info.fragmentShader->info.binding_layouts_count ; i++) {
+                descriptor_set_layouts.emplace_back(info.fragmentShader->info.binding_layouts[i]->layout);
+            }
         }
     }
 
@@ -106,8 +112,10 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
             .module = info.geometryShader->shader,
             .pName = info.geometryShader->info.entryPoint,
         });
-        if (info.geometryShader->binding_layout) {
-            descriptor_set_layouts.emplace_back(info.geometryShader->binding_layout->layout);
+        if (info.geometryShader->info.binding_layouts_count > 0) {
+            for (int i = 0 ; i < info.geometryShader->info.binding_layouts_count ; i++) {
+                descriptor_set_layouts.emplace_back(info.geometryShader->info.binding_layouts[i]->layout);
+            }
         }
     }
 
@@ -239,6 +247,10 @@ VkPipe::VkPipe(VkDevice device, const VkPipelineInfo &info)
 
     VK_CHECK(vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, VK_CALLBACKS, &pipeline));
     VK_DEBUG_NAME(device, VK_OBJECT_TYPE_PIPELINE, pipeline, info.name);
+
+    shadersWithPipes[info.vertexShader] = this;
+    shadersWithPipes[info.fragmentShader] = this;
+    shadersWithPipes[info.geometryShader] = this;
 }
 
 VkPipe::~VkPipe() {
@@ -253,6 +265,25 @@ void VkPipe::update(const VkPipeInfo &newInfo) {
     new (this) VkPipe(device, newInfo);
 }
 
+void VkPipe::onShaderUpdated(VkShader* shader) {
+    auto pipe = shadersWithPipes[shader];
+    if (pipe) {
+        switch (shader->info.stage) {
+            case VK_SHADER_STAGE_VERTEX_BIT:
+                pipe->info.vertexShader = shader;
+                break;
+            case VK_SHADER_STAGE_FRAGMENT_BIT:
+                pipe->info.fragmentShader = shader;
+                break;
+            case VK_SHADER_STAGE_GEOMETRY_BIT:
+                pipe->info.geometryShader = shader;
+                break;
+            default: return;
+        }
+        pipe->update(pipe->info);
+    }
+}
+
 VkComputePipe* VkComputePipe_create(VkContext* context, VkComputePipeInfo* info) {
     return new VkComputePipe(context->device, *info);
 }
@@ -265,10 +296,12 @@ void VkComputePipe_setInfo(VkComputePipe* pipe, VkComputePipeInfo* info) {
     pipe->update(*info);
 }
 
+std::unordered_map<VkShader*, VkComputePipe*> VkComputePipe::shadersWithPipes = {};
+
 VkComputePipe::VkComputePipe(VkDevice device, const VkComputePipeInfo &info)
 : device(device), info(info) {
-    u32 descriptor_set_layout_count = 0;
-    VkDescriptorSetLayout* descriptor_set_layout = nullptr;
+    std::vector<VkDescriptorSetLayout> descriptor_set_layouts;
+
     VkPipelineShaderStageCreateInfo shader_stage_create_info = {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
     };
@@ -277,16 +310,17 @@ VkComputePipe::VkComputePipe(VkDevice device, const VkComputePipeInfo &info)
         shader_stage_create_info.stage = VK_SHADER_STAGE_COMPUTE_BIT;
         shader_stage_create_info.module = info.computeShader->shader;
         shader_stage_create_info.pName = info.computeShader->info.entryPoint;
-        if (info.computeShader->binding_layout) {
-            descriptor_set_layout_count = 1;
-            descriptor_set_layout = &info.computeShader->binding_layout->layout;
+        if (info.computeShader->info.binding_layouts_count > 0) {
+            for (int i = 0 ; i < info.computeShader->info.binding_layouts_count ; i++) {
+                descriptor_set_layouts.emplace_back(info.computeShader->info.binding_layouts[i]->layout);
+            }
         }
     }
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-            .setLayoutCount = descriptor_set_layout_count,
-            .pSetLayouts = descriptor_set_layout,
+            .setLayoutCount = static_cast<u32>(descriptor_set_layouts.size()),
+            .pSetLayouts = descriptor_set_layouts.data(),
             .pushConstantRangeCount = 0,
             .pPushConstantRanges = nullptr,
     };
@@ -304,6 +338,8 @@ VkComputePipe::VkComputePipe(VkDevice device, const VkComputePipeInfo &info)
 
     VK_CHECK(vkCreateComputePipelines(device, nullptr, 1, &pipelineInfo, VK_CALLBACKS, &pipeline));
     VK_DEBUG_NAME(device, VK_OBJECT_TYPE_PIPELINE, pipeline, info.name);
+
+    shadersWithPipes[info.computeShader] = this;
 }
 
 VkComputePipe::~VkComputePipe() {
@@ -316,4 +352,10 @@ VkComputePipe::~VkComputePipe() {
 void VkComputePipe::update(const VkComputePipeInfo &newInfo) {
     this->~VkComputePipe();
     new (this) VkComputePipe(device, newInfo);
+}
+
+void VkComputePipe::onShaderUpdated(VkShader* shader) {
+    auto pipe = shadersWithPipes[shader];
+    pipe->info.computeShader = shader;
+    pipe->update(pipe->info);
 }

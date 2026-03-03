@@ -5,7 +5,7 @@
 #ifndef VK_CHECK_HPP
 #define VK_CHECK_HPP
 
-#include "../core/ResultBridge.hpp"
+#include "../api/ResultBridge.h"
 #include "../core/logger.hpp"
 
 #include <vulkan/vulkan_core.h>
