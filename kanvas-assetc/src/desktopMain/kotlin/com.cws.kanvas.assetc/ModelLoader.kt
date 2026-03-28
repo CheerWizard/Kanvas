@@ -1,13 +1,8 @@
 package com.cws.kanvas.assetc
 
-import com.cws.kanvas.math.Mat4
-import com.cws.print.Print
+import com.cws.std.math.Mat4
 import com.cws.std.memory.NativeBuffer
-import org.lwjgl.assimp.AIMesh
-import org.lwjgl.assimp.AINode
-import org.lwjgl.assimp.AIScene
 import org.lwjgl.assimp.Assimp.*
-import org.lwjgl.system.MemoryStack
 
 data class Model(
     val meshes: ArrayList<Mesh> = ArrayList(),

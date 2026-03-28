@@ -9,7 +9,7 @@ plugins {
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
+        freeCompilerArgs.add("-Xcontext-parameters")
     }
 
     androidTarget()
@@ -35,8 +35,6 @@ kotlin {
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
-                // Math
-                api(project(":kanvas-math"))
                 // Logging
                 api(project(":print"))
                 // Standard

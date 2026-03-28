@@ -1,22 +1,17 @@
 package com.cws.kanvas.assetc.docking.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.onDrag
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
-import com.cws.kanvas.assetc.core.LocalTheme
+import com.cws.kanvas.assetc.ui.styling.HorizontalDivider
+import com.cws.kanvas.assetc.ui.styling.VerticalDivider
 import org.jetbrains.skiko.Cursor
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -27,11 +22,8 @@ fun RowScope.DockDivider(
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width.toFloat()
 
-    Box(
+    VerticalDivider(
         modifier = modifier
-            .fillMaxHeight()
-            .width(2.dp)
-            .background(LocalTheme.current.border)
             .onDrag(
                 onDrag = {
                     onFractionChange(it.x / screenWidth)
@@ -39,8 +31,16 @@ fun RowScope.DockDivider(
             )
             .pointerHoverIcon(
                 icon = PointerIcon(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR))
-            )
+            ),
+        thickness = 1.dp,
     )
+//
+//    Box(
+//        modifier = modifier
+//            .fillMaxHeight()
+//            .width(2.dp)
+//            .background(LocalTheme.current.border)
+//    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -51,11 +51,8 @@ fun ColumnScope.DockDivider(
 ) {
     val screenHeight = LocalWindowInfo.current.containerSize.height.toFloat()
 
-    Box(
+    HorizontalDivider(
         modifier = modifier
-            .fillMaxWidth()
-            .height(2.dp)
-            .background(LocalTheme.current.border)
             .onDrag(
                 onDrag = {
                     onFractionChange(it.y / screenHeight)
@@ -63,6 +60,15 @@ fun ColumnScope.DockDivider(
             )
             .pointerHoverIcon(
                 icon = PointerIcon(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR))
-            )
+            ),
+        thickness = 1.dp,
     )
+
+//    Box(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .height(2.dp)
+//            .background(LocalTheme.current.border)
+//
+//    )
 }

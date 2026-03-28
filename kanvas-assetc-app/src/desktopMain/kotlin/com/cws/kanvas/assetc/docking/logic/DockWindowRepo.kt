@@ -1,6 +1,6 @@
 package com.cws.kanvas.assetc.docking.logic
 
-import com.cws.kanvas.assetc.json.AppJson
+import com.cws.kanvas.assetc.core.json.AppJson
 import com.cws.print.Print
 import kotlinx.serialization.encodeToString
 import java.io.File
@@ -20,7 +20,7 @@ class DockWindowRepo(
             val json = file.readText()
             AppJson.decodeFromString<List<DockWindowModel>>(json)
         } catch (e: Exception) {
-            Print.w(TAG, " Failed to read from $dockspaceFilepath", e)
+            Print.w(TAG, "Failed to read from $dockspaceFilepath", e)
             emptyList()
         }
     }
@@ -31,7 +31,7 @@ class DockWindowRepo(
             val file = File(dockspaceFilepath)
             file.writeText(json)
         } catch (e: Exception) {
-            Print.w(TAG, " Failed to write into $dockspaceFilepath", e)
+            Print.w(TAG, "Failed to write into $dockspaceFilepath", e)
         }
     }
 

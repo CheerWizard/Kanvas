@@ -7,7 +7,7 @@ kotlin {
     jvm("desktop")
 
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
+        freeCompilerArgs.add("-Xcontext-parameters")
     }
 
     sourceSets {
@@ -18,11 +18,16 @@ kotlin {
                 val osArch = System.getProperty("os.arch").lowercase()
                 val lwjglVersion = "3.4.1"
                 val lwjglNatives = when {
+                    osName.contains("mac") && (osArch.contains("arm") || osArch.contains("aarch")) -> "natives-macos-arm64"
+                    osName.contains("mac") -> "natives-macos"
                     osName.contains("windows") -> "natives-windows"
                     osName.contains("linux") -> "natives-linux"
-                    osName.contains("mac") -> "natives-macos"
-                    else -> throw GradleException("Unsupported OS: $osName")
+                    else -> error("Unsupported OS: $osName / $osArch")
                 }
+
+                // OpenAL (for sound engine)
+                implementation("org.lwjgl:lwjgl-openal:$lwjglVersion")
+                runtimeOnly("org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives")
 
                 // Assimp (supports huge number of 3D models formats)
                 implementation("org.lwjgl:lwjgl-assimp:$lwjglVersion")
@@ -36,8 +41,11 @@ kotlin {
                 implementation("org.lwjgl:lwjgl-shaderc:$lwjglVersion")
                 runtimeOnly("org.lwjgl:lwjgl-shaderc:$lwjglVersion:$lwjglNatives")
 
+                // LWJGL core
+                implementation("org.lwjgl:lwjgl:$lwjglVersion")
+                runtimeOnly("org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives")
+
                 // Standard
-                implementation(project(":kanvas-math"))
                 implementation(project(":print"))
                 implementation(project(":kotlin-std"))
                 implementation(kotlin("stdlib-common"))

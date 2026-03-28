@@ -1,1 +1,54 @@
-[]
+[
+    {
+        "id": "AppWindow",
+        "title": "Kanvas",
+        "x": 400.0,
+        "y": 300.0,
+        "width": 800.0,
+        "height": 600.0,
+        "docked": false,
+        "minimized": false,
+        "maximized": false,
+        "visible": true,
+        "canClose": true,
+        "canUndock": true,
+        "dockSpace": {
+            "type": "com.cws.kanvas.assetc.docking.logic.DockSpaceModel.Host",
+            "topFraction": 0.1,
+            "bottomFraction": 0.1,
+            "leftFraction": 0.1,
+            "rightFraction": 0.1,
+            "top": {
+                "windows": []
+            },
+            "bottom": {
+                "windows": []
+            },
+            "left": {
+                "windows": []
+            },
+            "right": {
+                "windows": []
+            },
+            "center": {
+                "windows": []
+            },
+            "hoverSlot": null
+        }
+    },
+    {
+        "id": "FileBrowserWindow",
+        "title": "File Browser",
+        "x": 400.0,
+        "y": 300.0,
+        "width": 800.0,
+        "height": 600.0,
+        "docked": false,
+        "minimized": false,
+        "maximized": false,
+        "visible": true,
+        "canClose": true,
+        "canUndock": true,
+        "dockSpace": null
+    }
+]

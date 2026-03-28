@@ -17,6 +17,7 @@ class DockWindowState(
     maximized: Boolean = false,
     visible: Boolean = true,
     canClose: Boolean = true,
+    canUndock: Boolean = true,
     content: @Composable () -> Unit = {},
     onClose: () -> Unit = {},
 ) {
@@ -29,6 +30,7 @@ class DockWindowState(
     var dockSpace by mutableStateOf(dockSpace)
     var visible by mutableStateOf(visible)
     var canClose by mutableStateOf(canClose)
+    var canUndock by mutableStateOf(canUndock)
     var content by mutableStateOf<@Composable () -> Unit>(content)
     var onClose by mutableStateOf(onClose)
 
@@ -44,6 +46,7 @@ class DockWindowState(
         maximized = maximized,
         visible = visible,
         canClose = canClose,
+        canUndock = canUndock,
         dockSpace = dockSpace?.toModel(),
     )
 

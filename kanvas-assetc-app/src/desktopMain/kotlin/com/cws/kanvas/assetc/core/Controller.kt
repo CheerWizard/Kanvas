@@ -32,6 +32,7 @@ fun <T : Controller> provideController(
     impl: () -> T,
 ): T {
     val isPreview = LocalInspectionMode.current
+
     val controller by remember(isPreview) {
         mutableStateOf(if (isPreview) preview() else impl())
     }

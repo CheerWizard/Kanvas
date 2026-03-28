@@ -19,6 +19,7 @@ data class DockWindowModel(
     val maximized: Boolean,
     val visible: Boolean,
     val canClose: Boolean,
+    val canUndock: Boolean,
     val dockSpace: DockSpaceModel?,
 ) {
 
@@ -30,6 +31,7 @@ data class DockWindowModel(
         maximized = maximized,
         visible = visible,
         canClose = canClose,
+        canUndock = canUndock,
         dockSpace = dockSpace?.toState(),
     ).apply {
         position = DpOffset(x, y)

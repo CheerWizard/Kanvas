@@ -28,7 +28,7 @@ kotlin {
     iosSimulatorArm64()
 
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
+        freeCompilerArgs.add("-Xcontext-parameters")
     }
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
@@ -46,8 +46,6 @@ kotlin {
             dependencies {
                 // Rendering
                 api(project(":kanvas-rendering"))
-                // Math
-                api(project(":kanvas-math"))
                 // Logging
                 api(project(":print"))
                 // Standard

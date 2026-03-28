@@ -11,7 +11,7 @@ kotlin {
     jvm("desktop")
 
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
+        freeCompilerArgs.add("-Xcontext-parameters")
     }
 
     sourceSets {
@@ -64,15 +64,15 @@ compose.desktop {
             packageVersion = "1.0.0"
 
             windows {
-                iconFile.set(project.file("icons/ic_kanvas.ico"))
+                iconFile.set(project.file("icons/KanvasLogo.ico"))
             }
 
             macOS {
-                iconFile.set(project.file("icons/ic_kanvas.icns"))
+                iconFile.set(project.file("icons/KanvasLogo.icns"))
             }
 
             linux {
-                iconFile.set(project.file("icons/ic_kanvas.png"))
+                iconFile.set(project.file("icons/KanvasLogo.png"))
             }
         }
     }

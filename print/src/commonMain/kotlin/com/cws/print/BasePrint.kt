@@ -92,6 +92,15 @@ open class BasePrint {
         )
     }
 
+    fun assert(condition: Boolean, tag: String, message: String, exception: Throwable? = null) {
+        if (!condition) {
+            loggers.forEach { logger ->
+                logger.log(logLevel, tag, message, exception)
+            }
+            throw AssertionError(message)
+        }
+    }
+
     private fun reportCrash(e: Throwable) {
         log(LogLevel.FATAL, "Print", "Crash reported!", e)
     }
