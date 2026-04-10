@@ -5,13 +5,17 @@ import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
-fun getCurrentTime(): Duration {
-    return Clock.System.now().toEpochMilliseconds().milliseconds
+fun getCurrentTimeMillis(): Long {
+    return Clock.System.now().toEpochMilliseconds()
+}
+
+@OptIn(ExperimentalTime::class)
+fun getCurrentTimeNanos(): Long {
+    return Clock.System.now().toEpochMilliseconds() * 1000
 }
 
 @OptIn(ExperimentalTime::class)

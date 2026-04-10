@@ -1,28 +1,21 @@
 package com.cws.kanvas.core
 
-import com.cws.kanvas.audio.AudioPlayer
-import com.cws.kanvas.audio.AudioRecorder
+import com.cws.kanvas.audio.AudioManager
 import com.cws.std.async.JobsManager
-import com.cws.kanvas.event.SensorManager
+import com.cws.kanvas.sensor.SensorManager
 import com.cws.kanvas.rendering.backend.ContextInfo
 import com.cws.kanvas.rendering.backend.RenderThread
 
-class Engine(context: Context) {
+class Engine(platform: Platform) {
 
     val jobsManager: JobsManager = JobsManager()
-
-    val audioPlayer: AudioPlayer = AudioPlayer()
-
-    val audioRecorder: AudioRecorder = AudioRecorder()
-
-    val sensorManager: SensorManager = SensorManager(context)
+    val sensorManager: SensorManager = platform.sensorManager
+    val audioManager: AudioManager = platform.audioManager
 
     private val renderThread = RenderThread(ContextInfo())
 
     fun init() {
         sensorManager.init()
-        audioPlayer.init()
-        audioRecorder.init()
         renderThread.start()
     }
 

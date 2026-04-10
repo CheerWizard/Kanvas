@@ -1,4 +1,4 @@
-package com.cws.kanvas.rendering.backend
+package com.cws.kanvas.shaderc.backend
 
 import com.cws.kanvas.vk.VK
 import com.cws.std.memory.NativeDataList

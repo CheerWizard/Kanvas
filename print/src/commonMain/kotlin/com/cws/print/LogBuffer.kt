@@ -17,7 +17,7 @@ class LogBuffer {
 
     fun add(logLevel: LogLevel, tag: String, message: String, exception: Throwable?) {
         logs[logIndex++].apply {
-            this.timestamp = getCurrentTime()
+            this.timestamp = getCurrentTimeMillis()
             this.level = logLevel
             this.tag = tag
             this.message = message

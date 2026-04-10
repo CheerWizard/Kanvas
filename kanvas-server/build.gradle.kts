@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm") version "2.2.10"
     kotlin("plugin.serialization") version "2.0.0"
-    id("com.google.protobuf") version "0.9.4"
 }
 
 repositories {
@@ -23,7 +22,7 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
 
-    // logging
+    // Logging
     implementation(project(":print"))
 
     // Testing

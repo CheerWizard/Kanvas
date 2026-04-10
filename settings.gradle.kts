@@ -23,16 +23,17 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Kanvas"
-include(":app")
 include(":kotlin-std")
 include(":kotlin-std-gen")
 include(":print")
 include(":print-sandbox")
 include(":kanvas")
 include(":kanvas-rendering")
+include(":kanvas-spirv")
+include(":kanvas-shaderc")
+include(":kanvas-shaderc-sandbox")
 include(":kanvas-vk")
 include(":kanvas-wgpu")
 include(":kanvas-editor")
 include(":kanvas-server")
 include(":kanvas-assetc")
-include(":kanvas-assetc-app")

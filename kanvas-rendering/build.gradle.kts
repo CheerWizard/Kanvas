@@ -35,20 +35,8 @@ kotlin {
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
-                // Logging
-                api(project(":print"))
                 // Standard
                 api(project(":kotlin-std"))
-                // Compose
-                api("org.jetbrains.compose.runtime:runtime:1.7.1")
-                api("org.jetbrains.compose.foundation:foundation:1.7.1")
-                api(compose.components.uiToolingPreview)
-                // Coroutines and Atomics
-                api(libs.atomicfu)
-                api(libs.kotlinx.coroutines.core)
-                api(kotlin("stdlib-common"))
-                api(libs.kotlinx.serialization.core)
-                api(libs.kotlinx.serialization.json)
             }
         }
 

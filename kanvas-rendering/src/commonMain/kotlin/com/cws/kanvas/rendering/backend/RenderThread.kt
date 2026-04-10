@@ -1,6 +1,7 @@
 package com.cws.kanvas.rendering.backend
 
-import com.cws.std.async.ConcurrentQueue
+import com.cws.std.async.ConcurrentRingBuffer
+import com.cws.std.async.RingBuffer
 import com.cws.std.async.Thread
 
 data class Frame(
@@ -20,7 +21,7 @@ class RenderThread(
         task = ::run,
     )
     private var isRunning = false
-    private val frameQueue = ConcurrentQueue<Frame>(contextInfo.frameCount)
+    private val frameQueue = ConcurrentRingBuffer<Frame>(contextInfo.frameCount)
     private var currentFrameIndex = 0
 
     fun pushFrame(frame: Frame) {
@@ -84,7 +85,7 @@ class RenderThread(
 //    }
 
         context.endFrame(currentFrameIndex)
-        currentFrameIndex = (currentFrameIndex + 1) % frameQueue.size()
+        currentFrameIndex = (currentFrameIndex + 1) % frameQueue.size
     }
 
 }

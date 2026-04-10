@@ -8,7 +8,7 @@ class ThreadPool(
 ) {
 
     private var running = false
-    private val tasks = ConcurrentQueue<Task>(100)
+    private val tasks = ConcurrentRingBuffer<Task>(100)
     private val threads: Array<Thread> = Array(size) {
         Thread(
             name = "$name-1",

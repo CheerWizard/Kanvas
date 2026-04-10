@@ -24,15 +24,15 @@ class LogProfiler : Profiler {
         color: TraceColor,
         category: String,
         functionName: String,
-        startTime: Duration,
-        endTime: Duration,
-        duration: Duration,
-        expectedDuration: Duration,
+        startTime: Long,
+        endTime: Long,
+        duration: Long,
+        expectedDuration: Long,
     ) {
-        if (duration > expectedDuration && expectedDuration != 0.nanoseconds) {
-            Print.w(TAG, "Scope=$scope Phase=$phase Function=$functionName() - spent ${duration.inWholeMilliseconds} ms, expected ${expectedDuration.inWholeMilliseconds} ms")
+        if (duration > expectedDuration && expectedDuration != 0L) {
+            Print.w(TAG, "Scope=$scope Phase=$phase Function=$functionName() - spent $duration ns, expected $expectedDuration ns")
         } else {
-            Print.d(TAG, "Scope=$scope Phase=$phase Function=$functionName() - spent ${duration.inWholeMilliseconds} ms")
+            Print.d(TAG, "Scope=$scope Phase=$phase Function=$functionName() - spent $duration ns")
         }
     }
 

@@ -1,8 +1,6 @@
 package com.cws.kanvas.core
 
 import com.cws.kanvas.event.EventListener
-import com.cws.kanvas.event.GamepadAxis
-import com.cws.kanvas.event.GamepadCode
 import net.java.games.input.Component
 import net.java.games.input.Controller
 import net.java.games.input.ControllerEnvironment
@@ -54,19 +52,19 @@ class GamepadManager(
         }
     }
 
-    private fun Component.Identifier.Button.toGamepadCode(): GamepadCode? {
+    private fun Component.Identifier.Button.toGamepadCode(): GamepadButton? {
         return when (this) {
-            Component.Identifier.Button.A -> GamepadCode.A
-            Component.Identifier.Button.B -> GamepadCode.B
-            Component.Identifier.Button.X -> GamepadCode.X
-            Component.Identifier.Button.Y -> GamepadCode.Y
-            Component.Identifier.Button.START -> GamepadCode.Start
-            Component.Identifier.Button.BACK -> GamepadCode.Back
-            Component.Identifier.Button.LEFT_THUMB -> GamepadCode.LeftThumb
-            Component.Identifier.Button.RIGHT_THUMB -> GamepadCode.RightThumb
-            Component.Identifier.Button.RIGHT -> GamepadCode.Right
-            Component.Identifier.Button.LEFT -> GamepadCode.Left
-            Component.Identifier.Button.FORWARD -> GamepadCode.Up
+            Component.Identifier.Button.A -> GamepadButton.A
+            Component.Identifier.Button.B -> GamepadButton.B
+            Component.Identifier.Button.X -> GamepadButton.X
+            Component.Identifier.Button.Y -> GamepadButton.Y
+            Component.Identifier.Button.START -> GamepadButton.Start
+            Component.Identifier.Button.BACK -> GamepadButton.Back
+            Component.Identifier.Button.LEFT_THUMB -> GamepadButton.LeftThumb
+            Component.Identifier.Button.RIGHT_THUMB -> GamepadButton.RightThumb
+            Component.Identifier.Button.RIGHT -> GamepadButton.Right
+            Component.Identifier.Button.LEFT -> GamepadButton.Left
+            Component.Identifier.Button.FORWARD -> GamepadButton.Up
             else -> null
         }
     }

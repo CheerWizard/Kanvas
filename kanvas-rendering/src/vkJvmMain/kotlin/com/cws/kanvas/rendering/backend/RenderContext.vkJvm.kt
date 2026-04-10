@@ -1,10 +1,9 @@
-package com.cws.kanvas.rendering.backend
+package com.cws.kanvas.shaderc.backend
 
+import com.cws.kanvas.rendering.backend.Resource
 import com.cws.kanvas.vk.*
 import com.cws.print.LogLevel
 import com.cws.print.Print
-import com.cws.print.toLogLevel
-import com.cws.std.memory.NativeString
 
 actual class RenderContext actual constructor(
     info: ContextInfo,

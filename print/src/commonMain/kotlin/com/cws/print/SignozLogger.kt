@@ -53,7 +53,7 @@ class SignozLogger(
     override fun getRequestBody(logs: Array<LogData>): Any? {
         val logRecords = logs.map { log ->
             LogRecord(
-                timeUnixNano = log.timestamp.inWholeNanoseconds.toString(),
+                timeUnixNano = log.timestamp.toString(),
                 severityText = log.level.toString(),
                 body = Body(log.message)
             )

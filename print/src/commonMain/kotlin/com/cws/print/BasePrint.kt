@@ -22,7 +22,7 @@ open class BasePrint {
     private var isInstalled = false
 
     fun install(
-        context: Context,
+        context: PrintContext,
         logLevel: LogLevel = LogLevel.VERBOSE,
         loggers: Set<Logger> = setOf(ConsoleLogger()),
         block: () -> Unit,
@@ -41,7 +41,7 @@ open class BasePrint {
             reportCrash(e)
         }
 
-        GlobalExceptionHandler(context) { throwable ->
+        GlobalExceptionHandler() { throwable ->
             reportCrash(throwable)
         }
 

@@ -46,13 +46,7 @@ kotlin {
                 runtimeOnly("org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives")
 
                 // Standard
-                implementation(project(":print"))
                 implementation(project(":kotlin-std"))
-                implementation(kotlin("stdlib-common"))
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.serialization.core)
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.atomicfu)
             }
         }
     }

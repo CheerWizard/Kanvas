@@ -32,7 +32,7 @@ class FirebaseLogger(
                     logs.map { log ->
                         put("name", "log")
                         putJsonObject("params") {
-                            put("timestamp", log.timestamp.inWholeMilliseconds)
+                            put("timestamp", log.timestamp)
                             put("level", log.level.name)
                             put("tag", log.tag)
                             put("message", log.message)

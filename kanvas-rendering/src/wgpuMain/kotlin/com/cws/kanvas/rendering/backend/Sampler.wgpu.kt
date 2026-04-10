@@ -1,5 +1,6 @@
-package com.cws.kanvas.rendering.backend
+package com.cws.kanvas.shaderc.backend
 
+import com.cws.kanvas.rendering.backend.Resource
 import com.cws.kanvas.wgpu.gpu.GPUSamplerDescriptor
 
 actual class Sampler actual constructor(

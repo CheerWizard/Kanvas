@@ -1,4 +1,4 @@
-package com.cws.kanvas.gfx.texture
+package com.cws.kanvas.rendering.texture
 
 import java.nio.ByteBuffer
 

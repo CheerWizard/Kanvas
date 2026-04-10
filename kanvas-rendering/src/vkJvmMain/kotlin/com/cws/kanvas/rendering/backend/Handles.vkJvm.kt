@@ -1,6 +1,6 @@
-package com.cws.kanvas.rendering.backend
+package com.cws.kanvas.shaderc.backend
 
-import com.cws.kanvas.rendering.backend.BufferHandle
+import com.cws.kanvas.shaderc.backend.BufferHandle
 import com.cws.std.memory.INativeData
 import com.cws.std.memory.MemoryLayout
 import com.cws.std.memory.NativeBuffer

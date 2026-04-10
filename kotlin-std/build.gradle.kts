@@ -27,11 +27,13 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 // Logger
-                implementation(project(":print"))
+                api(project(":print"))
                 // Standard
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.atomicfu)
+                api(kotlin("stdlib-common"))
+                api(libs.atomicfu)
+                api(libs.kotlinx.coroutines.core)
+                api(libs.kotlinx.serialization.core)
+                api(libs.kotlinx.serialization.json)
             }
         }
 
@@ -68,8 +70,9 @@ kotlin {
     }
 }
 
-project.extra["jniProject"] = "cmemory"
-apply(from = "$rootDir/scripts/jni.gradle.kts")
+// TODO will need to find out how to fix it
+//project.extra["jniProject"] = "cmemory"
+//apply(from = "$rootDir/scripts/jni.gradle.kts")
 
 android {
     namespace = "com.cws.std"
@@ -92,4 +95,94 @@ android {
             path = file("src/cpp/cmemory/CMakeLists.txt")
         }
     }
+}
+
+val jniBuildDir = file("$buildDir/jni")
+
+fun cmakeTask(project: String): TaskProvider<Task?> {
+    // Determine platform once during configuration
+    val osName = System.getProperty("os.name").lowercase()
+    val osArch = System.getProperty("os.arch").lowercase()
+
+    println("OS: $osName, Arch: $osArch")
+
+    val generator = when {
+        osName.contains("windows") -> "Visual Studio 18 2026"
+        osName.contains("linux") -> "Unix Makefiles"
+        osName.contains("mac") -> "Unix Makefiles"
+        else -> throw GradleException("Unsupported OS: $osName")
+    }
+
+    val platform = when {
+        osName.contains("win") && (osArch == "amd64" || osArch == "x86_64") -> "windows-x86_64"
+        osName.contains("linux") && (osArch == "amd64" || osArch == "x86_64") -> "linux-x86_64"
+        osName.contains("linux") && (osArch == "aarch64" || osArch == "arm64") -> "linux-arm64"
+        osName.contains("mac") && (osArch == "x86_64") -> "macos-x86_64"
+        osName.contains("mac") && (osArch == "aarch64" || osArch == "arm64") -> "macos-arm64"
+        else -> throw GradleException("Unsupported platform: $osName / $osArch")
+    }
+
+    return tasks.register("buildJni_$platform") {
+        group = "jni"
+        doLast {
+            println("Running cmakeTask for platform:$platform project:$project")
+
+            val outDir = file( "$jniBuildDir/$platform")
+            outDir.mkdirs()
+
+            val javaHome = System.getenv("JAVA_HOME") ?: "/usr/lib/jvm/java-21-openjdk-amd64"
+
+            val jniPlatformInclude = when(platform) {
+                "linux-x86_64" -> "linux"
+                "windows-x86_64" -> "win32"
+                "macos-x86_64" -> "darwin"
+                else -> throw GradleException("Unknown platform")
+            }
+
+            val jniIncludeArgs = listOf(
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-DJAVA_HOME=$javaHome",
+                "-DCMAKE_INCLUDE_PATH=$javaHome/include;$javaHome/include/$jniPlatformInclude"
+            )
+
+            exec {
+                workingDir = outDir
+                environment("JAVA_HOME", javaHome)
+                println("Running cmake -G $generator")
+                commandLine("cmake", "-G", generator, *jniIncludeArgs.toTypedArray(), "../../../src/cpp/$project")
+            }
+
+            exec {
+                workingDir = outDir
+                environment("JAVA_HOME", javaHome)
+                println("Running cmake --build .")
+                commandLine("cmake", "--build", ".")
+            }
+
+            val libName = when(platform) {
+                "linux-x86_64" -> "lib$project.so"
+                "windows-x86_64" -> "$project.dll"
+                "macos-x86_64" -> "lib$project.dylib"
+                else -> throw GradleException("Unknown platform")
+            }
+
+            copy {
+                val fromDir = if (osName.contains("win")) {
+                    "$outDir/Debug/$libName"
+                } else {
+                    "$outDir/$libName"
+                }
+                val toDir = "src/desktopMain/resources/jni/$platform"
+                println("Copying $fromDir -> $toDir")
+                from(fromDir)
+                into(toDir)
+            }
+        }
+    }
+}
+
+val cmakeBuild = cmakeTask("cmemory")
+
+tasks.register("kotlin-std_buildJni") {
+    dependsOn(cmakeBuild)
 }

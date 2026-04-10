@@ -86,7 +86,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.cws.printer.sandbox"
+        applicationId = "com.cws.print.sandbox"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

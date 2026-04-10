@@ -1,5 +1,3 @@
-#include <jni.h>
-#include <sys/mman.h>
 #include "../cmemory.hpp"
 #include <jni.h>
 #include <cstring>

@@ -22,7 +22,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(libs.kotlinx.coroutines.core)
+                implementation(project(":kotlin-std"))
             }
         }
     }

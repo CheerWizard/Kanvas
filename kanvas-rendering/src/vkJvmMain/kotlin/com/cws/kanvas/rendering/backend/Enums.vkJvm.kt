@@ -1,4 +1,4 @@
-package com.cws.kanvas.rendering.backend
+package com.cws.kanvas.shaderc.backend
 
 /* ================= AttributeFormat ================= */
 

@@ -1,7 +1,7 @@
 package com.cws.print
 
 fun getCurrentTimestamp(): String {
-    return getCurrentTime().formatDateTime("dd.MM.YYYY HH:mm:ss")
+    return getCurrentTimeMillis().formatDateTime("dd.MM.YYYY HH:mm:ss")
 }
 
 fun formatLog(logLevel: LogLevel, tag: String, message: String, exception: Throwable? = null): String {

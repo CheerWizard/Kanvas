@@ -11,12 +11,9 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.window.WindowState
-import com.cws.kanvas.event.GamepadAxis
-import com.cws.kanvas.event.GamepadCode
 import com.cws.kanvas.event.KeyCode
 import com.cws.kanvas.event.MouseCode
-import com.cws.kanvas.gfx.texture.Pixels
-import net.java.games.input.Component
+import com.cws.kanvas.rendering.texture.Pixels
 import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 

@@ -1,7 +1,5 @@
 package com.cws.std.tracer
 
-import kotlin.time.Duration
-
 interface Profiler {
     fun open()
     fun close()
@@ -11,9 +9,9 @@ interface Profiler {
         color: TraceColor,
         category: String,
         functionName: String,
-        startTime: Duration,
-        endTime: Duration,
-        duration: Duration,
-        expectedDuration: Duration,
+        startTime: Long,
+        endTime: Long,
+        duration: Long,
+        expectedDuration: Long,
     )
 }

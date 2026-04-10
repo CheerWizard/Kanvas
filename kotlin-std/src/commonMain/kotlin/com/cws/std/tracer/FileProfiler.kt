@@ -1,6 +1,6 @@
 package com.cws.std.tracer
 
-import com.cws.print.getCurrentTime
+import com.cws.print.getCurrentTimeMillis
 import com.cws.std.async.getCurrentProcessId
 import com.cws.std.async.getCurrentThreadId
 import com.cws.std.io.File
@@ -38,20 +38,20 @@ class FileProfiler(filepath: String) : Profiler {
         color: TraceColor,
         category: String,
         functionName: String,
-        startTime: Duration,
-        endTime: Duration,
-        duration: Duration,
-        expectedDuration: Duration,
+        startTime: Long,
+        endTime: Long,
+        duration: Long,
+        expectedDuration: Long,
     ) {
         lock.withLock {
-            val currentTime = getCurrentTime()
+            val currentTime = getCurrentTimeMillis()
             traceEvents.events.add(
                 TraceEvent(
                     id = currentID++,
                     category = category,
                     name = functionName,
-                    durationNanos = duration.inWholeNanoseconds,
-                    timestamp = currentTime.inWholeMilliseconds,
+                    durationNanos = duration,
+                    timestamp = currentTime,
                     scope = scope.value,
                     phase = phase.value,
                     color = color.value,

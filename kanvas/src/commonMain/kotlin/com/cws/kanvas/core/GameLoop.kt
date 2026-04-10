@@ -6,13 +6,13 @@ import com.cws.kanvas.event.EventListener
 import com.cws.kanvas.utils.fps
 import com.cws.print.Print
 
-class GameLoop(context: Context) : PlatformGameLoop(name = TAG, priority = 1), EventListener {
+class GameLoop(platform: Platform) : PlatformGameLoop(name = TAG, priority = 1), EventListener {
 
     companion object {
         private const val TAG = "GameLoop"
     }
 
-    private val engine = Engine(context)
+    private val engine = Engine(platform)
 
     private lateinit var window: Window
 

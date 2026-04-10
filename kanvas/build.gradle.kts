@@ -46,20 +46,13 @@ kotlin {
             dependencies {
                 // Rendering
                 api(project(":kanvas-rendering"))
-                // Logging
-                api(project(":print"))
+                // Compose
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.components.uiToolingPreview)
+                api(compose.components.resources)
                 // Standard
                 api(project(":kotlin-std"))
-                // Compose
-                api("org.jetbrains.compose.runtime:runtime:1.7.1")
-                api("org.jetbrains.compose.foundation:foundation:1.7.1")
-                api(compose.components.uiToolingPreview)
-                // Coroutines and Atomics
-                api(libs.atomicfu)
-                api(libs.kotlinx.coroutines.core)
-                api(kotlin("stdlib-common"))
-                api(libs.kotlinx.serialization.core)
-                api(libs.kotlinx.serialization.json)
             }
         }
 
@@ -74,7 +67,10 @@ kotlin {
 
         val desktopMain by getting {
             dependencies {
+                // Gamepad
                 implementation(libs.jinput)
+                // Compose
+                api(compose.desktop.currentOs)
             }
             dependsOn(commonMain)
         }

@@ -1,14 +1,12 @@
 package com.cws.kanvas.rendering.frontend
 
 import com.cws.kanvas.rendering.backend.Binding
-import com.cws.kanvas.rendering.backend.BindingLayout
 import com.cws.kanvas.rendering.backend.BindingLayoutHandle
 import com.cws.kanvas.rendering.backend.Buffer
 import com.cws.kanvas.rendering.backend.BufferInfo
 import com.cws.kanvas.rendering.backend.BufferUsage
 import com.cws.kanvas.rendering.backend.MemoryType
 import com.cws.kanvas.rendering.backend.RenderContext
-import com.cws.std.memory.INativeData
 import com.cws.std.memory.MemoryLayout
 import com.cws.std.memory.NativeData
 import com.cws.std.memory.NativeDataList

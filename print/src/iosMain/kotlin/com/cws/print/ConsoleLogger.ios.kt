@@ -13,7 +13,7 @@ actual class ConsoleLogger actual constructor() : Logger {
     }
 
     actual override fun log(logLevel: LogLevel, tag: String, message: String, exception: Throwable?) {
-        val formattedMessage = "${logLevel.toColorCode()}$logLevel $tag: $message"
+        val formattedMessage = "$logLevel $tag: $message"
         NSLog(formattedMessage)
         exception?.printStackTrace()
     }

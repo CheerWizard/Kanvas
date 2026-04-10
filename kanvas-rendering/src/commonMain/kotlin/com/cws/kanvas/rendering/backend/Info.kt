@@ -1,6 +1,6 @@
 package com.cws.kanvas.rendering.backend
 
-import com.cws.kanvas.math.Vec4
+import com.cws.std.math.Vec4
 import com.cws.std.memory.*
 
 /* ============================================================

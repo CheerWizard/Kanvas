@@ -1,6 +1,7 @@
 package com.cws.std.tracer
 
-import com.cws.print.getCurrentTime
+import com.cws.print.getCurrentTimeMillis
+import com.cws.print.getCurrentTimeNanos
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.CoroutineScope
@@ -129,13 +130,13 @@ object Tracer {
             return
         }
 
-        val startTime = getCurrentTime().inWholeNanoseconds.nanoseconds
-        val endTime: Duration
+        val startTime = getCurrentTimeNanos()
+        val endTime: Long
 
         try {
             function()
         } finally {
-            endTime = getCurrentTime().inWholeNanoseconds.nanoseconds
+            endTime = getCurrentTimeNanos()
         }
 
         val duration = endTime - startTime

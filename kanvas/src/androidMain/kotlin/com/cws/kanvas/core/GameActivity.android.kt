@@ -25,7 +25,7 @@ abstract class GameActivity : ComponentActivity() {
 
     private fun initGameLoop() {
         if (!::gameLoop.isInitialized) {
-            gameLoop = GameLoop(applicationContext)
+            gameLoop = GameLoop(AndroidPlatform(applicationContext))
         }
     }
 

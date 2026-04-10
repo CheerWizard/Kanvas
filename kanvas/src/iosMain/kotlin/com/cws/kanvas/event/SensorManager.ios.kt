@@ -1,27 +1,28 @@
 package com.cws.kanvas.event
 
-import com.cws.kanvas.core.Context
+import com.cws.kanvas.sensor.SensorManager
 import com.cws.print.Print
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.CoreMotion.CMMotionManager
 import platform.Foundation.NSOperationQueue
-import com.cws.kanvas.math.*
+import com.cws.kanvas.sensor.SensorState
+import com.cws.std.math.normalize
 
 @OptIn(ExperimentalForeignApi::class)
-actual class SensorManager actual constructor(context: Context) {
+class IOSSensorManager : SensorManager {
 
     companion object {
-        private const val TAG = "SensorManager"
+        private const val TAG = "IOSSensorManager"
     }
 
-    actual val sensor: SensorVector = SensorVector()
+    override val sensorState: SensorState = SensorState()
 
     private val motionManager = CMMotionManager()
 
-    actual fun init() {
+    override fun init() {
         if (!motionManager.isAccelerometerAvailable()) {
-            Print.e(TAG, "Accelerometer is not available on Native platform")
+            Print.e(TAG, "Accelerometer is not available on IOS platform")
             return
         }
 
@@ -30,16 +31,16 @@ actual class SensorManager actual constructor(context: Context) {
         motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.mainQueue) { data, error ->
             data?.let {
                 it.acceleration.useContents {
-                    sensor.acceleration.x = x.toFloat()
-                    sensor.acceleration.y = y.toFloat()
-                    sensor.acceleration.z = z.toFloat()
-                    sensor.acceleration = sensor.acceleration.normalize()
+                    sensorState.acceleration.x = x.toFloat()
+                    sensorState.acceleration.y = y.toFloat()
+                    sensorState.acceleration.z = z.toFloat()
+                    sensorState.acceleration = sensorState.acceleration.normalize()
                 }
             }
         }
     }
 
-    actual fun release() {
+    override fun release() {
         motionManager.stopAccelerometerUpdates()
     }
 

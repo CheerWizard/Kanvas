@@ -37,7 +37,7 @@ abstract class GameViewController : UIViewController() {
 
     private fun initGameLoop() {
         if (!::gameLoop.isInitialized) {
-            gameLoop = GameLoop(Unit)
+            gameLoop = GameLoop(IOSPlatform())
         }
     }
 

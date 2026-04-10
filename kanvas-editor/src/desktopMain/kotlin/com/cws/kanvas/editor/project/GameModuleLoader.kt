@@ -11,9 +11,9 @@ class GameModuleLoader {
         private const val TAG = "GameModuleLoader"
     }
 
-    fun load(projectConfig: ProjectConfig, moduleName: String): GameModule? {
-        if (build(projectConfig.root, moduleName)) {
-            return loadClass(projectConfig.root, "${projectConfig.packageName}.${projectConfig.name}")
+    fun load(projectModel: ProjectModel, moduleName: String): GameModule? {
+        if (build(projectModel.root, moduleName)) {
+            return loadClass(projectModel.root, "${projectModel.packageName}.${projectModel.name}")
         }
         return null
     }

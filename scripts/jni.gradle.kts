@@ -39,21 +39,20 @@ fun cmakeTask(project: String, platform: String, generator: String) = tasks.regi
             commandLine("cmake", "--build", ".")
         }
 
-        // may be already copied by CMake build
-//        val libName = when(platform) {
-//            "linux-x86_64" -> "lib$project.so"
-//            "windows-x86_64" -> "$project.dll"
-//            "macos-x86_64" -> "lib$project.dylib"
-//            else -> throw GradleException("Unknown platform")
-//        }
-//
-//        copy {
-//            val fromDir = "$outDir/$libName"
-//            val toDir = "src/desktopMain/resources/jni/$platform"
-//            println("Copying $fromDir -> $toDir")
-//            from(fromDir)
-//            into(toDir)
-//        }
+        val libName = when(platform) {
+            "linux-x86_64" -> "lib$project.so"
+            "windows-x86_64" -> "$project.dll"
+            "macos-x86_64" -> "lib$project.dylib"
+            else -> throw GradleException("Unknown platform")
+        }
+
+        copy {
+            val fromDir = "$outDir/$libName"
+            val toDir = "src/desktopMain/resources/jni/$platform"
+            println("Copying $fromDir -> $toDir")
+            from(fromDir)
+            into(toDir)
+        }
     }
 }
 

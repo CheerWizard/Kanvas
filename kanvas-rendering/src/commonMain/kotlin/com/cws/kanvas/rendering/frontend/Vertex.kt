@@ -1,10 +1,9 @@
 package com.cws.kanvas.rendering.frontend
 
-import com.cws.kanvas.math.Vec2
-import com.cws.kanvas.math.Vec3
 import com.cws.kanvas.rendering.backend.Attribute
 import com.cws.kanvas.rendering.backend.AttributeFormat
 import com.cws.kanvas.rendering.backend.AttributeType
+import com.cws.std.math.*
 import com.cws.std.memory.NativeData
 
 val DefaultVertexAttributes = arrayOf(

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 project(cmemory)
 
 if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")

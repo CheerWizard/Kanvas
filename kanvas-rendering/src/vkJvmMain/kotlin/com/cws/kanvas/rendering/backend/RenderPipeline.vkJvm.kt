@@ -1,5 +1,6 @@
-package com.cws.kanvas.rendering.backend
+package com.cws.kanvas.shaderc.backend
 
+import com.cws.kanvas.rendering.backend.Resource
 import com.cws.kanvas.vk.VK
 
 actual class RenderPipeline actual constructor(
